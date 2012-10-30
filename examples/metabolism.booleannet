@@ -1,0 +1,6 @@
+fermentation*			= glucose
+pyruvate*			= glucose or glycerol or lactate or ethanol
+oxidative_phosphorylation*	= pyruvate and ( not glucose )
+vacuolar_catabolism*		= stress
+energy*				= fermentation or oxidative_phosphorylation or vacuolar_catabolism
+

@@ -1,0 +1,312 @@
+<?xml version="1.0"?>
+<!DOCTYPE gxl SYSTEM "http://gin.univ-mrs.fr/GINsim/GINML_2_1.dtd">
+<gxl xmlns:xlink="http://www.w3.org/1999/xlink">
+	<graph id="default" class="regulatory" nodeorder="CycD Rb E2F CycE CycA p27 Cdc20 cdh1 UbcH10 CycB">
+		<node id="E2F" basevalue="1" maxvalue="1">
+			<parameter idActiveInteractions="CycA_E2F_0 p27_E2F_0" val="1"/>
+			<parameter idActiveInteractions="p27_E2F_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="101" y="187" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="CycB" basevalue="1" maxvalue="1">
+			<nodevisualsetting>
+				<ellipse x="220" y="417" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="p27" basevalue="1" maxvalue="1">
+			<parameter idActiveInteractions="p27_p27_0" val="1"/>
+			<parameter idActiveInteractions="p27_p27_0 CycE_p27_0" val="1"/>
+			<parameter idActiveInteractions="p27_p27_0 CycA_p27_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="361" y="183" width="65" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="CycA" basevalue="0" maxvalue="1">
+			<parameter idActiveInteractions="E2F_CycA_0" val="1"/>
+			<parameter idActiveInteractions="E2F_CycA_0 CycA_CycA_0" val="1"/>
+			<parameter idActiveInteractions="E2F_CycA_0 cdh1_CycA_0" val="1"/>
+			<parameter idActiveInteractions="CycA_CycA_0 E2F_CycA_0 cdh1_CycA_0" val="1"/>
+			<parameter idActiveInteractions="E2F_CycA_0 UbcH10_CycA_0" val="1"/>
+			<parameter idActiveInteractions="CycA_CycA_0 UbcH10_CycA_0" val="1"/>
+			<parameter idActiveInteractions="CycA_CycA_0 E2F_CycA_0 UbcH10_CycA_0" val="1"/>
+			<parameter idActiveInteractions="CycA_CycA_0" val="1"/>
+			<parameter idActiveInteractions="CycA_CycA_0 cdh1_CycA_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="222" y="211" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="Cdc20" basevalue="0" maxvalue="1">
+			<parameter idActiveInteractions="CycB_Cdc20_0" val="1"/>
+			<parameter idActiveInteractions="CycB_Cdc20_0 cdh1_Cdc20_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="220" y="278" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="UbcH10" basevalue="1" maxvalue="1">
+			<parameter idActiveInteractions="CycA_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycB_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="UbcH10_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 CycB_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycB_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 CycB_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="UbcH10_UbcH10_0 CycA_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycB_UbcH10_0 UbcH10_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 CycB_UbcH10_0 UbcH10_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycB_UbcH10_0 UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 CycB_UbcH10_0 UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 cdh1_UbcH10_0 UbcH10_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycB_UbcH10_0 cdh1_UbcH10_0 UbcH10_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="cdh1_UbcH10_0 UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 CycB_UbcH10_0 cdh1_UbcH10_0 UbcH10_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycB_UbcH10_0 cdh1_UbcH10_0 UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 cdh1_UbcH10_0 UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<parameter idActiveInteractions="CycA_UbcH10_0 CycB_UbcH10_0 cdh1_UbcH10_0 UbcH10_UbcH10_0 Cdc20_UbcH10_0" val="1"/>
+			<nodevisualsetting>
+				<rect x="156" y="326" width="55" height="25" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="CycE" basevalue="0" maxvalue="1">
+			<parameter idActiveInteractions="E2F_CycE_0" val="1"/>
+			<parameter idActiveInteractions="E2F_CycE_0 CycA_CycE_0" val="1"/>
+			<parameter idActiveInteractions="E2F_CycE_0 CycE_CycE_0" val="1"/>
+			<parameter idActiveInteractions="E2F_CycE_0 CycA_CycE_0 CycE_CycE_0" val="1"/>
+			<parameter idActiveInteractions="E2F_CycE_0 p27_CycE_0" val="1"/>
+			<parameter idActiveInteractions="CycA_CycE_0 E2F_CycE_0 p27_CycE_0" val="1"/>
+			<parameter idActiveInteractions="CycE_CycE_0 CycA_CycE_0 E2F_CycE_0 p27_CycE_0" val="1"/>
+			<parameter idActiveInteractions="CycE_CycE_0 p27_CycE_0 E2F_CycE_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="222" y="94" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="cdh1" basevalue="1" maxvalue="1">
+			<parameter idActiveInteractions="Cdc20_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="Cdc20_cdh1_0 CycB_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="Cdc20_cdh1_0 CycA_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="Cdc20_cdh1_0 CycA_cdh1_0 CycB_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="Cdc20_cdh1_0 p27_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="CycB_cdh1_0 Cdc20_cdh1_0 p27_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="CycA_cdh1_0 Cdc20_cdh1_0 p27_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="CycA_cdh1_0 CycB_cdh1_0 Cdc20_cdh1_0 p27_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="CycA_cdh1_0 p27_cdh1_0" val="1"/>
+			<parameter idActiveInteractions="p27_cdh1_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="304" y="323" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="CycD" basevalue="0" maxvalue="1">
+			<parameter idActiveInteractions="CycD_CycD_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="227" y="46" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<node id="Rb" basevalue="1" maxvalue="1">
+			<parameter idActiveInteractions="CycA_Rb_0 p27_Rb_0" val="1"/>
+			<parameter idActiveInteractions="CycE_Rb_0 p27_Rb_0" val="1"/>
+			<parameter idActiveInteractions="CycA_Rb_0 CycE_Rb_0 p27_Rb_0" val="1"/>
+			<parameter idActiveInteractions="p27_Rb_0" val="1"/>
+			<nodevisualsetting>
+				<ellipse x="19" y="221" width="50" height="30" backgroundColor="#FFFFFF" foregroundColor="#000000"/>
+			</nodevisualsetting>
+		</node>
+		<edge id="E2F_CycA_0" from="E2F" to="CycA" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="126,202 170,220 247,226" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="E2F_CycE_0" from="E2F" to="CycE" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="126,202 247,109" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycB_Rb_0" from="CycB" to="Rb" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="245,432 122,362 44,236" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycB_p27_0" from="CycB" to="p27" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="245,432 365,356 393,198" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycB_cdh1_0" from="CycB" to="cdh1" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="245,432 329,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycB_Cdc20_0" from="CycB" to="Cdc20" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="245,432 245,293" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycB_UbcH10_0" from="CycB" to="UbcH10" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="245,432 183,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycB_E2F_0" from="CycB" to="E2F" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="245,432 134,344 126,202" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="p27_p27_0" from="p27" to="p27" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="393,198 437,214 425,233 393,198" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="p27_CycE_0" from="p27" to="CycE" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="393,198 247,109" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="p27_E2F_0" from="p27" to="E2F" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="393,198 260,161 126,202" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="p27_Rb_0" from="p27" to="Rb" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="393,198 375,377 247,452 102,383 44,236" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="p27_cdh1_0" from="p27" to="cdh1" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="393,198 329,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycA_cdh1_0" from="CycA" to="cdh1" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,226 329,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycA_E2F_0" from="CycA" to="E2F" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,226 174,205 126,202" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycA_Rb_0" from="CycA" to="Rb" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,226 151,244 44,236" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycA_CycA_0" from="CycA" to="CycA" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="247,226 218,215 219,189 228,182 247,226" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycA_CycE_0" from="CycA" to="CycE" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,226 247,109" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycA_p27_0" from="CycA" to="p27" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,226 393,198" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycA_UbcH10_0" from="CycA" to="UbcH10" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="247,226 183,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="Cdc20_CycB_0" from="Cdc20" to="CycB" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="245,293 245,432" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="Cdc20_CycA_0" from="Cdc20" to="CycA" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="245,293 247,226" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="Cdc20_cdh1_0" from="Cdc20" to="cdh1" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="245,293 329,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="Cdc20_UbcH10_0" from="Cdc20" to="UbcH10" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="245,293 183,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="UbcH10_CycA_0" from="UbcH10" to="CycA" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="183,338 247,226" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="UbcH10_UbcH10_0" from="UbcH10" to="UbcH10" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="183,338 156,340 141,316 156,310 183,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycE_CycE_0" from="CycE" to="CycE" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,109 299,120 293,98 247,109" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycE_Rb_0" from="CycE" to="Rb" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,109 133,170 44,236" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycE_p27_0" from="CycE" to="p27" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="247,109 393,198" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="cdh1_CycB_0" from="cdh1" to="CycB" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="329,338 245,432" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="cdh1_CycA_0" from="cdh1" to="CycA" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="329,338 247,226" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="cdh1_Cdc20_0" from="cdh1" to="Cdc20" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="329,338 245,293" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="cdh1_UbcH10_0" from="cdh1" to="UbcH10" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="329,338 183,338" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycD_Rb_0" from="CycD" to="Rb" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="252,61 73,142 44,236" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycD_p27_0" from="CycD" to="p27" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="252,61 338,97 393,198" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="CycD_CycD_0" from="CycD" to="CycD" minvalue="1" sign="positive">
+			<edgevisualsetting>
+				<polyline points="252,61 303,60 298,41 252,61" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="Rb_E2F_0" from="Rb" to="E2F" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="44,236 126,202" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="Rb_CycE_0" from="Rb" to="CycE" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="44,236 105,157 247,109" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+		<edge id="Rb_CycA_0" from="Rb" to="CycA" minvalue="1" sign="negative">
+			<edgevisualsetting>
+				<polyline points="44,236 154,272 247,226" line_style="curve" line_color="#333333" line_width="2" routage="manual"/>
+			</edgevisualsetting>
+		</edge>
+	</graph>
+</gxl>

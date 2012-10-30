@@ -1,0 +1,106 @@
+<html>
+<head>
+  <title>biosimulator</title>
+  
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.22.custom.css"/>
+  <link rel="stylesheet" type="text/css" href="css/simulator.css"/>
+  <link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
+  <link rel="stylesheet" type="text/css" href="css/rickshaw.min.css"/>
+
+	<script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="settings.js"></script>
+	<script type="text/javascript" src="lib/jquery-ui-1.8.22.custom.min.js"></script>
+  <script type="text/javascript" src="js/controls.js"></script>
+  
+</head>
+
+<body>
+  <div id=tabs>
+    <ul>
+      <li><a href="#graphNetwork">Network</a></li>
+      <li><a href="#graphStateTransition">Transitions</a></li>
+      <li><a href="#plotTimeSeries">Time Series</a></li>
+      
+      <li><button id=buttonImportDialog>Open</button></li>
+      <li><button id=buttonExportDialog>Save</button></li>
+      <li><button id=buttonSimulate>Simulate</button></li>
+      <li><button id=buttonAnalyse>Analyse</button></li>
+      
+      <div>
+        <li><img id=circleProgress src="css/images/progress.gif"/></li>
+        <li><label id=textIteration>0</label></li>
+      </div>
+      
+      <div id=sliderZoom></div>
+    </ul>
+    
+    <div id=graphNetwork class=tabs>
+    </div>
+    
+    <div id=graphStateTransition class=tabs>
+    </div>
+    
+    <div id=plotTimeSeries class=tabs>
+      <div id=axisY></div>
+      <div id=plotArea></div>
+      <div id=legendNodes></div>
+    </div>
+    
+  </div>
+  
+  <div id=dialogImport class=dialog title="Import File">
+    <input type=file id=fileNetwork /> 
+    
+    <div id=radioSeed>
+      <b>Initial Seed:</b> <br>
+      <input type=radio name="seed" id=seedTrue checked />All True<br>
+      <input type=radio name="seed" id=seedFalse />All False<br>
+      <input type=radio name="seed" id=seedRandom />Random Seed<br>
+      <input type=radio name="seed" id=seedGuess />Guess Seed(SBML only)<br>
+    </div>
+    
+    <div id=radioFormat>
+      <b>Type of file:</b> <br>
+      <input type=radio name="format" id=formatRBoolNet />R BoolNet<br>
+      <input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet<br>
+      <input type=radio name="format" id=formatGINML checked />GINML<br>
+      <input type=radio name="format" id=formatSBML />SBML<br>
+    </div>
+    
+    <div id=checkOptions>
+      <b>Other Options:</b> <br>
+      <input type=checkbox id=optionsOneClick />Simulate on node click
+      <input type=checkbox id=optionsScale checked />Scale Graph to fit page
+    </div>
+    
+    <button id=buttonImportFile class=dialogButton> Import </button>
+  </div>
+  
+  <div id=dialogExport class=dialog title="Export">
+    <div id=radioGraph>
+      <b>Format</b><br>
+      <input type=radio name="graph" id=graphSBGN  />SBGN<br>
+      <input type=radio name="graph" id=graphSVG checked />SVG<br>
+      <input type=radio name="graph" id=graphjSBGN />jSBGN<br>
+    </div>
+    <div id=radioExport>
+      <b>Graph</b><br>
+      <input type=radio name="export" id=exportNetwork checked />Network<br>
+      <input type=radio name="export" id=exportStateTransition />Transitions<br><br>
+      <b>Network Rules</b><br>
+      <input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br>
+      <input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br>
+    </div>
+    
+    <button id=buttonExportFile class=dialogButton> Export </button>
+  </div>
+  
+  <div id=dialogEdit class=dialog title="Edit Rule">
+    <p id=textID></p>
+    <input type=text id=textRule />
+    <button id=buttonEdit class=dialogButton> Save </button>
+  </div>
+
+</body>
+
+</html>

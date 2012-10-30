@@ -1,4 +1,102 @@
-BONESIM
-=======
+/*
+ * README
+ * 
+ * Copyright 2012 Chaitanya Talnikar <chaitukca@gmail.com>
+ * 
+ */
+ 
+Welcome to the biographer simulator.
 
-Boolean Network Simulator
+The simulator uses a Makefile to manage the project. make by default
+executes the directive 'all' which consists of 'lint', 'doc', 'test' and
+'pkg'. 
+The simulator source code does not consist of any external libraries
+by default and they have to be fetched and installed.
+
+Build libs:
+1. If you are using Ubuntu, install necessary dependences to test and 
+build the software by typing in the terminal:
+    make deps
+Otherwise please refer below for a list of dependencies:
+    #required to build bui
+    nodejs
+    npm
+    node-uglify
+    #required to build libSBGN.js
+    ant
+    git-core(git)
+    #required for creating documentation
+    jsdoc-toolkit(jsdoc)
+    #required for the offline app
+    libqtwebkit4
+    python-qt4
+    #required for lint code check
+    jshint
+    #required for unit testing
+    selenium python api
+    chromedriver(selenium webdriver)
+    
+2. Fetch and build the libs by executing the command:
+    make libs
+The above commands adds the following libs:
+    biographer-ui
+    d3.js
+    libSBGN.js
+    
+3. To support SBML files in the simulator the biographer server needs to 
+be setup. First clone it:
+    hg clone https://code.google.com/p/biographer.server/ server
+Now go through the README to install it and then link the server directory
+to the web2py applications directory
+    ln -s $PWD/server /path/to/web2py/applications/biographer
+Ensure that the correct server URL is put in main/settings.js(The 
+default URL is 'http://127.0.0.1:8000/biographer'):
+    serverURL = 'http://web2py-url:port/application-name'
+Also the biographer server web2py app needs to know the location of the 
+simulator, so create a symlink to the main directory of the simulator to
+the static directory of the biographer server application:
+    rm -rf /path/to/web2py/applications/biographer/static
+    ln -s  $PWD/main /path/to/web2py/applications/biographer/static   
+or just copy the main directory to the server static folder:
+    cp -R main/. /path/to/web2py/biographer-server/static 
+    
+4. For testing purposes if you are using Chrome you need to download the
+Chrome WebDriver available at the following url:
+    http://code.google.com/p/chromedriver/downloads/list
+Download the linux zip depending on your architechture and install it using 
+the commands:
+    tar -xvf chromedriver*.zip
+    sudo cp chromedriver /usr/bin
+
+
+Now once you have the necessary libs you are ready to test the simulator or
+create a deployable package.
+
+Offline App(browse):
+To test the application offline(no SBML support) using the qt webkit engine. Run:
+    make browse
+    
+Testing(test):
+To run all the tests for the simulator, run:
+    make test
+This executes all the tests including the file import/export, SBML server
+tests and the Simulate, Analyse and Plot features using the selenium
+browser testing framework along with python's unittest.
+To run specific tests take a look at the main.py file in the tests directory.
+The default browser is Chrome and the default URL is the localhost web2py
+server. To change these settings modify the simulator.py file.
+
+Packaging(pkg):
+To create a package which can be easily deployed on a server execute:
+    make pkg
+A zip file simulator.zip will be created in the root directory. 
+
+The following tasks don't really require the libs.
+Code checking(lint):
+To perform jshint on the js files execute:
+    make lint
+
+Documentation(doc):
+To generate documentation using jsdoc execute:
+    make doc
+The docs will reside in the jsdoc directory.
