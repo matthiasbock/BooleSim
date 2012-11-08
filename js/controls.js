@@ -62,7 +62,7 @@ var Controls = function() {
     });
     
     $.getScript("lib/jquery.simulate.js");
-    $.getScript("lib/biographer-ui.min.js", function() {
+    $.getScript("lib/biographer-ui.js", function() {
       bui.settings.css.stylesheetUrl = 'css/visualization-svg.css';
     });
     $.getScript("lib/interact.js");
