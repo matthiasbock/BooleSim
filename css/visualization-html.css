@@ -1,0 +1,34 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.placeholder {
+    position: absolute;
+    background: #eee;
+    border: 2px dashed green;/*#ff8c00;*/
+    opacity: 0.5;
+    cursor: move;
+}
+
+.invisible, .hidden {
+    display: none;
+}
+
+.textDimensionCalculation {
+    position: absolute;
+    visibility: hidden;
+    height: auto;
+    width: auto;
+    white-space: nowrap;
+}
+
+.defaultText {
+    font-family: "Times-Roman";
+    font-size: 19px;
+}
+
+.smallText {
+    font-family: Verdana;
+    font-size: 13px;
+}
