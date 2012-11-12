@@ -3,7 +3,7 @@ var controls, simulator = null;
 $(document).ready(function() {
   // Load up the UI
   controls = new Controls();
-  controls.initialise();
+  controls.initialize();
 });
 
 /**
@@ -18,16 +18,16 @@ var Controls = function() {
   var obj = this;
   
   /**
-   * Initialise all the UI components and fetch the extra js files. The
+   * initialize all the UI components and fetch the extra js files. The
    * UI consists of buttons, dialog boxes, a slider and a tab interface.
    */
-  this.initialise = function() {
+  this.initialize = function() {
     // Load the jQuery UI tabs
     $('#tabs').tabs();
     $('#tabs').tabs('select', '#graphNetwork');
     $('#tabs').bind('tabsselect', changeTab);
     
-    // Initialise all the jQuery UI components
+    // initialize all the jQuery UI components
     $('#sliderZoom').slider({ step: 0.1, max: 2, stop: zoomGraph});
     $('#buttonSimulate').button({icons: {primary: "ui-icon-play" }});
     $('#buttonAnalyse').button({icons: {primary: "ui-icon-gear" }});
@@ -145,7 +145,7 @@ var Controls = function() {
   /** 
    * The event handler for the import file button in the import file dialog
    * box. The file is read using the appropriate boolean network importer.
-   * The simulator is then initialised using this network.
+   * The simulator is then initialized using this network.
    */  
   var importFile = function() {
     
@@ -182,7 +182,7 @@ var Controls = function() {
       $('#tabs').tabs('select', '#graphNetwork');
       $('#textIteration').text(0);
       
-      // Delete any previous instance of the Simulator and initialise a new one
+      // Delete any previous instance of the Simulator and initialize a new one
       if (simulator !== null) 
         simulator.destroy();
       simulator = new Simulator();
@@ -193,7 +193,7 @@ var Controls = function() {
         guessSeed: $('#seedGuess').attr('checked'),
         oneClick: $('#optionsOneClick').attr('checked')
       };
-      simulator.initialise(jsbgn, settings);
+      simulator.initialize(jsbgn, settings);
     };
     reader.readAsText(file);
   };
