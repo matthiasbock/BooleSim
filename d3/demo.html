@@ -2,7 +2,7 @@
 
 <head>
 	<script src="d3.v2.js"></script>
-	<link type="text/css" rel="stylesheet" href="https://raw.github.com/mbostock/d3/master/examples/force/force.css"/>
+	<link type="text/css" rel="stylesheet" href="force.css"/>
 	<script src="network.js"></script>
 </head>
 
@@ -14,17 +14,16 @@
 	var color = d3.scale.category20();
 
 	var force = d3.layout.force()
-						.charge(-130)
-						.linkDistance(10)
+						.charge(-200)
+						.linkDistance(30)
 						.size([width, height]);
 
 	var svg = d3.select("body").append("svg")
 								.attr("width", width)
 								.attr("height", height);
 
-	network.links = network.edges;
 	console.log(network.nodes.length+' nodes')
-	console.log(network.links.length+' edges');
+	console.log(network.edges.length+' edges');
 
 	for (i in network.nodes) {
 		n = network.nodes[i];
@@ -34,29 +33,24 @@
 		n.px = 1;
 		n.py = 1;
 		n.fixed = false;
-		n.width = 1;
+		n.weight = 1;
 		}
-/*
+
 	function getNodeById(id) {
 		for (i in network.nodes) {
 			if (network.nodes[i].id == id || network.nodes[i] == id)
 				return network.nodes[i];
 			}
-		console.error('node '+id+' not found');
-		var n = network.nodes.append( {'index':network.nodes.length()} );
-		return n;
+		console.error('node '+id+' not found. created.');
+		return network.nodes.append( {'index':network.nodes.length, 'x':1, 'y':1, 'fixed':false} );
 		}
 
 	for (i in network.edges) {
-		network.edges[i].source = getNodeById(network.edges[i].source);
-		network.edges[i].target = getNodeById(network.edges[i].target);
-		network.edges[i].value = 1;
-//		console.log(JSON.stringify(network.edges[i]));
-		if (network.edges[i].source == null || network.edges[i].target == null)
-			delete network.edges[i];
+		network.edges[i].sourceNode = getNodeById(network.edges[i].source);
+		network.edges[i].targetNode = getNodeById(network.edges[i].target);
 		}
-*/
-	  force
+
+	force
 	      .nodes(network.nodes)
 	      .links(network.edges)
 	      .start();
@@ -69,25 +63,28 @@
 								.attr("class", "link")
 								.style("stroke-width", 1);
     
-	  var nodes = svg.selectAll("rect.node")
+	var w = 60;
+	var h = 20;
+	var nodes = svg.selectAll("rect.node")
 							.data(network.nodes).enter()
 								.append("rect")
 								.attr("class", "node")
-//								.attr("r", 5)
-								.attr("width", "10")
-								.attr("height", "10")
+								.attr("width", w)
+								.attr("height",  h)
+								.attr("rx", 5)
 								.style("fill", "green")
 								.call(force.drag);
 
-	  nodes.append("title").text(
+	  /*nodes.append("title").text(
 						function(n) { return n.id; }
 						);
+						*/
 
 	  force.on("tick", function() {
-						    links	.attr("x1", function(e) { return e.source.x; })
-								.attr("y1", function(e) { return e.source.y; })
-								.attr("x2", function(e) { return e.target.x; })
-								.attr("y2", function(e) { return e.target.y; });
+						    links	.attr("x1", function(e) { return e.sourceNode.x+w/2; })
+								.attr("y1", function(e) { return e.sourceNode.y+h/2; })
+								.attr("x2", function(e) { return e.targetNode.x+w/2; })
+								.attr("y2", function(e) { return e.targetNode.y+h/2; });
 
 						    nodes	.attr("x", function(n) { return n.x; })
 								.attr("y", function(n) { return n.y; });
