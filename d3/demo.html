@@ -3,16 +3,9 @@
 <head>
 	<script src="d3.v2.js"></script>
 	<script src="paper.net.js"></script>
+	<script src="convert.js"></script>
 	<script>
-/*		jSBGN_network = '{	"nodes":	[ \
-										{"id":"glucose"}, \
-										{"id":"glycerol"} \
-									], \
-							"edges":	[ \
-									{"source":"glucose", "target":"glycerol"} \
-									] \
-							}';
-*/		network = JSON.parse(jSBGN_network);
+		network = jSBGN_to_d3( JSON.parse(jSBGN_network) );
 	</script>
 
 	<style>
@@ -36,54 +29,29 @@
 
 <body>
 	<script>
-		var	width = window.innerWidth,
-			height = window.innerHeight;
 
-	//	var color = d3.scale.category20();
+		// d3 setup
+		var	svg_width = window.innerWidth,
+			svg_height = window.innerHeight;
 
 		var force = d3.layout.force()
 							.charge(-500)
 							.linkDistance(50)
-							.size([width, height]);
+							.size([svg_width, svg_height]);
 
 		var svg = d3.select("body").append("svg")
-									.attr("width", width)
-									.attr("height", height);
+									.attr("width", svg_width)
+									.attr("height", svg_height);
 
-		console.log(network.nodes.length+' nodes')
-		console.log(network.edges.length+' edges');
+		console.log("d3 setup complete.");
 
+		// setup arrow
 		arrow = svg.append("defs").append("marker");
 		arrow.attr('id', 'arrow').attr('orient', 'auto').attr('markerWidth', 10).attr('markerHeight', 10).attr('refX', 20).attr('refY', 3);
 		arrow.append('path').attr('d', 'M0,0 V6 L4,3 Z').attr('fill', 'blue');
 
-		for (i in network.nodes) {
-			n = network.nodes[i];
-			n.index = i;
-			n.x = 10;
-			n.y = 10;
-			n.px = 1;
-			n.py = 1;
-			n.fixed = false;
-			n.weight = 1;
-			}
-
-		function getNodeById(id) {
-			for (i in network.nodes) {
-				if (network.nodes[i].id == id || network.nodes[i] == id)
-					return network.nodes[i];
-				}
-			console.error('node '+id+' not found. created.');
-			return network.nodes.append( {'index':network.nodes.length, 'x':1, 'y':1, 'fixed':false} );
-			}
-
-		//
-		// d3 expects edge source and targets specified as object links, rather than ids or indices
-		//
-		for (i in network.edges) {
-			network.edges[i].sourceNode = getNodeById(network.edges[i].source);
-			network.edges[i].targetNode = getNodeById(network.edges[i].target);
-			}
+		console.log(network.nodes.length+' nodes')
+		console.log(network.edges.length+' edges');
 
 		// import data to d3 force-directed layouting
 		force
@@ -91,12 +59,15 @@
 		      .links(network.edges)
 		      .start();
 
+		console.log("data import complete.");
+
 		var edges = svg.selectAll("line.edge")
 						.data(network.edges).enter()
 							.append("line")
-							.attr("class", "edge");		// add class link for application of css style attributes
-		edges.attr('marker-end', 'url(#arrow)');
-		
+							.attr("class", "edge")		// add class link for application of css style attributes
+							.attr('marker-end', 'url(#arrow)');
+
+		// layers: <g> elements
 		var w = 70;
 		var h = 30;
 		var nodes = svg.selectAll("g").data(network.nodes)	// selectAll.data = apply the data in network.nodes to the selected svg elements, which already exist
@@ -104,36 +75,33 @@
 												.append("g")
 													.attr("class", "node")
 													.attr("id", function(data) { return data.id; });
+		// drag'n'drop handler
 		nodes	.call(force.drag);
 
-		var circles =	nodes
+		var rects =	nodes
 						.append("rect")
 						.attr("class", "rect")
 						.attr("width", w)
 						.attr("height",  h)
 						.attr("rx", 5);
 
-		var titles =	nodes
+		var labels =	nodes
 						.append("text")
 						.attr("class", "label")
-						.attr("transform", "translate(10, "+h/2+")")
+						.attr("transform", "translate(10, "+h/2+")")	// move text inside the rect
 						.text( function(data) { return data.id; } );
 
-		  /*nodes.append("title").text(
-							function(n) { return n.id; }
-							);
-							*/
-
-		  force.on("tick", function() {
+		// on every x|y update do:
+		force.on("tick", function() {
 							    edges	.attr("x1", function(data) { return data.sourceNode.x+w/2; })
 									.attr("y1", function(data) { return data.sourceNode.y+h/2; })
 									.attr("x2", function(data) { return data.targetNode.x+w/2; })
 									.attr("y2", function(data) { return data.targetNode.y+h/2; });
 
-							    circles	.attr("x", function(data) { return data.x; })
+							    rects	.attr("x", function(data) { return data.x; })
 									.attr("y", function(data) { return data.y; });
 
-							    titles	.attr("x", function(data) { return data.x; })
+							    labels	.attr("x", function(data) { return data.x; })
 									.attr("y", function(data) { return data.y; });
 							});
 	</script>
