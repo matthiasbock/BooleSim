@@ -2,7 +2,10 @@
 
 <head>
 	<script src="d3.v2.js"></script>
-	<script src="network.js"></script>
+	<script>
+	input = '{"nodes":[{"id":"glucose"},{"id":"glycerol"}], "edges":[{"source":"glucose", "target":"glycerol"}]}';
+	network = JSON.parse(input);
+	</script>
 	<style>
 	.node	{
 			stroke: #fff;
@@ -106,7 +109,7 @@
 					.append("text")
 					.attr("class", "node_text")
 					.attr("transform", "translate(10, "+h/2+")")
-					.text("test");
+					.text( function(data) { return data.id; } );
 
 	  /*nodes.append("title").text(
 						function(n) { return n.id; }
