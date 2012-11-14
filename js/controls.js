@@ -162,39 +162,42 @@ var Controls = function() {
     
     // This event handler is called when the file reading task is complete
     reader.onload = function(read) {
-      // Get the data contained in the file
-      data = read.target.result;
-      
-      // Depending on the file type option checked in the import dialog box
-      // call the appropriate importer
-      if ($('#formatRBoolNet').attr('checked'))
-        jsbgn.importBooleanNetwork(data, ',');
-      else if ($('#formatPyBooleanNet').attr('checked'))
-        jsbgn.importBooleanNetwork(data, '=');
-      else if ($('#formatGINML').attr('checked'))
-        jsbgn.importGINML(data);
-      else 
-        jsbgn.importSBML(file, data);
-        
-      $('#graphStateTransition').html('');
-      // Import the jSBGN object into a bui.Graph instance
-      obj.importNetwork(jsbgn, '#graphNetwork');
-      $('#tabs').tabs('select', '#graphNetwork');
-      $('#textIteration').text(0);
-      
-      // Delete any previous instance of the Simulator and initialize a new one
-      if (simulator !== null) 
-        simulator.destroy();
-      simulator = new Simulator();
-      if ($('#formatSBML').attr('checked'))
-        simulator.scopes = true;  
-      var settings = { 
-        simDelay: 500, 
-        guessSeed: $('#seedGuess').attr('checked'),
-        oneClick: $('#optionsOneClick').attr('checked')
-      };
-      simulator.initialize(jsbgn, settings);
-    };
+		// Get the data contained in the file
+		data = read.target.result;
+
+		// Depending on the file type option checked in the import dialog box
+		// call the appropriate importer
+		if ($('#formatRBoolNet').attr('checked'))
+			jsbgn.importBooleanNetwork(data, ',');
+		else if ($('#formatPyBooleanNet').attr('checked'))
+			jsbgn.importBooleanNetwork(data, '=');
+		else if ($('#formatGINML').attr('checked'))
+			jsbgn.importGINML(data);
+		else 
+			jsbgn.importSBML(file, data);
+
+		$('#graphStateTransition').html('');
+		// Import the jSBGN object into a bui.Graph instance
+		obj.importNetwork(jsbgn, '#graphNetwork');
+		$('#tabs').tabs('select', '#graphNetwork');
+		$('#textIteration').text(0);
+
+		// Delete any previous instance of the Simulator and initialize a new one
+		if (simulator !== null) 
+			simulator.destroy();
+
+		simulator = new Simulator();
+
+		if ($('#formatSBML').attr('checked'))
+			simulator.scopes = true;  
+
+		var settings = { 
+			simDelay: 500, 
+			guessSeed: $('#seedGuess').attr('checked'),
+			oneClick: $('#optionsOneClick').attr('checked')
+			};
+		simulator.initialize(jsbgn, settings);
+		};
     reader.readAsText(file);
   };
 

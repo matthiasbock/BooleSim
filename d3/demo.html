@@ -4,15 +4,23 @@
 	<script src="d3.v2.js"></script>
 	<script src="network.js"></script>
 	<style>
-	g {
-	  stroke: #fff;
-	  stroke-width: 1.5px;
-	  fill: #008000;
-	}
-	line {
-	  stroke: #999;
-	  stroke-opacity: .6;
-	}
+	.node	{
+			stroke: #fff;
+			stroke-width: 1.5px;
+			fill: transparent;
+			}
+	.edge	{
+			stroke: #999;
+			stroke-opacity: .6;
+			stroke-width: 1.6px;
+			}
+	.node_rect	{
+				fill: green;
+				}
+	.node_text	{
+				fill: black;
+				font-family: Arial;
+				}
 	</style>
 </head>
 
@@ -34,6 +42,10 @@
 
 	console.log(network.nodes.length+' nodes')
 	console.log(network.edges.length+' edges');
+
+	arrow = svg.append("defs").append("marker");
+	arrow.attr('id', 'arrow').attr('orient', 'auto').attr('markerWidth', 10).attr('markerHeight', 10).attr('refX', 20).attr('refY', 3);
+	arrow.append('path').attr('d', 'M0,0 V6 L4,3 Z').attr('fill', 'blue');
 
 	for (i in network.nodes) {
 		n = network.nodes[i];
@@ -69,30 +81,31 @@
 	      .links(network.edges)
 	      .start();
 
-	var links = svg.selectAll("line.link")
+	var edges = svg.selectAll("line.edge")
 					.data(network.edges).enter()
 						.append("line")
-						.attr("class", "link")			// add class link for application of css style attributes
-						.style("stroke-width", 2);
-    
+						.attr("class", "edge");		// add class link for application of css style attributes
+	edges.attr('marker-end', 'url(#arrow)');
+	
 	var w = 70;
 	var h = 30;
 	var nodes = svg.selectAll("g").data(network.nodes)	// selectAll.data = apply the data in network.nodes to the selected svg elements, which already exist
 										.enter()	// for remaining unapplied data do:
-											.append("g");
-	nodes	.attr("class", "bbox")
-			.attr("width", w)
-			.attr("height",  h);
-
+											.append("g")
+												.attr("class", "bbox");
 	nodes	.call(force.drag);
 
 	var circles =	nodes
 					.append("rect")
-					.attr("class", "node")
-					.attr("fill", "green");
+					.attr("class", "node_rect")
+					.attr("width", w)
+					.attr("height",  h)
+					.attr("rx", 5);
 
 	var titles =	nodes
 					.append("text")
+					.attr("class", "node_text")
+					.attr("transform", "translate(10, "+h/2+")")
 					.text("test");
 
 	  /*nodes.append("title").text(
@@ -101,7 +114,7 @@
 						*/
 
 	  force.on("tick", function() {
-						    links	.attr("x1", function(data) { return data.sourceNode.x+w/2; })
+						    edges	.attr("x1", function(data) { return data.sourceNode.x+w/2; })
 								.attr("y1", function(data) { return data.sourceNode.y+h/2; })
 								.attr("x2", function(data) { return data.targetNode.x+w/2; })
 								.attr("y2", function(data) { return data.targetNode.y+h/2; });
