@@ -2,8 +2,18 @@
 
 <head>
 	<script src="d3.v2.js"></script>
-	<link type="text/css" rel="stylesheet" href="force.css"/>
 	<script src="network.js"></script>
+	<style>
+	g {
+	  stroke: #fff;
+	  stroke-width: 1.5px;
+	  fill: #008000;
+	}
+	line {
+	  stroke: #999;
+	  stroke-opacity: .6;
+	}
+	</style>
 </head>
 
 <body>
@@ -14,8 +24,8 @@
 	var color = d3.scale.category20();
 
 	var force = d3.layout.force()
-						.charge(-200)
-						.linkDistance(30)
+						.charge(-500)
+						.linkDistance(50)
 						.size([width, height]);
 
 	var svg = d3.select("body").append("svg")
@@ -45,35 +55,45 @@
 		return network.nodes.append( {'index':network.nodes.length, 'x':1, 'y':1, 'fixed':false} );
 		}
 
+	//
+	// d3 expects edge source and targets specified as object links, rather than ids or indices
+	//
 	for (i in network.edges) {
 		network.edges[i].sourceNode = getNodeById(network.edges[i].source);
 		network.edges[i].targetNode = getNodeById(network.edges[i].target);
 		}
 
+	// import data to d3 force-directed layouting
 	force
 	      .nodes(network.nodes)
 	      .links(network.edges)
 	      .start();
 
-	// link.source/target is expected as index of a node
-
-	  var links = svg.selectAll("line.link")
-							.data(network.edges).enter()
-								.append("line")
-								.attr("class", "link")
-								.style("stroke-width", 1);
+	var links = svg.selectAll("line.link")
+					.data(network.edges).enter()
+						.append("line")
+						.attr("class", "link")			// add class link for application of css style attributes
+						.style("stroke-width", 2);
     
-	var w = 60;
-	var h = 20;
-	var nodes = svg.selectAll("rect.node")
-							.data(network.nodes).enter()
-								.append("rect")
-								.attr("class", "node")
-								.attr("width", w)
-								.attr("height",  h)
-								.attr("rx", 5)
-								.style("fill", "green")
-								.call(force.drag);
+	var w = 70;
+	var h = 30;
+	var nodes = svg.selectAll("g").data(network.nodes)	// selectAll.data = apply the data in network.nodes to the selected svg elements, which already exist
+										.enter()	// for remaining unapplied data do:
+											.append("g");
+	nodes	.attr("class", "bbox")
+			.attr("width", w)
+			.attr("height",  h);
+
+	nodes	.call(force.drag);
+
+	var circles =	nodes
+					.append("rect")
+					.attr("class", "node")
+					.attr("fill", "green");
+
+	var titles =	nodes
+					.append("text")
+					.text("test");
 
 	  /*nodes.append("title").text(
 						function(n) { return n.id; }
@@ -81,14 +101,17 @@
 						*/
 
 	  force.on("tick", function() {
-						    links	.attr("x1", function(e) { return e.sourceNode.x+w/2; })
-								.attr("y1", function(e) { return e.sourceNode.y+h/2; })
-								.attr("x2", function(e) { return e.targetNode.x+w/2; })
-								.attr("y2", function(e) { return e.targetNode.y+h/2; });
+						    links	.attr("x1", function(data) { return data.sourceNode.x+w/2; })
+								.attr("y1", function(data) { return data.sourceNode.y+h/2; })
+								.attr("x2", function(data) { return data.targetNode.x+w/2; })
+								.attr("y2", function(data) { return data.targetNode.y+h/2; });
 
-						    nodes	.attr("x", function(n) { return n.x; })
-								.attr("y", function(n) { return n.y; });
-						  });
+						    circles	.attr("x", function(data) { return data.x; })
+								.attr("y", function(data) { return data.y; });
+
+						    titles	.attr("x", function(data) { return data.x; })
+								.attr("y", function(data) { return data.y; });
+						});
 	</script>
 </body>
 
