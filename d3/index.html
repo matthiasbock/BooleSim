@@ -23,6 +23,7 @@
 		.label	{
 				fill: black;
 				font-family: Arial;
+				font-size: 7.5pt;
 				}
 	</style>
 </head>
@@ -37,13 +38,11 @@
 		var color = d3.scale.category20();
 
 		var force = d3.layout.force()
-/*							.charge(-10)
-							.linkDistance(60)
-							.linkStrength(0)*/
-							.gravity(0.1)
-							.charge(-100)
-							.linkDistance(30)
-							.size([svg_width, svg_height]);
+							.size([svg_width, svg_height])
+							.charge(-200)
+							.gravity(0.08)
+							.linkDistance(80).
+							linkStrength(0.1);
 
 		var svg = d3.select("body").append("svg")
 									.attr("width", svg_width)
@@ -58,6 +57,26 @@
 
 		console.log(network.nodes.length+' nodes')
 		console.log(network.edges.length+' edges');
+
+		// distance calculation requires link.source/target to be object links
+		function getNodeById(id) {
+			var i=-1;
+			while (++i < network.nodes.length) {
+				if ( network.nodes[i].id == id )
+					return network.nodes[i];
+				}
+			return null;
+			}
+
+		var i=-1;
+		while (++i < network.edges.length) {
+			var e,s,t;
+			e = network.edges[i];
+			s = getNodeById(e.source);
+			t = getNodeById(e.target);
+			e.source = s;
+			e.target = t;
+			}
 
 		// import data to d3 force-directed layouting
 		force
@@ -74,8 +93,8 @@
 							.attr('marker-end', 'url(#arrow)');
 
 		// layers: <g> elements
-		var w = 70;
-		var h = 30;
+		var w = 40;
+		var h = 16;
 		var nodes = svg.selectAll("g").data(network.nodes)	// selectAll.data = apply the data in network.nodes to the selected svg elements, which already exist
 											.enter()	// for remaining unapplied data do:
 												.append("g")

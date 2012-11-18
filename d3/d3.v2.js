@@ -5063,67 +5063,86 @@
       d.py = d3.event.y;
       force.resume();
     }
+    
     var force = {}, event = d3.dispatch("start", "tick", "end"), size = [ 1, 1 ], drag, alpha, friction = .9, linkDistance = d3_layout_forceLinkDistance, linkStrength = d3_layout_forceLinkStrength, charge = -30, gravity = .1, theta = .8, interval, nodes = [], links = [], distances, strengths, charges;
     force.tick = function() {
-      if ((alpha *= .99) < .005) {
-        event.end({
-          type: "end",
-          alpha: alpha = 0
-        });
-        return true;
-      }
-      var n = nodes.length, m = links.length, q, i, o, s, t, l, k, x, y;
-      for (i = 0; i < m; ++i) {
-        o = links[i];
-        s = o.source;
-        t = o.target;
-        x = t.x - s.x;
-        y = t.y - s.y;
-        if (l = x * x + y * y) {
-          l = alpha * strengths[i] * ((l = Math.sqrt(l)) - distances[i]) / l;
-          x *= l;
-          y *= l;
-          t.x -= x * (k = s.weight / (t.weight + s.weight));
-          t.y -= y * k;
-          s.x += x * (k = 1 - k);
-          s.y += y * k;
-        }
-      }
-      if (k = alpha * gravity) {
-        x = size[0] / 2;
-        y = size[1] / 2;
-        i = -1;
-        if (k) while (++i < n) {
-          o = nodes[i];
-          o.x += (x - o.x) * k;
-          o.y += (y - o.y) * k;
-        }
-      }
-      if (charge) {
-        d3_layout_forceAccumulate(q = d3.geom.quadtree(nodes), alpha, charges);
-        i = -1;
-        while (++i < n) {
-          if (!(o = nodes[i]).fixed) {
-            q.visit(repulse(o));
-          }
-        }
-      }
-      i = -1;
-      while (++i < n) {
-        o = nodes[i];
-        if (o.fixed) {
-          o.x = o.px;
-          o.y = o.py;
-        } else {
-          o.x -= (o.px - (o.px = o.x)) * friction;
-          o.y -= (o.py - (o.py = o.y)) * friction;
-        }
-      }
-      event.tick({
-        type: "tick",
-        alpha: alpha
-      });
-    };
+					// continuation threshold
+				      if ((alpha *= .99) < .005) {
+								event.end({
+								  type: "end",
+								  alpha: alpha = 0
+								});
+								return true;
+								}
+				      
+				      var n = nodes.length, m = links.length, q, i, o, s, t, l, k, x, y;
+
+					// for all links:
+				      for (i = 0; i < m; ++i) {
+									o = links[i];
+									s = o.source;
+									t = o.target;
+									x = t.x - s.x;
+									y = t.y - s.y;
+									if (l = x * x + y * y) {
+												  l = alpha * strengths[i] * ((l = Math.sqrt(l)) - distances[i]) / l;
+												  x *= l;
+												  y *= l;
+												  t.x -= x * (k = s.weight / (t.weight + s.weight));
+												  t.y -= y * k;
+												  s.x += x * (k = 1 - k);
+												  s.y += y * k;
+												}
+/*									else		{
+											console.error('Calculation failed: '+x+'^2+'+y+'^2. Source: '+o.source+'. Target: '+o.target);
+											console.log(l);
+											event.end({
+											  type: "end",
+											  alpha: alpha = 0
+											});
+											return false;
+											}*/
+								      }
+				      if (k = alpha * gravity) {
+									x = size[0] / 2;
+									y = size[1] / 2;
+									i = -1;
+									if (k) while (++i < n) {
+									  o = nodes[i];
+									  o.x += (x - o.x) * k;
+									  o.y += (y - o.y) * k;
+									}
+								      }
+				      if (charge) {
+							d3_layout_forceAccumulate(q = d3.geom.quadtree(nodes), alpha, charges);
+							i = -1;
+							while (++i < n) {
+								if (!(o = nodes[i]).fixed) {
+												    q.visit(repulse(o));
+												  }
+								}
+							}
+
+					// for all nodes:
+				      i = -1;
+				      while (++i < n) {
+							o = nodes[i];
+							if (o.fixed) { // new pos = old pos
+									  o.x = o.px;
+									  o.y = o.py;
+							} else { // move towards new pos by a fraction
+								  o.x -= (o.px - (o.px = o.x)) * friction;
+								  o.y -= (o.py - (o.py = o.y)) * friction;
+								}
+						      }
+
+					// recursively iterate
+				      event.tick({
+							type: "tick",
+							alpha: alpha
+						      });
+				    };
+    
     force.nodes = function(x) {
       if (!arguments.length) return nodes;
       nodes = x;
