@@ -157,6 +157,8 @@
     display: block;
     z-index: 50;
 }
+
+
 .rickshaw_graph .y_axis { fill: none }
 .rickshaw_graph .y_ticks .tick {
     stroke: rgba(0,0,0,.16);
@@ -195,6 +197,8 @@
     color: #fff;
     text-shadow: -1px 1px 0 rgba(0,0,0,.8),1px -1px 0 rgba(0,0,0,.8),1px 1px 0 rgba(0,0,0,.8),0px 1px 0 rgba(0,0,0,.8),0px -1px 0 rgba(0,0,0,.8),1px 0 0 rgba(0,0,0,.8),-1px 0 0 rgba(0,0,0,.8),-1px -1px 0 rgba(0,0,0,.8);
 }
+
+
 .rickshaw_legend {
     font-family: Arial;
     font-size: 11px;
@@ -204,6 +208,8 @@
     padding: 12px 5px;
     border-radius: 3px;
     position: relative;
+	width: 90%;
+	overflow: visible;
 }
 .rickshaw_legend:hover { z-index: 10 }
 .rickshaw_legend .swatch {
