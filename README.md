@@ -12,6 +12,7 @@ Download using
 git clone https://github.com/matthiasbock/BONESIM.git
 
 Software license: GNU Affero GPL v3
+
 Built upon previous work located at Google Code:
 http://biographer.googlecode.com/
 
