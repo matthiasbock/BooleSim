@@ -14,12 +14,13 @@
 	<script type="text/javascript" src="js/controls.js"></script>
 </head>
 
-<body>
+<body style="overflow-y: scroll;">
 <div id=tabs>
 	<ul>
+		<img style="float: left; padding: 5px 5px 0 0; margin: none;" alt="BoNeSim" src="img/logo.png" />
+		<li><a href="#graphStateTransition">Statespace</a></li>
+		<li><a href="#plotTimeSeries">Timeseries</a></li>
 		<li><a href="#graphNetwork">Network</a></li>
-		<li><a href="#plotTimeSeries">Time Series</a></li>
-		<li><a href="#graphStateTransition">Transitions</a></li>
 
 		<li><button id=buttonImportDialog>Open</button></li>
 		<li><button id=buttonExportDialog>Save</button></li>
@@ -29,11 +30,12 @@
 		<li><img id=circleProgress src="css/images/progress.gif"/></li>
 		<li><label id=textIteration>0</label></li>
 		</div>
-
-		<div id=sliderZoom></div>
 	</ul>
     
 	<div id=graphNetwork class=tabs>
+		<div style="float: right; padding: none; margin: none;">
+		Zoom:<div id=sliderZoom style="float: right;"></div>
+		</div>
 	</div>
     
 	<div id=plotTimeSeries class=tabs>
