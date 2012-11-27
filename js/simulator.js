@@ -185,7 +185,7 @@ var Simulator = function() {
 		    plot = new Rickshaw.Graph({
 		      element: $("#plotArea")[0],
 		      width: $(window).width()*0.9,
-		      height: $(window).height()*0.6,
+		      height: $(window).height()*0.1,
 		      renderer: 'line',
 		      interpolation: 'step-after',
 		      series: timeSeries
@@ -202,14 +202,15 @@ var Simulator = function() {
 		    var yAxis = new Rickshaw.Graph.Axis.Y({
 		      graph: plot,
 		      orientation: 'left',
-		      tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+			ticks: 1,
 		      element: $('#axisY')[0]
 		    });
 		    
 		    // Create the legend, separate from the graph
 		    var legend = new Rickshaw.Graph.Legend({
 		      element: $('#legendNodes')[0],
-		      graph: plot
+		      graph: plot,
+			columns: $(window).width()*0.9 / 100
 		    });
 		    
 		    // Create the choice list for the nodes, attach to legend

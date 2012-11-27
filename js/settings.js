@@ -1,6 +1,6 @@
 var serverURL = "http://127.0.0.1:8000/biographer";
 var debug = true;
-var iterationDelay = 100;
+var simDelay = 300;
 
 // If debugging or testing code
 if(debug) {

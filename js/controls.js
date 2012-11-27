@@ -68,7 +68,7 @@ var Controls = function() {
     $.getScript("lib/interact.js");
     $.getScript("lib/d3.v2.min.js");
     $.getScript("lib/libSBGN.min.js");
-    $.getScript("lib/rickshaw.min.js");
+    $.getScript("lib/rickshaw.js");
 
     $.getScript("js/import.js");
     $.getScript("js/simulator.js");
@@ -192,7 +192,7 @@ var Controls = function() {
 			simulator.scopes = true;  
 
 		var settings = { 
-			simDelay: 500, 
+			simDelay: simDelay, 
 			guessSeed: $('#seedGuess').attr('checked'),
 			oneClick: $('#optionsOneClick').attr('checked')
 			};
