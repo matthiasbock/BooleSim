@@ -11,6 +11,8 @@ Download using
 
 git clone https://github.com/matthiasbock/BONESIM.git
 
+After downloading drag'n'drop index.html into your web browser.
+
 Software license: GNU Affero GPL v3
 
 Built upon previous work located at Google Code:

@@ -184,8 +184,8 @@ var Simulator = function() {
 		    // Create the Graph, constant hold interpolation  
 		    plot = new Rickshaw.Graph({
 		      element: $("#plotArea")[0],
-		      width: 600,//$(window).width(),
-		      height: 400,//$(window).height(),
+		      width: $(window).width()*0.9,
+		      height: $(window).height()*0.6,
 		      renderer: 'line',
 		      interpolation: 'step-after',
 		      series: timeSeries
