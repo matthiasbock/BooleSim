@@ -169,59 +169,60 @@ var Simulator = function() {
 	   * @param {Object} state The state of the network.
 	   */
 	  var createPlotter = function(nodes, state) {
-		    var i, timeSeries = [];
-		    
-		    // Clear any previous plots
-		    $('#plotArea').html('');
-		    $('#axisY').html('');
-		    $('#legendNodes').html('');
-		    
-		    // Generate the timeSeries Object for the plotter
-		    for (i in state) 
-		      timeSeries.push({ color: getRandomColor(), 
-			data: [{x: 0, y: +state[i]}], name: i });
-		    
-		    // Create the Graph, constant hold interpolation  
-		    plot = new Rickshaw.Graph({
-		      element: $("#plotArea")[0],
-		      width: $(window).width()*0.9,
-		      height: $(window).height()*0.1,
-		      renderer: 'line',
-		      interpolation: 'step-after',
-		      series: timeSeries
-		    });
-		    
-		    // Create the X & Y-axis, X is attached to the graph, whereas 
-		    // Y is separate
-		    var time = new Rickshaw.Fixtures.Time().unit('second');
-		    time.formatter = function(d) { return d.getUTCSeconds(); };
-		    var xAxis = new Rickshaw.Graph.Axis.Time({
-		      graph: plot,
-		      timeUnit: time
-		    });
-		    var yAxis = new Rickshaw.Graph.Axis.Y({
-		      graph: plot,
-		      orientation: 'left',
-			ticks: 1,
-		      element: $('#axisY')[0]
-		    });
-		    
-		    // Create the legend, separate from the graph
-		    var legend = new Rickshaw.Graph.Legend({
-		      element: $('#legendNodes')[0],
-		      graph: plot,
-			columns: $(window).width()*0.9 / 100
-		    });
-		    
-		    // Create the choice list for the nodes, attach to legend
-		    var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
-		      graph: plot,
-		      legend: legend
-		    });
-		    
-		    // Render the plot and select the first node
-		    plot.render();
-		    $('#legendNodes ul :eq(0) span ').trigger('click');
+		  for (var nplot=0; nplot<=1; nplot++) {
+			    var i, timeSeries = [];
+			    
+			    // Clear any previous plots
+			    $('#plotArea'+nplot).html('');
+			    $('#axisY'+nplot).html('');
+			    $('#legendNodes'+nplot).html('');
+			    
+			    // Generate the timeSeries Object for the plotter
+			    for (i in state) 
+			      timeSeries.push({ color: getRandomColor(), 
+				data: [{x: 0, y: +state[i]}], name: i });
+			    
+			    // Create the Graph, constant hold interpolation  
+			    plot = new Rickshaw.Graph({
+			      element: $("#plotArea"+nplot)[0],
+			      width: $(window).width()*0.8,
+			      height: $(window).height()*0.1,
+			      renderer: 'line',
+			      interpolation: 'step-after',
+			      series: timeSeries
+			    });
+			    
+			    // Create the X & Y-axis, X is attached to the graph, whereas 
+			    // Y is separate
+			    var time = new Rickshaw.Fixtures.Time().unit('second');
+			    time.formatter = function(d) { return d.getUTCSeconds(); };
+			    var xAxis = new Rickshaw.Graph.Axis.Time({
+			      graph: plot,
+			      timeUnit: time
+			    });
+			    var yAxis = new Rickshaw.Graph.Axis.Y({
+			      graph: plot,
+			      orientation: 'left',
+				ticks: 1,
+			      element: $('#axisY'+nplot)[0]
+			    });
+			    
+			    // Create the legend, separate from the graph
+			    var legend = new Rickshaw.Graph.Legend({
+			      element: $('#legendNodes'+nplot)[0],
+			      graph: plot,
+			    });
+			    
+			    // Create the choice list for the nodes, attach to legend
+			    var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+			      graph: plot,
+			      legend: legend
+			    });
+			    
+			    // Render the plot and select the first node
+			    plot.render();
+			    $('#legendNodes'+nplot+' ul :eq(0) span ').trigger('click');
+			}
 		  };
 	  
 	  /**

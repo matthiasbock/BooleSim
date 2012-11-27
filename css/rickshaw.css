@@ -159,7 +159,12 @@
 }
 
 
-.rickshaw_graph .y_axis { fill: none }
+.rickshaw_graph .y_axis {
+		fill: none;
+		}
+svg {
+		overflow: visible;
+		}
 .rickshaw_graph .y_ticks .tick {
     stroke: rgba(0,0,0,.16);
     stroke-width: 2px;
@@ -208,8 +213,7 @@
     padding: 12px 5px;
     border-radius: 3px;
     position: relative;
-	width: 90%;
-	overflow: visible;
+	width: 10%;
 }
 .rickshaw_legend:hover { z-index: 10 }
 .rickshaw_legend .swatch {
