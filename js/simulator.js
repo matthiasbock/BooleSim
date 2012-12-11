@@ -187,7 +187,8 @@ var Simulator = function () {
 	 * @param {Object} state The state of the network.
 	 */
 	var createPlotter = function (nodes, state) {
-		for (var nplot = 0; nplot <= 1; nplot++) {
+		// number of plots = 1
+		for (var nplot = 0; nplot <= 0; nplot++) {
 			var i, timeSeries = [];
 
 			// Clear any previous plots
