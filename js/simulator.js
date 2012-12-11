@@ -302,7 +302,7 @@ var Simulator = function() {
 		      if (newState[i] !== state[i]) 
 			changed.push(i);
 		    }
-		    // The update the synchronous, the state is updated only after all
+		    // The update is synchronous: the states are updated only after all
 		    // the new states are calculated
 		    for (i in changed) {
 		      id = changed[i];
@@ -381,19 +381,7 @@ var Simulator = function() {
 		    updatePlots(network.nodes, network.state);  
 		    $('#textIteration').text(iterationCount++);
 		    
-		    // Get the next states from the current state, contact server if required  
-		    if (this.scopes) {
-		      $.ajax({
-			url: serverURL + '/Simulate/Iterate',
-			type: 'POST',
-			data: { state : exportStateJSON([network.state]) },
-			success: function (resp) {
-			  updateNodeRules(JSON.parse(resp));
-			  singleIteration();
-			}
-		      });
-		    }
-		    else
+		    // Get the next states from the current state
 		       singleIteration();
 		  };
 	  
@@ -418,7 +406,7 @@ var Simulator = function() {
 	    var state = {}, i, j = 0;
 	    for (i in network.state)
 	      state[i] =  Boolean(parseInt(map[j++], 10));
-	    return state;  
+	    return state; 
 	  };
 	  
 	  /**
@@ -625,7 +613,7 @@ var Simulator = function() {
 	    $('#buttonSimulate').unbind('click', obj.start);
 	    $('#buttonSimulate').click(obj.stop);
 	    $('#buttonSimulate').button( "option", "icons", {primary: 'ui-icon-pause'});
-	    $('#circleProgress').show();
+	    //$('#circleProgress').show();
 	    $('#tabs').tabs('select', '#graphNetwork');
 	    // Start the simulation
 	    obj.run();
@@ -639,7 +627,7 @@ var Simulator = function() {
 	    $('#buttonSimulate').unbind('click', obj.stop);
 	    $('#buttonSimulate').click(obj.start);
 	    $('#buttonSimulate').button( "option", "icons", {primary: 'ui-icon-play'});
-	    $('#circleProgress').hide();
+	    //$('#circleProgress').hide();
 	  };
 	  
 	  /**
