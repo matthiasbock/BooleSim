@@ -39,11 +39,11 @@ var Controls = function () {
 				primary: "ui-icon-play"
 			}
 		});
-		$('#buttonAnalyse').button({
+		/*$('#buttonAnalyse').button({
 			icons: {
 				primary: "ui-icon-gear"
 			}
-		});
+		});*/
 		$('#buttonImportDialog').button({
 			icons: {
 				primary: "ui-icon-folder-open"
@@ -69,7 +69,7 @@ var Controls = function () {
 			minWidth: 400,
 			modal: true
 		});
-		$('#circleProgress').hide();
+		//$('#circleProgress').hide();
 
 		// Bind listeners to events
 		$('#buttonImportDialog').click(openImportDialog);
@@ -206,7 +206,7 @@ var Controls = function () {
 			else if ($('#formatGINML').attr('checked')) jsbgn.importGINML(data);
 			else jsbgn.importSBML(file, data);
 
-			$('#graphStateTransition').html('');
+			//$('#graphStateTransition').html('');
 			// Import the jSBGN object into a bui.Graph instance
 			obj.importNetwork(jsbgn, '#graphNetwork');
 			$('#tabs').tabs('select', '#graphNetwork');
