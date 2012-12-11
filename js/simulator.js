@@ -336,8 +336,7 @@ var Simulator = function () {
 		// Get the new states by calling the respective update rule functions
 		for (i in network.state) {
 			console.log(ruleFunctions[i]);
-			if (ruleFunctions[i].indexOf('return false;') + ruleFunctions[i].indexOf('return true;') > -1)
-				newState[i] = ruleFunctions[i](state);
+			newState[i] = ruleFunctions[i](state);
 			if (newState[i] !== state[i]) changed.push(i);
 		}
 		// The update is synchronous: the states are updated only after all
