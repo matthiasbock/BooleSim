@@ -76,6 +76,7 @@ var Controls = function () {
 		$('#buttonImportFile').click(importFile);
 		$('#buttonImportCancel').click(function () {
 			$('#dialogImport').dialog('close');
+			document.getElementById('Hourglass').style.visibility = 'hidden';
 		});
 
 		$('#buttonExportDialog').click(openExportDialog);
@@ -226,6 +227,11 @@ var Controls = function () {
 			simulator.initialize(jsbgn, settings);
 		};
 		reader.readAsText(file);
+
+		window.setTimeout( function() {
+			document.getElementById('Hourglass').style.visibility = 'hidden';
+			}, 2000
+		);
 	};
 
 	/** 
