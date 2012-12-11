@@ -335,7 +335,9 @@ var Simulator = function () {
 
 		// Get the new states by calling the respective update rule functions
 		for (i in network.state) {
-			if (ruleFunctions[i] != 'true' && ruleFunctions[i] != 'false') newState[i] = ruleFunctions[i](state);
+			console.log(ruleFunctions[i]);
+			if (ruleFunctions[i] != 'true' && ruleFunctions[i] != 'false')
+				newState[i] = ruleFunctions[i](state);
 			if (newState[i] !== state[i]) changed.push(i);
 		}
 		// The update is synchronous: the states are updated only after all
@@ -359,10 +361,10 @@ var Simulator = function () {
 		// the Simulation has not reached steady state
 		if (changed.length > 0) {
 			for (i in changed)
-			updateNodeColor(changed[i]);
+				updateNodeColor(changed[i]);
 			setTimeout(function () {
-				obj.run();
-			}, config.simDelay);
+									obj.run();
+								}, config.simDelay);
 		} else {
 			console.log('Boolean network reached steady state.');
 			obj.stop();

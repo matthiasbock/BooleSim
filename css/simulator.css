@@ -1,95 +1,122 @@
-#tabs {
-  font-size: 16px;
-  margin: 0px;
-  padding: 0px;
-  border: none;
+#tabs
+{
+  font-size:16px;
+  border:none;
+  margin:0;
+  padding:0;
 }
 
-.tabs {
-  padding: 0px !important;
-  background-color:white !important;
+.tabs
+{
+  background-color:#FFF!important;
+  padding:0!important;
 }
 
-#plotTimeSeries {
-  width: 100%;
-  height: 100%;
+#Hourglass
+{
+	position:	absolute;
+	width:		4%;
+	left:			48%;
+	top:			45%;
+	visibility:	hidden;
 }
 
-#plotTimeSeries > div {
-  display: inline-block;
-  vertical-align: top;
-  padding: 0px;
-  margin: 10px;
+#Hourglass img
+{
+	width:		100%;
 }
 
-#axisY {
-  width: 40px;
+#plotTimeSeries
+{
+  width:100%;
+  height:100%;
 }
 
-#buttonImportDialog {
-  margin-left: 20px;
+#plotTimeSeries > div
+{
+  display:inline-block;
+  vertical-align:top;
+  margin:10px;
+  padding:0;
 }
 
-#sliderZoom {
-  float: right;
-  margin: 10px;
-  width: 150px;
+#axisY
+{
+  width:40px;
 }
 
-#textIteration{
-  position: absolute;
-  top: 10px;
-  left: 5px;
+#buttonImportDialog
+{
+  margin-left:20px;
 }
 
-#circleProgress{
-  position: absolute;
-  top: 4px;
+#sliderZoom
+{
+  float:right;
+  width:150px;
+  margin:10px;
 }
 
-#boxInfo {
+#textIteration
+{
+  position:absolute;
+  top:10px;
+  left:5px;
+}
+
+#circleProgress
+{
+  position:absolute;
+  top:4px;
+}
+
+#boxInfo
+{
   position:fixed;
-  top: 60px;
-  right: 20px;
-  padding: 10px;
-  max-width: 30%;
-  word-wrap: break-word;
-  background-color: lightblue;
-  border: solid blue 1px;
-  font-size: 12px;
+  top:60px;
+  right:20px;
+  max-width:30%;
+  word-wrap:break-word;
+  background-color:#ADD8E6;
+  border:solid blue 1px;
+  font-size:12px;
+  padding:10px;
 }
 
-.dialog {
-  font-size: 14px;
+.dialog
+{
+  font-size:14px;
 }
 
-#fileNetwork {
-  margin: 10px;
+#radioFormat,#radioExport
+{
+  width:50%;
 }
 
-#radioFormat, #radioExport {
-  width: 50%;
-}
-#radioSeed, #radioGraph {
-  float: right;
-  width: 50%;
+#radioSeed,#radioGraph
+{
+  float:right;
+  width:50%;
 }
 
-#checkOptions {
-  margin: 10px;
+#optionsScale
+{
+  margin-left:30px;
 }
 
-#optionsScale {
-  margin-left: 30px;
-}
-
-.dialogButton {
+.dialogButton
+{
   position:relative;
-  margin: 10px;
-  margin-top: 20px;
   left:40%;
+  margin:20px 10px 10px;
 }
 
-#textRule {
-  width: 100%;
+#textRule
+{
+  width:100%;
+}
+
+#fileNetwork,#checkOptions
+{
+  margin:10px;
 }
