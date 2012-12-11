@@ -41,6 +41,8 @@ var Controls = function() {
     // Bind listeners to events
     $('#buttonImportDialog').click(openImportDialog);
     $('#buttonImportFile').click(importFile);
+    $('#buttonImportCancel').click( function() { $('#dialogImport').dialog('close'); } );
+
     $('#buttonExportDialog').click(openExportDialog);
     $('#buttonExportFile').click(exportFile);
     
@@ -136,6 +138,8 @@ var Controls = function() {
     if (simulator !== null) 
       simulator.stop();
       
+	document.getElementById('Hourglass').style.visibility = 'visible';
+	  
     // Set all values to their initial states.
     $('#fileNetwork').attr({ value: '' });
     $('#dropFile span').html('Drag and Drop File');
