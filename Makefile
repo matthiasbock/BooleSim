@@ -8,10 +8,7 @@ update-bui:
 	else \
 		cd lib/biographer; hg pull; \
 	fi
-	if [ ! -e 'lib/bui' ]; then \
-		ln biographer/bui/src/main/javascript lib/bui -s; \
-	fi
-	cd lib/bui; \
+	cd lib/biographer/bui/src/main/javascript; \
 	cat 'intro' \
            'settings.js' \
            'core.js' \
@@ -51,4 +48,4 @@ update-bui:
            'importer.js' \
            'layouter.js' \
            'layout-grid.js' \
-           'outro' > bui.js
+           'outro' > ../../../../../biographer-ui.js
