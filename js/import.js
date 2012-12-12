@@ -273,7 +273,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 				}
 				// Connect the source and target and create the edge
 				edgeID = sourceID + ' -> ' + targetID;
-				if (doc.arc(edgeID) === null) doc.createArc(edgeID).type(sb.ArcType.LogicArc).source(sourceID).target(targetID);
+				if (doc.arc(edgeID) === null) doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
 			}
 		}
 	}

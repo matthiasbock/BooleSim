@@ -105,7 +105,7 @@ var Controls = function () {
 		});
 		$.getScript("lib/interact.js");
 		$.getScript("lib/d3.v2.min.js");
-		$.getScript("lib/libSBGN.min.js");
+		$.getScript("lib/libSBGN.js");
 		$.getScript("lib/rickshaw.js");
 
 		$.getScript("js/import.js");
