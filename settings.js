@@ -7,7 +7,7 @@ var optionsSimulateAfterClick = true;
 var optionsScaleGraphToWindow = true;
 
 var autoload = true;
-var autoload_file = 'paper.js';
+var autoload_file = 'autoload.net';
 
 // If debugging or testing code
 if (debug) {

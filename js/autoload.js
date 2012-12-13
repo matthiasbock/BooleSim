@@ -6,5 +6,5 @@ if (autoload) {
 									}
 				});
 
-	$.getScript(autoload_file);
+	$.get(autoload_file);
 	}
