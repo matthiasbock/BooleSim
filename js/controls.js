@@ -29,21 +29,14 @@ var Controls = function () {
 		$('#tabs').bind('tabsselect', changeTab);
 
 		// initialize all the jQuery UI components
-		$('#sliderZoom').slider({
+		/*$('#sliderZoom').slider({
 			step: 0.1,
 			max: 2,
 			stop: zoomGraph
-		});
-		$('#buttonSimulate').button({
-			icons: {
-				primary: "ui-icon-play"
-			}
-		});
-		/*$('#buttonAnalyse').button({
-			icons: {
-				primary: "ui-icon-gear"
-			}
 		});*/
+		//$('#circleProgress').hide();
+		
+		// initialize jQuery UI buttons
 		$('#buttonImportDialog').button({
 			icons: {
 				primary: "ui-icon-folder-open"
@@ -54,6 +47,23 @@ var Controls = function () {
 				primary: "ui-icon-disk"
 			}
 		});
+		$('#buttonSimulate').button({
+			icons: {
+				primary: "ui-icon-play"
+			}
+		});
+		$('#buttonHelp').button({
+			icons: {
+				primary: "ui-icon-help"
+			}
+		});
+		/*$('#buttonAnalyse').button({
+			icons: {
+				primary: "ui-icon-gear"
+			}
+		});*/
+
+		// initialize jQuery UI dialogs
 		$('#dialogImport').dialog({
 			autoOpen: false,
 			minWidth: 450,
@@ -69,20 +79,28 @@ var Controls = function () {
 			minWidth: 400,
 			modal: true
 		});
-		//$('#circleProgress').hide();
 
-		// Bind listeners to events
+		// bind button event listeners
 		$('#buttonImportDialog').click(openImportDialog);
 		$('#buttonImportFile').click(importFile);
 		$('#buttonImportCancel').click(function () {
-			$('#dialogImport').dialog('close');
-			document.getElementById('Hourglass').style.visibility = 'hidden';
-		});
-
+											$('#dialogImport').dialog('close');
+											document.getElementById('Hourglass').style.visibility = 'hidden';
+										});
 		$('#buttonExportDialog').click(openExportDialog);
 		$('#buttonExportFile').click(exportFile);
+		$('#buttonExportCancel').click(function () {
+											$('#dialogExport').dialog('close');
+										});
+		$('#buttonSimulate').click(function () {
+										if ( network == null || network == undefined || network == {} ) {
+											alert('You need to import a network, before you can simulate it.\n\nPlease click "Open", to do so.');
+											return;
+											}
+										});
 
-		getScripts();
+
+		loadAdditionalResources();
 	};
 
 	/** 
@@ -90,7 +108,7 @@ var Controls = function () {
 	 * external libraries excluding the jquery core are fetched using this
 	 * method in addition to import and simulator js files.
 	 */
-	var getScripts = function () {
+	var loadAdditionalResources = function () {
 		// Ensure that the files are fetched as JS.
 		$.ajaxSetup({
 			cache: true,
@@ -281,6 +299,11 @@ var Controls = function () {
 	 * stopped if it's running.
 	 */
 	var openExportDialog = function () {
+		if ( network == null || network == undefined || network == {} ) {
+			alert('You need to import a network, before you can export it.\n\nPlease click "Open", to do so.');
+			return;
+			}
+
 		if (simulator !== null) simulator.stop();
 		$('#dialogExport').dialog('open');
 	};
@@ -293,6 +316,7 @@ var Controls = function () {
 	 * network file is generated. The link is passed as a data URI.
 	 */
 	var exportFile = function () {
+		// close the dialog and start to do the export
 		$('#dialogExport').dialog('close');
 
 		// Get the bui.Graph instance of the select graph to export
