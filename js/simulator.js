@@ -277,8 +277,8 @@ var Simulator = function () {
 
 		$('#buttonSimulate')
 			.click(this.start);
-		$('#buttonAnalyse')
-			.click(this.search);
+		//$('#buttonAnalyse')
+		//	.click(this.search);
 
 		// initialize the state of the network
 		var i;

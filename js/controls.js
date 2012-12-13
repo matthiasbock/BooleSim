@@ -204,7 +204,10 @@ var Controls = function () {
 	var importFile = function () {
 
 		var files = $('#fileNetwork')[0].files;
-		if (files.length === 0) return;
+		if (files.length === 0) {
+			alert('Please choose a file to be imported.');
+			return;
+			}
 		var file = files[0];
 
 		$('#dialogImport').dialog('close');
@@ -253,14 +256,17 @@ var Controls = function () {
 
 			simulator = new Simulator();
 
-			if ($('#formatSBML').attr('checked')) simulator.scopes = true;
+			// if ($('#formatSBML').attr('checked')) simulator.scopes = true;
 
 			var settings = {
 				simDelay: simDelay,
-				guessSeed: $('#seedGuess').attr('checked'),
-				oneClick: $('#optionsOneClick').attr('checked')
+//				guessSeed: $('#seedGuess').attr('checked'),
+				oneClick: optionsSimulateAfterClick
 			};
 			simulator.initialize(jsbgn, settings);
+
+			if (optionsSimulateAfterImport)
+				simulator.start()
 		};
 		reader.readAsText(file);
 
@@ -291,7 +297,8 @@ var Controls = function () {
 
 		// Center the graph and optionally scale it
 		graph.reduceTopLeftWhitespace();
-		if ($('#optionsScale').attr('checked')) graph.fitToPage();
+		if (optionsScaleGraphToWindow)
+			graph.fitToPage();
 		graph.unsuspendRedraw(handle);
 
 		$('#sliderZoom').slider('option', 'value', graph.scale());
