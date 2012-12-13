@@ -116,19 +116,21 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 			// Extract the columns using the split key which is different
 			// for R and Python Boolean Net
 			cols = trimmed.split(splitKey);
-			if (cols.length != 2) console.error('Error in input file, line ' + i + ': Broken update rule');
+			if (cols.length != 2)
+				console.error('Error in input file, line ' + i + ': Broken update rule');
 			targetID = cols[0].trim();
 
 			// Replace R/Python's logical operators with JS logical operators.
 			rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
-				.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
-				.trim();
+					.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
+					.trim();
 
 			if (targetID === 'targets' && splitKey === ',') continue;
 			if (targetID[targetID.length - 1] == '*') targetID = targetID.substring(0, targetID.length - 1);
 
 			// Create the node if it does not exist
-			if (!(targetID in rules)) targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
+			if (!(targetID in rules))
+				targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
 			rules[targetID] = rule;
 			if (rule === 'True' || rule === 'False') {
 				rules[targetID] = targetID;
@@ -146,7 +148,17 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 				}
 				// Connect the source and target and create the edge
 				edgeID = sourceID + ' -> ' + targetID;
-				if (doc.arc(edgeID) === null) doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
+				if (doc.arc(edgeID) === null) {
+					// find the source node inside the update rule
+					k = rule.indexOf(sourceID)-2;
+					// get it's prefix
+					r = rule.substr(k,2);
+					// is it a "not" ?
+					if (r.indexOf('!') > -1)
+						doc.createArc(edgeID).type(sb.ArcType.Inhibition).source(sourceID).target(targetID);
+					else
+						doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
+					}
 			}
 		}
 	}

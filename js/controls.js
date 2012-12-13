@@ -128,7 +128,7 @@ var Controls = function () {
 
 		$.getScript("js/import.js");
 		$.getScript("js/simulator.js");
-
+		
 		$.ajaxSetup({
 			beforeSend: null
 		});
@@ -201,78 +201,89 @@ var Controls = function () {
 	 * box. The file is read using the appropriate boolean network importer.
 	 * The simulator is then initialized using this network.
 	 */
-	var importFile = function () {
+	importFile = function () {
 
-		var files = $('#fileNetwork')[0].files;
-		if (files.length === 0) {
-			alert('Please choose a file to be imported.');
-			return;
-			}
-		var file = files[0];
+		plaintextImporter = function (data) {
+						// Depending on the file type option checked in the import dialog box
+						// call the appropriate importer
+						var guessed;
+						if ($('#formatGuess').attr('checked')) {
+									if ( data.indexOf(' and ') + data.indexOf(' or ') > -1 )
+										guessed = 'Python';
+									else if ( data.indexOf(' && ') + data.indexOf(' || ') > -1 )
+										guessed = 'R';
+									else if ( data.indexOf('<gxl') > -1 )
+										guessed = 'GINML';
+									else {
+										alert('Sorry,\nthe format of your network file could not be detected.\nPlease try to specify it manually.\nThank you!');
+										return;
+										}
+									console.log('Format not specified. Guessing: '+guessed);
+									}
+						if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
+							jsbgn.importBooleanNetwork(data, '=');
+						else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
+							jsbgn.importBooleanNetwork(data, ',');
+						else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
+							jsbgn.importGINML(data);
+						//else jsbgn.importSBML(file, data);
 
-		$('#dialogImport').dialog('close');
+						//$('#graphStateTransition').html('');
+						// Import the jSBGN object into a bui.Graph instance
+						obj.importNetwork(jsbgn, '#graphNetwork');
+						$('#tabs').tabs('select', '#graphNetwork');
+						$('#textIteration').text(0);
 
-		// Create an instance of the file reader and jSBGN.
-		var reader = new FileReader();
-		var data, jsbgn = new jSBGN();
+						// Delete any previous instance of the Simulator and initialize a new one
+						if (simulator !== null) simulator.destroy();
+
+						simulator = new Simulator();
+
+						// if ($('#formatSBML').attr('checked')) simulator.scopes = true;
+
+						var settings = {
+							simDelay: simDelay,
+			//				guessSeed: $('#seedGuess').attr('checked'),
+							oneClick: optionsSimulateAfterClick
+						};
+						simulator.initialize(jsbgn, settings);
+
+						if (optionsSimulateAfterImport)
+							simulator.start()
+						};
 
 		// This event handler is called when the file reading task is complete
-		reader.onload = function (read) {
-			// Get the data contained in the file
-			data = read.target.result;
+		fileImporter = function (read) {
+						// Get the data contained in the file
+						plaintextImporter( read.target.result );
+						}
 
-			// Depending on the file type option checked in the import dialog box
-			// call the appropriate importer
-			var guessed;
-			if ($('#formatGuess').attr('checked')) {
-				if ( data.indexOf(' and ') + data.indexOf(' or ') > -1 )
-					guessed = 'Python';
-				else if ( data.indexOf(' && ') + data.indexOf(' || ') > -1 )
-					guessed = 'R';
-				else if ( data.indexOf('<gxl') > -1 )
-					guessed = 'GINML';
-				else {
-					alert('Sorry,\nthe format of your network file could not be detected.\nPlease try to specify it manually.\nThank you!');
-					return;
-					}
-				console.log('Format not specified. Guessing: '+guessed);
+		// import data
+/*		if (autoload_content != undefined) {
+			plaintextImporter(autoload_content);
+		} else {*/
+			// import file
+			var files = $('#fileNetwork')[0].files;
+			if (files.length === 0) {
+				alert('Please choose a file to be imported.');
+				return;
 				}
-			if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
-				jsbgn.importBooleanNetwork(data, '=');
-			else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
-				jsbgn.importBooleanNetwork(data, ',');
-			else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
-				jsbgn.importGINML(data);
-			//else jsbgn.importSBML(file, data);
+			var file = files[0];
 
-			//$('#graphStateTransition').html('');
-			// Import the jSBGN object into a bui.Graph instance
-			obj.importNetwork(jsbgn, '#graphNetwork');
-			$('#tabs').tabs('select', '#graphNetwork');
-			$('#textIteration').text(0);
+			$('#dialogImport').dialog('close');
 
-			// Delete any previous instance of the Simulator and initialize a new one
-			if (simulator !== null) simulator.destroy();
+			// Create an instance of the file reader and jSBGN.
+			var reader = new FileReader();
+			var data, jsbgn = new jSBGN();
 
-			simulator = new Simulator();
+			reader.onload = fileImporter;
+			reader.readAsText(file);
+			//}
 
-			// if ($('#formatSBML').attr('checked')) simulator.scopes = true;
-
-			var settings = {
-				simDelay: simDelay,
-//				guessSeed: $('#seedGuess').attr('checked'),
-				oneClick: optionsSimulateAfterClick
-			};
-			simulator.initialize(jsbgn, settings);
-
-			if (optionsSimulateAfterImport)
-				simulator.start()
-		};
-		reader.readAsText(file);
-
+		// make the hourglass disappear
 		window.setTimeout( function() {
 			document.getElementById('Hourglass').style.visibility = 'hidden';
-			}, 2000
+			}, 1000
 		);
 	};
 

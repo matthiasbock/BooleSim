@@ -2,3 +2,14 @@
 # The network in this file will be loaded automatically
 # if autoload == true in settings.js.
 #
+# Due to security concerns, access to local files
+# may be restricted by your browser,
+# so this feature is prominently for use on a web server.
+#
+
+fermentation*			= glucose
+pyruvate*			= glucose or glycerol or lactate or ethanol
+oxidative_phosphorylation*	= pyruvate and ( not glucose )
+vacuolar_catabolism*		= stress
+energy*				= fermentation or oxidative_phosphorylation or vacuolar_catabolism
+

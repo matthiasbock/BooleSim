@@ -6,7 +6,7 @@ var optionsSimulateAfterImport = true;
 var optionsSimulateAfterClick = true;
 var optionsScaleGraphToWindow = true;
 
-var autoload = true;
+var autoload = false;
 var autoload_file = 'autoload.net';
 
 // If debugging or testing code
