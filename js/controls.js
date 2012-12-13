@@ -83,6 +83,7 @@ var Controls = function () {
 		// bind button event listeners
 		$('#buttonImportDialog').click(openImportDialog);
 		$('#buttonImportFile').click(importFile);
+		$('#buttonImportDemo').click(importDemo);
 		$('#buttonImportCancel').click(function () {
 											$('#dialogImport').dialog('close');
 											document.getElementById('Hourglass').style.visibility = 'hidden';
@@ -196,17 +197,11 @@ var Controls = function () {
 		$('#dialogImport').dialog('open');
 	};
 
-	/** 
-	 * The event handler for the import file button in the import file dialog
-	 * box. The file is read using the appropriate boolean network importer.
-	 * The simulator is then initialized using this network.
-	 */
-	importFile = function () {
-
-		plaintextImporter = function (data) {
+	plaintextImporter = function (data) {
 						// Depending on the file type option checked in the import dialog box
 						// call the appropriate importer
 						var guessed;
+						var data, jsbgn = new jSBGN();
 						if ($('#formatGuess').attr('checked')) {
 									if ( data.indexOf(' and ') + data.indexOf(' or ') > -1 )
 										guessed = 'Python';
@@ -252,41 +247,54 @@ var Controls = function () {
 							simulator.start()
 						};
 
+
+	/** 
+	 * The event handler for the import file button in the import file dialog
+	 * box. The file is read using the appropriate boolean network importer.
+	 * The simulator is then initialized using this network.
+	 */
+	importFile = function () {
+		// import file
+		var files = $('#fileNetwork')[0].files;
+		if (files.length === 0) {
+			alert('Please choose a file to be imported.');
+			return;
+			}
+		var file = files[0];
+
+		// close import dialog
+		$('#dialogImport').dialog('close');
+
+		// Create an instance of the file reader and jSBGN.
+		var reader = new FileReader();
+
 		// This event handler is called when the file reading task is complete
-		fileImporter = function (read) {
-						// Get the data contained in the file
-						plaintextImporter( read.target.result );
-						}
-
-		// import data
-/*		if (autoload_content != undefined) {
-			plaintextImporter(autoload_content);
-		} else {*/
-			// import file
-			var files = $('#fileNetwork')[0].files;
-			if (files.length === 0) {
-				alert('Please choose a file to be imported.');
-				return;
-				}
-			var file = files[0];
-
-			$('#dialogImport').dialog('close');
-
-			// Create an instance of the file reader and jSBGN.
-			var reader = new FileReader();
-			var data, jsbgn = new jSBGN();
-
-			reader.onload = fileImporter;
-			reader.readAsText(file);
-			//}
+		reader.onload = function (read) {
+								// Get the data contained in the file
+								plaintextImporter( read.target.result );
+								};
+		reader.readAsText(file);
 
 		// make the hourglass disappear
 		window.setTimeout( function() {
-			document.getElementById('Hourglass').style.visibility = 'hidden';
-			}, 1000
-		);
+								document.getElementById('Hourglass').style.visibility = 'hidden';
+								}, 1000
+						);
 	};
 
+	importDemo = function() {
+		// close import dialog
+		$('#dialogImport').dialog('close');
+
+		window.setTimeout( function() { plaintextImporter($('#demoNetwork').html()) }, 500 );
+
+		// make the hourglass disappear
+		window.setTimeout( function() {
+								document.getElementById('Hourglass').style.visibility = 'hidden';
+								}, 1000
+						);
+	}
+	
 	/** 
 	 * Import a jSBGN object into the Network tab by creating a new bui.Graph
 	 * instance. First the layouting is done and then the graph is scaled

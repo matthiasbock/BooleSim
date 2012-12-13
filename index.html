@@ -3,7 +3,7 @@
 <head>
 	<title>BoNeSim</title>
   
-	<!-- The order of import plays a role, due to dependencies on jquery ... -->
+	<!-- The order of import plays a role, due to dependencies on jQuery ... -->
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.22.custom.css"/>
 	<link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
 	<link rel="stylesheet" type="text/css" href="css/simulator.css"/>
@@ -13,11 +13,9 @@
 	<script type="text/javascript" src="lib/jquery-ui-1.8.22.custom.min.js"></script>
 	<script type="text/javascript" src="settings.js"></script>
 	<script type="text/javascript" src="js/controls.js"></script>
-	<script type="text/javascript" src="js/autoload.js"></script>
 </head>
 
 <body style="overflow-y: scroll;">
-
 <!-- The hourglass appears after "Import" has been clicked and is hidden as the network loading is complete -->
 <div id=Hourglass onclick="document.getElementById('Hourglass').style.visibility = 'hidden';">
 	<img src="img/Hourglass_2.png"/>
@@ -38,20 +36,26 @@
 		<li><label id=textIteration>0</label></li>
 	</ul>
 
-	<div id=graphNetwork class=tabs>
+	<div class=tabs id=graphNetwork>
 		<!--div style="float: right; padding: none; margin: none;">
 		Zoom:<div id=sliderZoom style="float: right;"></div>
 		</div-->
 	</div>
     
-	<div id=plotTimeSeries class=tabs>
+	<div class=tabs id=plotTimeSeries>
 		<div id=axisY0></div>
 		<div id=plotArea0 style="padding: none;"></div>
 		<div id=legendNodes0 style="padding: none;"></div>
 	</div>
     
-	<!--div id=graphStateTransition class=tabs>
+	<!--div class=tabs id=graphStateTransition>
 		<button id=buttonAnalyse>Analyse</button>
+	</div-->
+
+	<!--div class=tabs id=plotTruthtable>
+	</div-->
+
+	<!--div class=tabs id=plotHeatmap>
 	</div-->
 </div>
 
@@ -61,8 +65,8 @@
 	<input type=file id=fileNetwork /> 
 	<div id=radioSeed>
 		<b>Initial node state:</b> <br>
-		<input type=radio name="seed" id=seedFile checked />as initialized in the model<br>
-		<input type=radio name="seed" id=seedTrue />all true<br>
+		<input type=radio name="seed" id=seedFile />as initialized in the model<br>
+		<input type=radio name="seed" id=seedTrue checked />all true<br>
 		<input type=radio name="seed" id=seedFalse />all false<br>
 		<!--input type=radio name="seed" id=seedRandom />all randomly true or false<br-->
 	</div>
@@ -115,13 +119,97 @@
 	<button id=buttonEdit class=dialogButton> Save </button>
 </div>
 
-<!-- This dialog appears after "Help" is clicked -->
+<!-- This dialog appears when "Help" is clicked -->
 
 <!-- This warning appears, when an incompatible browser is detected -->
 <script>
 	var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 	if (! is_chrome)
 		alert('Dear user,\nplease note, that this web application is developed for\nand thus works best with the Chromium web browser.\nThank you!');
+</script>
+
+<!-- This is a demo network -->
+<script type="data/jSBGN" id="demoNetwork">
+glucose = True
+glycerol = False
+nitrogen = True
+
+glycolysis* = glucose
+pyruvate* = glycolysis or glycerol
+
+fermentation* = pyruvate and (not oxphos)
+ethanol* = fermentation
+
+oxphos* = NADH and oxygen and ETC
+#petite* = pyruvate and (not oxphos)
+ROS* = oxphos
+
+acid_cycle* = pyruvate and oxphos
+CO2* = acid_cycle
+
+NADH* = glycolysis or acid_cycle
+ATP* = glycolysis or oxphos
+
+Gpr1* = glucose
+Gpa2* = Gpr1
+Cyr1* = Ras2 or Gpa2
+
+Ras2* = CO2
+cAMP* = Cyr1 and ATP
+PKA* = cAMP
+
+Sch9* = glycerol
+
+rapamycin = False
+TORC1* = (not glucose) or (not nitrogen) or (rapamycin and (not fortified_cell_wall))
+
+Psr1* = not PKA
+Psr2 = True
+#Whi2* = not unknown_kinase1
+#Msn2_4* = (Psr1 or Psr2) and Whi2 and (not (PKA or unknown_kinase2))
+Msn2_4* = (Psr1 or Psr2) and Whi2 and (not PKA)
+#unknown_kinase1 = False
+#unknown_kinase2 = False
+
+Wsc1* = ROS
+#calcofluor_white = False
+Pkc1* = Wsc1
+#or calcofluor_white
+Bck1* = Pkc1
+Mkk1* = Bck1
+Mkk2* = Bck1
+Slt2* = Mkk1 or Mkk2
+
+Sdp1* = ROS
+Slt2_cytosol* = Slt2 and Sdp1
+Slt2_nucleus* = Slt2 and (not Sdp1)
+Rlm1* = Slt2_nucleus
+
+fortified_cell_wall* = Rlm1 or (not Uth1)
+
+#Sln1 branch upstream
+#Pbs2 = False
+#Hog1* = Pbs2
+#Hog1_cytosol* = Hog1 and Sdp1
+#Hog1_nucleus* = Hog1 and (not Sdp1)
+
+
+Atg1* = ((not PKA) and (not Sch9)) or TORC1
+Atg13* = Atg1
+Atg1_13_17* = Atg1 and Atg13 and Atg17
+
+#Atg11
+
+Atg8* = Msn2_4
+#and Hog1_cytosol
+
+Atg32* = Slt2_cytosol or Atg33
+
+Ptc6* = (not ROS)
+#Atg33* = Msn2_4 and unknown_kinase3 and (not Ptc6)
+Atg33* = unknown_kinase3 and (not Ptc6)
+
+mitophagy* = Atg1_13_17 and Atg32 and Atg8
 </script>
 </body>
 
