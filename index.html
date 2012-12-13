@@ -1,8 +1,9 @@
 <html>
 
 <head>
-	<title>biosimulator</title>
+	<title>BoNeSim</title>
   
+	<!-- The order of import plays a role, due to dependencies on jquery ... -->
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.22.custom.css"/>
 	<link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
 	<link rel="stylesheet" type="text/css" href="css/simulator.css"/>
@@ -15,8 +16,10 @@
 </head>
 
 <body style="overflow-y: scroll;">
-<div id=Hourglass>
-	<img src="img/Hourglass_2.png" onclick="document.getElementById('Hourglass').style.visibility = 'hidden';"/>
+
+<!-- The hourglass appears after "Import" has been clicked and is hidden as the network loading is complete -->
+<div id=Hourglass onclick="document.getElementById('Hourglass').style.visibility = 'hidden';">
+	<img src="img/Hourglass_2.png"/>
 </div>
 
 <div id=tabs>
@@ -29,6 +32,7 @@
 		<li><button id=buttonImportDialog>Open</button></li>
 		<li><button id=buttonExportDialog>Save</button></li>
 		<li><button id=buttonSimulate>Simulate / Pause</button></li>
+		<li><button id=buttonHelp>Help</button></li>
 
 		<li><label id=textIteration>0</label></li>
 	</ul>
@@ -49,7 +53,8 @@
 		<button id=buttonAnalyse>Analyse</button>
 	</div-->
 </div>
-  
+
+<!-- This dialog appears after clicking "Open" -->
 <div id=dialogImport class=dialog title="Import File">
 	<b>Choose file:</b>
 	<input type=file id=fileNetwork /> 
@@ -63,21 +68,22 @@
 	<div id=radioFormat>
 		<b>Filetype:</b> <br>
 		<input type=radio name="format" id=formatGuess checked />guess format<br>
-		<input type=radio name="format" id=formatPyBooleanNet checked />Python BooleanNet<br>
-		<input type=radio name="format" id=formatRBoolNet />R BoolNet<br>
-		<input type=radio name="format" id=formatSBML />SBML<br>
-		<input type=radio name="format" id=formatGINML />GINML<br>
+		<input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet <small>(<a target="_blank" href="http://code.google.com/p/booleannet/">help</a>)</small><br>
+		<input type=radio name="format" id=formatRBoolNet />R BoolNet <small>(<a target="_blank" href="http://www.informatik.uni-ulm.de/ni/mitarbeiter/HKestler/boolnet/">help</a>)</small><br>
+		<input type=radio name="format" id=formatGINML />GINML <small>(<a target="_blank" href="http://gin.univ-mrs.fr/GINsim/ginml.html">help</a>)</small><br>
+		<input type=radio name="format" id=formatSBML />SBML <small>(<a target="_blank" href="http://sbml.org/Basic_Introduction_to_SBML">help</a>)</small><br>
 	</div>
-	<div id=checkOptions>
+	<!--div id=checkOptions>
 		<b>Options:</b> <br>
 		<input type=checkbox id=optionsImportSimulate checked />Start simulating after import<br/>
 		<input type=checkbox id=optionsOneClick checked />Start simulating on node click<br/>
 		<input type=checkbox id=optionsScale checked />Scale graph to fit page<br/>
-	</div>
+	</div-->
 	<button id=buttonImportCancel class=dialogButton> Cancel </button>
 	<button id=buttonImportFile class=dialogButton> Import </button>
 </div>
   
+<!-- This dialog appears after clicking "Save" -->
 <div id=dialogExport class=dialog title="Save">
 	<div id=radioGraph>
 		<b>Graph format</b><br>
@@ -98,13 +104,19 @@
 	<button id=buttonCancel class=dialogButton> Cancel </button>
 	<button id=buttonExportFile class=dialogButton> Download </button>
 </div>
-  
+
+<!-- This dialog appears after right click on a node -->
 <div id=dialogEdit class=dialog title="Edit Rule">
 	<p id=textID></p>
 	<input type=text id=textRule />
 	<button id=buttonCancel class=dialogButton> Cancel </button>
 	<button id=buttonEdit class=dialogButton> Save </button>
 </div>
+
+<!-- This dialog appears after "Help" is clicked -->
+
+<!-- This warning appears, when an incompatible browser is detected -->
+
 </body>
 
 </html>

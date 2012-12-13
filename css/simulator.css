@@ -19,6 +19,7 @@
 	left:			48%;
 	top:			45%;
 	visibility:	hidden;
+	cursor:		pointer;
 	z-index:	20;
 }
 
