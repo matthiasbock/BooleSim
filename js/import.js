@@ -86,49 +86,77 @@ jSBGN.prototype.layoutGraph = function (graph) {
 	layouter.stop();
 };
 
+
 /** 
- * Import an SBML file into the jSBGN object. The libSBGN.js library is 
- * used as the initial importer. All the compartment and process nodes
- * are disabled.
- * @param {File} file The file object of the SBML file.
- * @param {string} data The data contained in the SBML file.
+ * Import a Boolean Net file(R/Python) into the jSBGN object. These 
+ * files are quite simple with each line containing an update rule. By 
+ * parsing this line the connections between nodes are made.
+ * @param {string} data The data contained in the Boolean Net file.
+ * @param {string} splitKey The character separating the LHS and RHS of
+ * a update rule.
  */
-jSBGN.prototype.importSBML = function (file, data) {
+jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 
-	// File submitted to server using a form
-	var formData = new FormData();
-	formData.append('file', file);
+	var targetNode, sourceNode;
+	var targetID, sourceID, edgeID;
+	var rules = {}, ruleIDs, rule;
 
+	var doc = new sb.Document();
+	doc.lang(sb.Language.AF);
 
-	// The SBML File is uploaded to the server so that it can be opened by
-	// libscopes which runs on the server 
-	$.ajax({
-		url: serverURL + '/Put/UploadSBML',
-		type: 'POST',
-		data: formData,
-		contentType: false,
-		processData: false,
-		async: false
-	});
+	// The file consists of multiple lines with each line representing 
+	// the update rule for a node
+	var lines, cols, i, j, trimmed;
+	lines = data.split('\n');
+	for (i = 0; i < lines.length; i++) {
+		trimmed = lines[i].trim();
+		// Skip empty lines
+		if (trimmed.length === 0) continue;
+		if (trimmed[0] != '#') {
+			// Extract the columns using the split key which is different
+			// for R and Python Boolean Net
+			cols = trimmed.split(splitKey);
+			if (cols.length != 2) console.error('Error in input file, line ' + i + ': Broken update rule');
+			targetID = cols[0].trim();
 
-	// Use libSBGN.js's SBML reader
-	var reader = new sb.io.SbmlReader();
-	var doc = reader.parseText(data);
+			// Replace R/Python's logical operators with JS logical operators.
+			rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
+				.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
+				.trim();
+
+			if (targetID === 'targets' && splitKey === ',') continue;
+			if (targetID[targetID.length - 1] == '*') targetID = targetID.substring(0, targetID.length - 1);
+
+			// Create the node if it does not exist
+			if (!(targetID in rules)) targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
+			rules[targetID] = rule;
+			if (rule === 'True' || rule === 'False') {
+				rules[targetID] = targetID;
+				continue;
+			}
+
+			// Extract all the node id's in the update rule
+			ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
+			for (j in ruleIDs) {
+				sourceID = ruleIDs[j];
+				// Create the node if it does not exist
+				if (!(sourceID in rules)) {
+					rules[sourceID] = sourceID;
+					sourceNode = doc.createNode(sourceID).type(sb.NodeType.Macromolecule).label(sourceID);
+				}
+				// Connect the source and target and create the edge
+				edgeID = sourceID + ' -> ' + targetID;
+				if (doc.arc(edgeID) === null) doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
+			}
+		}
+	}
+
 	var jsbgn = JSON.parse(sb.io.write(doc, 'jsbgn'));
-
 	this.nodes = jsbgn.nodes;
 	this.edges = jsbgn.edges;
-	this.rules = {};
-
-	// Disable rules for nodes that are of type compartment or process
-	var i, node;
-	for (i in this.nodes) {
-		node = this.nodes[i];
-		node.data.label = node.id;
-		if ((node.sbo === sb.sbo.NodeTypeMapping[sb.NodeType.Compartment]) || (node.sbo === sb.sbo.NodeTypeMapping[sb.NodeType.Process])) this.rules[node.id] = '';
-		else this.rules[node.id] = 'update';
-	}
+	this.rules = rules;
 };
+
 
 /** 
  * Import a GINML file into the jSBGN object. The jQuery XML library 
@@ -214,72 +242,48 @@ jSBGN.prototype.importGINML = function (data) {
 	this.rules = rules;
 };
 
+
 /** 
- * Import a Boolean Net file(R/Python) into the jSBGN object. These 
- * files are quite simple with each line containing an update rule. By 
- * parsing this line the connections between nodes are made.
- * @param {string} data The data contained in the Boolean Net file.
- * @param {string} splitKey The character separating the LHS and RHS of
- * a update rule.
+ * Import an SBML file into the jSBGN object. The libSBGN.js library is 
+ * used as the initial importer. All the compartment and process nodes
+ * are disabled.
+ * @param {File} file The file object of the SBML file.
+ * @param {string} data The data contained in the SBML file.
  */
-jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
+jSBGN.prototype.importSBML = function (file, data) {
 
-	var targetNode, sourceNode;
-	var targetID, sourceID, edgeID;
-	var rules = {}, ruleIDs, rule;
+	// File submitted to server using a form
+	var formData = new FormData();
+	formData.append('file', file);
 
-	var doc = new sb.Document();
-	doc.lang(sb.Language.AF);
+/*
+	// The SBML File is uploaded to the server so that it can be opened by
+	// libscopes which runs on the server 
+	$.ajax({
+		url: serverURL + '/Put/UploadSBML',
+		type: 'POST',
+		data: formData,
+		contentType: false,
+		processData: false,
+		async: false
+	});
+*/
 
-	// The file consists of multiple lines with each line representing 
-	// the update rule for a node
-	var lines, cols, i, j, trimmed;
-	lines = data.split('\n');
-	for (i = 0; i < lines.length; i++) {
-		trimmed = lines[i].trim();
-		// Skip empty lines
-		if (trimmed.length === 0) continue;
-		if (trimmed[0] != '#') {
-			// Extract the columns using the split key which is different
-			// for R and Python Boolean Net
-			cols = trimmed.split(splitKey);
-			if (cols.length != 2) console.error('Error in input file, line ' + i + ': Broken update rule');
-			targetID = cols[0].trim();
-
-			// Replace R/Python's logical operators with JS logical operators.
-			rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
-				.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
-				.trim();
-
-			if (targetID === 'targets' && splitKey === ',') continue;
-			if (targetID[targetID.length - 1] == '*') targetID = targetID.substring(0, targetID.length - 1);
-
-			// Create the node if it does not exist
-			if (!(targetID in rules)) targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
-			rules[targetID] = rule;
-			if (rule === 'True' || rule === 'False') {
-				rules[targetID] = targetID;
-				continue;
-			}
-
-			// Extract all the node id's in the update rule
-			ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
-			for (j in ruleIDs) {
-				sourceID = ruleIDs[j];
-				// Create the node if it does not exist
-				if (!(sourceID in rules)) {
-					rules[sourceID] = sourceID;
-					sourceNode = doc.createNode(sourceID).type(sb.NodeType.Macromolecule).label(sourceID);
-				}
-				// Connect the source and target and create the edge
-				edgeID = sourceID + ' -> ' + targetID;
-				if (doc.arc(edgeID) === null) doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
-			}
-		}
-	}
-
+	// Use libSBGN.js's SBML reader
+	var reader = new sb.io.SbmlReader();
+	var doc = reader.parseText(data);
 	var jsbgn = JSON.parse(sb.io.write(doc, 'jsbgn'));
+
 	this.nodes = jsbgn.nodes;
 	this.edges = jsbgn.edges;
-	this.rules = rules;
+	this.rules = {};
+
+	// Disable rules for nodes that are of type compartment or process
+	var i, node;
+	for (i in this.nodes) {
+		node = this.nodes[i];
+		node.data.label = node.id;
+		if ((node.sbo === sb.sbo.NodeTypeMapping[sb.NodeType.Compartment]) || (node.sbo === sb.sbo.NodeTypeMapping[sb.NodeType.Process])) this.rules[node.id] = '';
+		else this.rules[node.id] = 'update';
+	}
 };

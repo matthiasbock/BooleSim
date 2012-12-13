@@ -185,6 +185,7 @@ var Controls = function () {
 		// If the simulator is running stop it.
 		if (simulator !== null) simulator.stop();
 
+		// show the hourglass behind the import dialog, such that it's already there when the browser window freezes on import
 		document.getElementById('Hourglass').style.visibility = 'visible';
 
 		// Set all values to their initial states.
@@ -219,10 +220,27 @@ var Controls = function () {
 
 			// Depending on the file type option checked in the import dialog box
 			// call the appropriate importer
-			if ($('#formatRBoolNet').attr('checked')) jsbgn.importBooleanNetwork(data, ',');
-			else if ($('#formatPyBooleanNet').attr('checked')) jsbgn.importBooleanNetwork(data, '=');
-			else if ($('#formatGINML').attr('checked')) jsbgn.importGINML(data);
-			else jsbgn.importSBML(file, data);
+			var guessed;
+			if ($('#formatGuess').attr('checked')) {
+				if ( data.indexOf(' and ') + data.indexOf(' or ') > -1 )
+					guessed = 'Python';
+				else if ( data.indexOf(' && ') + data.indexOf(' || ') > -1 )
+					guessed = 'R';
+				else if ( data.indexOf('<gxl') > -1 )
+					guessed = 'GINML';
+				else {
+					alert('Sorry,\nthe format of your network file could not be detected.\nPlease try to specify it manually.\nThank you!');
+					return;
+					}
+				console.log('Format not specified. Guessing: '+guessed);
+				}
+			if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
+				jsbgn.importBooleanNetwork(data, '=');
+			else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
+				jsbgn.importBooleanNetwork(data, ',');
+			else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
+				jsbgn.importGINML(data);
+			//else jsbgn.importSBML(file, data);
 
 			//$('#graphStateTransition').html('');
 			// Import the jSBGN object into a bui.Graph instance
