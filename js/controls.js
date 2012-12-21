@@ -74,6 +74,11 @@ var Controls = function () {
 			minWidth: 400,
 			modal: true
 		});
+		$('#dialogHelp').dialog({
+			autoOpen: false,
+			minWidth: 400,
+			modal: true
+		});
 		$('#dialogEdit').dialog({
 			autoOpen: false,
 			minWidth: 400,
@@ -95,7 +100,7 @@ var Controls = function () {
 										});
 		$('#buttonSimulate').click(function () {
 										if ( network == null || network == undefined || network == {} ) {
-											alert('You need to import a network, before you can simulate it.\n\nPlease click "Open", to do so.');
+											alert('You need to import a network, before you can simulate it.\n\nClick "Import", to do so.');
 											return;
 											}
 										});
@@ -123,7 +128,7 @@ var Controls = function () {
 			bui.settings.css.stylesheetUrl = 'css/visualization-svg.css';
 		});
 		$.getScript("lib/interact.js");
-		$.getScript("lib/d3.v2.min.js");
+		$.getScript("lib/d3.v2.js");
 		$.getScript("lib/libSBGN.js");
 		$.getScript("lib/rickshaw.js");
 
@@ -222,6 +227,7 @@ var Controls = function () {
 						else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
 							jsbgn.importGINML(data);
 						//else jsbgn.importSBML(file, data);
+						jsbgn.model = data;
 
 						//$('#graphStateTransition').html('');
 						// Import the jSBGN object into a bui.Graph instance
@@ -344,7 +350,7 @@ var Controls = function () {
 	 */
 	var openExportDialog = function () {
 		if ( network == null || network == undefined || network == {} ) {
-			alert('You need to import a network, before you can export it.\n\nPlease click "Open", to do so.');
+			alert('You need to import a network, before you can export it.\n\nClick "Import", to do so.');
 			return;
 			}
 

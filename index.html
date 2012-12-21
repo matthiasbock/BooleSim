@@ -28,10 +28,10 @@
 		<li><a href="#plotTimeSeries">Timeseries</a></li>
 		<li><a href="#graphNetwork">Network</a></li>
 
-		<li><button id=buttonImportDialog>Open</button></li>
-		<li><button id=buttonExportDialog>Save</button></li>
+		<li><button id=buttonImportDialog>Import</button></li>
+		<li><button id=buttonExportDialog>Export</button></li>
 		<li><button id=buttonSimulate>Simulate / Pause</button></li>
-		<!--li><button id=buttonHelp>Help</button></li-->
+		<li><button id=buttonHelp>Help</button></li>
 
 		<li><label id=textIteration>0</label></li>
 	</ul>
@@ -60,55 +60,47 @@
 </div>
 
 <!-- This dialog appears after clicking "Open" -->
-<div id=dialogImport class=dialog title="Import File">
+<div id=dialogImport class=dialog title="Import">
 	<b>Choose file:</b>
 	<input type=file id=fileNetwork /> 
 	<div id=radioSeed>
-		<b>Initial node state:</b> <br>
-		<input type=radio name="seed" id=seedFile />as initialized in the model<br>
-		<input type=radio name="seed" id=seedTrue checked />all true<br>
-		<input type=radio name="seed" id=seedFalse />all false<br>
+		<b>Initial node state:</b> <br/>
+		<input type=radio name="seed" id=seedFile />as initialized in the model<br/>
+		<input type=radio name="seed" id=seedTrue checked />all true<br/>
+		<input type=radio name="seed" id=seedFalse />all false<br/>
 		<!--input type=radio name="seed" id=seedRandom />all randomly true or false<br-->
 	</div>
 	<div id=radioFormat>
-		<b>Filetype:</b> <br>
-		<input type=radio name="format" id=formatGuess checked />guess format<br>
-		<input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet <small>(<a target="_blank" href="http://code.google.com/p/booleannet/">more</a>)</small><br>
-		<input type=radio name="format" id=formatRBoolNet />R BoolNet <small>(<a target="_blank" href="http://www.informatik.uni-ulm.de/ni/mitarbeiter/HKestler/boolnet/">more</a>)</small><br>
-		<input type=radio name="format" id=formatGINML />GINML <small>(<a target="_blank" href="http://gin.univ-mrs.fr/GINsim/ginml.html">more</a>)</small><br>
+		<b>Filetype:</b> <br/>
+		<input type=radio name="format" id=formatGuess checked />guess format<br/>
+		<input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet <small>(<a target="_blank" href="http://code.google.com/p/booleannet/">more</a>)</small><br/>
+		<input type=radio name="format" id=formatRBoolNet />R BoolNet <small>(<a target="_blank" href="http://www.informatik.uni-ulm.de/ni/mitarbeiter/HKestler/boolnet/">more</a>)</small><br/>
+		<input type=radio name="format" id=formatGINML />GINML <small>(<a target="_blank" href="http://gin.univ-mrs.fr/GINsim/ginml.html">more</a>)</small><br/>
+		<input type=radio name="format" id=formatjSBGN />jSBGN <small>(<a target="_blank" href="https://code.google.com/p/biographer/wiki/graph_exchange">more</a>)</small><br/>
 		<!--input type=radio name="format" id=formatSBML />SBML <small>(<a target="_blank" href="http://sbml.org/Basic_Introduction_to_SBML">more</a>)</small><br-->
 	</div>
 	<!--div id=checkOptions>
-		<b>Options:</b> <br>
+		<b>Options:</b> <br/>
 		<input type=checkbox id=optionsImportSimulate checked />Start simulating after import<br/>
 		<input type=checkbox id=optionsOneClick checked />Start simulating on node click<br/>
 		<input type=checkbox id=optionsScale checked />Scale graph to fit page<br/>
 	</div-->
-	<button id=buttonImportCancel class=dialogButton> Cancel </button>
-	<button id=buttonImportDemo class=dialogButton> Demo </button>
 	<button id=buttonImportFile class=dialogButton> Import </button>
+	<button id=buttonImportDemo class=dialogButton> Demo </button>
+	<button id=buttonImportCancel class=dialogButton> Cancel </button>
 </div>
   
 <!-- This dialog appears after clicking "Save" -->
-<div id=dialogExport class=dialog title="Save">
-	<div id=radioGraph>
-		<b>Graph format</b><br>
-		<input type=radio name="graph" id=graphSVG checked />SVG<br>
-		<input type=radio name="graph" id=graphSBGN  />SBGN<br>
-		<input type=radio name="graph" id=graphjSBGN />jSBGN<br>
-	</div>
-	<div id=radioExport>
-		<b>Graph:</b><br>
-		<input type=radio name="export" id=exportNetwork checked />Network<br>
-		<input type=radio name="export" id=exportStateTransition />Transitions<br>
-		<input type=radio name="export" id=exportStateTransition />Time series<br>
-		<br>
-		<b>Update rules</b><br>
-		<input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br>
-		<input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br>
-	</div>
+<div id=dialogExport class=dialog title="Export">
+	<b>Graph only:</b><br/>
+	<input type=radio name="graph" id=exportSVG checked />SVG<br/>
+	<b>Model only:</b><br/>
+	<input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br/>
+	<input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br/>
+	<b>Graph and model in one file:</b><br/>
+	<input type=radio name="graph" id=graphjSBGN />jSBGN<br/>
 	<button id=buttonExportCancel class=dialogButton> Cancel </button>
-	<button id=buttonExportFile class=dialogButton> Download </button>
+	<button id=buttonExportFile class=dialogButton> Export </button>
 </div>
 
 <!-- This dialog appears after right click on a node -->
@@ -120,6 +112,9 @@
 </div>
 
 <!-- This dialog appears when "Help" is clicked -->
+<div id=dialogHelp class=dialog title="Help">
+	Help text
+</div>
 
 <!-- This warning appears, when an incompatible browser is detected -->
 <script>
