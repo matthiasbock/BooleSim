@@ -28,13 +28,23 @@
 	width:		100%;
 }
 
-#plotTimeSeries
+#Truthtable
+{
+	border:		1px solid black;
+}
+
+#Truthtable td
+{
+	border:		1px solid black;
+}
+
+#tabTimeseries
 {
   width:100%;
   height:100%;
 }
 
-#plotTimeSeries > div
+#tabTimeseries > div
 {
   display:inline-block;
   vertical-align:top;

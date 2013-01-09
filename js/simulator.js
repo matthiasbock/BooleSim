@@ -10,7 +10,6 @@ var Simulator = function () {
 	//
 	// Public variables
 	//
-
 	this.running = false;
 	this.scopes = false;
 
@@ -153,7 +152,7 @@ var Simulator = function () {
 			id: 'boxInfo',
 			text: rule
 		})
-			.prependTo('#graphNetwork');
+			.prependTo('#tabNetwork');
 	};
 
 	/**
@@ -180,13 +179,13 @@ var Simulator = function () {
 	};
 
 	/**
-	 * Create the Rickshaw Plotter. The time series variable is first created,
+	 * Create a Rickshaw plotter. The time series variable is first created,
 	 * then the plotter, X-axis, Y-axis and finally the legend and it's 
 	 * node select option.
 	 * @param {Array} nodes The list of nodes in the graph.
 	 * @param {Object} state The state of the network.
 	 */
-	var createPlotter = function (nodes, state) {
+	var createRickshawTimeseries = function (nodes, state) {
 		// number of plots = 1
 		for (var nplot = 0; nplot <= 0; nplot++) {
 			var i, timeSeries = [];
@@ -259,6 +258,7 @@ var Simulator = function () {
 		}
 	};
 
+
 	/**
 	 * initialize the simulator. The initial states are calculated, the 
 	 * plotter is created and all the event handlers for the nodes are 
@@ -286,7 +286,7 @@ var Simulator = function () {
 			if (network.rules[i].length !== 0) network.state[i] = controls.getInitialSeed();
 		}
 
-		createPlotter(network.nodes, network.state);
+		createRickshawTimeseries(network.nodes, network.state);
 
 		var svgNode;
 		for (i in network.state) {
@@ -679,7 +679,7 @@ var Simulator = function () {
 		});
 		//$('#circleProgress').show();
 		$('#tabs')
-			.tabs('select', '#graphNetwork');
+			.tabs('select', '#tabNetwork');
 		// Start the simulation
 		obj.run();
 	};

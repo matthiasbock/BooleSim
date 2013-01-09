@@ -1,14 +1,11 @@
 
-all:
-	# possible make targets: update-bui
-
-update-bui:
-	if [ ! -e 'lib/biographer' ]; then \
-		hg clone https://code.google.com/p/biographer/ lib/biographer; \
+bui_upgrade:
+	if [ ! -e 'js/biographer' ]; then \
+		hg clone https://code.google.com/p/biographer/ js/biographer; \
 	else \
-		cd lib/biographer; hg pull; \
+		cd js/biographer; hg pull; \
 	fi
-	cd lib/biographer/bui/src/main/javascript; \
+	cd js/biographer/bui/src/main/javascript; \
 	cat 'intro' \
            'settings.js' \
            'core.js' \

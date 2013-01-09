@@ -25,7 +25,7 @@ var Controls = function () {
 	this.initialize = function () {
 		// Load the jQuery UI tabs
 		$('#tabs').tabs();
-		$('#tabs').tabs('select', '#graphNetwork');
+		$('#tabs').tabs('select', '#tabNetwork');
 		$('#tabs').bind('tabsselect', changeTab);
 
 		// initialize all the jQuery UI components
@@ -123,14 +123,14 @@ var Controls = function () {
 			}
 		});
 
-		$.getScript("lib/jquery.simulate.js");
-		$.getScript("lib/biographer-ui.js", function () {
+		$.getScript("js/jquery.simulate.js");
+		$.getScript("js/biographer-ui.js", function () {
 			bui.settings.css.stylesheetUrl = 'css/visualization-svg.css';
 		});
-		$.getScript("lib/interact.js");
-		$.getScript("lib/d3.v2.js");
-		$.getScript("lib/libSBGN.js");
-		$.getScript("lib/rickshaw.js");
+		$.getScript("js/interact.js");
+		$.getScript("js/d3.v2.js");
+		$.getScript("js/libSBGN.js");
+		$.getScript("js/rickshaw.js");
 
 		$.getScript("js/import.js");
 		$.getScript("js/simulator.js");
@@ -231,8 +231,8 @@ var Controls = function () {
 
 						//$('#graphStateTransition').html('');
 						// Import the jSBGN object into a bui.Graph instance
-						obj.importNetwork(jsbgn, '#graphNetwork');
-						$('#tabs').tabs('select', '#graphNetwork');
+						obj.importNetwork(jsbgn, '#tabNetwork');
+						$('#tabs').tabs('select', '#tabNetwork');
 						$('#textIteration').text(0);
 
 						// Delete any previous instance of the Simulator and initialize a new one

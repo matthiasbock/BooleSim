@@ -9,8 +9,8 @@
 	<link rel="stylesheet" type="text/css" href="css/simulator.css"/>
 	<link rel="stylesheet" type="text/css" href="css/rickshaw.css"/>
 
-	<script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
-	<script type="text/javascript" src="lib/jquery-ui-1.8.22.custom.min.js"></script>
+	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.22.custom.min.js"></script>
 	<script type="text/javascript" src="settings.js"></script>
 	<script type="text/javascript" src="js/controls.js"></script>
 </head>
@@ -25,8 +25,9 @@
 	<ul>
 		<img style="float: left; padding: 5px 5px 0 0; margin: none;" alt="BoNeSim" src="img/logo.png" />
 		<!--li><a href="#graphStateTransition">Statespace</a></li-->
-		<li><a href="#plotTimeSeries">Timeseries</a></li>
-		<li><a href="#graphNetwork">Network</a></li>
+		<li><a href="#tabHeatmap">Heatmap</a></li>
+		<li><a href="#tabTimeseries">Timeseries</a></li>
+		<li><a href="#tabNetwork">Network</a></li>
 
 		<li><button id=buttonImportDialog>Import</button></li>
 		<li><button id=buttonExportDialog>Export</button></li>
@@ -36,18 +37,42 @@
 		<li><label id=textIteration>0</label></li>
 	</ul>
 
-	<div class=tabs id=graphNetwork>
+	<div class=tabs id=tabNetwork>
 		<!--div style="float: right; padding: none; margin: none;">
 		Zoom:<div id=sliderZoom style="float: right;"></div>
 		</div-->
 	</div>
-    
-	<div class=tabs id=plotTimeSeries>
+
+	<div class=tabs id=tabTimeseries>
 		<div id=axisY0></div>
 		<div id=plotArea0 style="padding: none;"></div>
 		<div id=legendNodes0 style="padding: none;"></div>
 	</div>
-    
+
+	<div class=tabs id=tabHeatmap>
+		<center>
+		<br/>
+		<br/>
+		<table id=TruthTable>
+			<tr>
+				<th colspan=6>input scenarios</th>
+				<th>&nbsp;</th>
+				<th colspan=2>simulation output</th>
+			</tr>
+			<tr>
+				<td>oxygen</td>
+				<td>glucose</td>
+				<td>glycerol</td>
+				<td>nitrogen</td>
+				<td>rapamycin</td>
+				<td>Whi2</td>
+				<td>&nbsp;</td>
+				<td>bulk autophagy</td>
+				<td>mitophagy</td>
+			</tr>
+		</table>
+	</div>
+
 	<!--div class=tabs id=graphStateTransition>
 		<button id=buttonAnalyse>Analyse</button>
 	</div-->
@@ -79,12 +104,6 @@
 		<input type=radio name="format" id=formatjSBGN />jSBGN <small>(<a target="_blank" href="https://code.google.com/p/biographer/wiki/graph_exchange">more</a>)</small><br/>
 		<!--input type=radio name="format" id=formatSBML />SBML <small>(<a target="_blank" href="http://sbml.org/Basic_Introduction_to_SBML">more</a>)</small><br-->
 	</div>
-	<!--div id=checkOptions>
-		<b>Options:</b> <br/>
-		<input type=checkbox id=optionsImportSimulate checked />Start simulating after import<br/>
-		<input type=checkbox id=optionsOneClick checked />Start simulating on node click<br/>
-		<input type=checkbox id=optionsScale checked />Scale graph to fit page<br/>
-	</div-->
 	<button id=buttonImportFile class=dialogButton> Import </button>
 	<button id=buttonImportDemo class=dialogButton> Demo </button>
 	<button id=buttonImportCancel class=dialogButton> Cancel </button>
@@ -92,12 +111,12 @@
   
 <!-- This dialog appears after clicking "Save" -->
 <div id=dialogExport class=dialog title="Export">
-	<b>Graph only:</b><br/>
-	<input type=radio name="graph" id=exportSVG checked />SVG<br/>
-	<b>Model only:</b><br/>
+	<b>model:</b><br/>
 	<input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br/>
 	<input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br/>
-	<b>Graph and model in one file:</b><br/>
+	<b>graph:</b><br/>
+	<input type=radio name="graph" id=exportSVG checked />SVG<br/>
+	<b>model and graph combined:</b><br/>
 	<input type=radio name="graph" id=graphjSBGN />jSBGN<br/>
 	<button id=buttonExportCancel class=dialogButton> Cancel </button>
 	<button id=buttonExportFile class=dialogButton> Export </button>
