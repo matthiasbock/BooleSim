@@ -94,6 +94,8 @@ updateRickshawTimeseries = function (nodes, state) {
 				x: iterationCounter,
 				y: +state[id]
 			});
+			if (plot.series[i].data.length > 30)
+				plot.series[i].data.shift();
 		}
 	}
 	plot.render();

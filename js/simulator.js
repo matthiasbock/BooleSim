@@ -54,6 +54,7 @@ initializeSimulator = function (jsbgn, settings) {
 	network = jsbgn;
 	config = settings;
 	network.state = {};
+	network.freeze = {};
 
 	console.log('Initializing simulator ...');
 
@@ -65,7 +66,10 @@ initializeSimulator = function (jsbgn, settings) {
 	// initialize the state of the network
 	var i;
 	for (i in network.rules) {
-		if (network.rules[i].length !== 0) network.state[i] = controls.getInitialSeed();
+		if (network.rules[i].length !== 0) {
+			network.state[i] = controls.getInitialSeed();
+			network.freeze[i] = false;
+		}
 	}
 
 	createRickshawTimeseries(network.nodes, network.state);
@@ -93,8 +97,18 @@ updateNodeColor = function (nodeid) {
 	if (network.state[nodeid] == true)
 		opacity = 1;
 
+	color = "#10d010";
+	stroke = "black";
+	width = "1px";
+	if (network.freeze[nodeid]) {
+		stroke = "#FF4538";
+		width = "5px";
+	}
+	
 	$('#' + nodeid + ' :eq(0)')
-		.css('fill', '#10d010')
+		.css('stroke', stroke)
+		.css('stroke-width', width)
+		.css('fill', color)
 		.animate({
 				'fill-opacity': opacity
 				},
@@ -108,7 +122,9 @@ onNodeClick = function (event) {
 	// Toggle the node state
 	var nodeid = $(this).attr('id');
 	if (!event.ctrlKey)
-		network.state[nodeid] = !network.state[nodeid];
+		network.state[nodeid] = ! network.state[nodeid];
+	else
+		network.freeze[nodeid] = ! network.freeze[nodeid];
 	updateNodeColor(nodeid);
 
 	// Start the simulation if the One click option is checked
@@ -131,8 +147,11 @@ synchronousUpdate = function (state) {
 
 	// Get the new states by calling the respective update rule functions
 	for (i in network.state) {
-		newState[i] = ruleFunctions[i](state);
-		if (newState[i] !== state[i]) changed.push(i);
+		if (!network.freeze[i]) {
+			newState[i] = ruleFunctions[i](state);
+			if (newState[i] !== state[i])
+				changed.push(i);
+		}
 	}
 	// The update is synchronous: the states are updated only after all
 	// the new states are calculated
