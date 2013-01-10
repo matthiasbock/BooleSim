@@ -1,5 +1,10 @@
 
-bui_upgrade:
+all:
+	make bui
+	make rickshaw
+	exit
+
+bui:
 	if [ ! -e 'js/biographer' ]; then \
 		hg clone https://code.google.com/p/biographer/ js/biographer; \
 	else \
@@ -46,3 +51,6 @@ bui_upgrade:
            'layouter.js' \
            'layout-grid.js' \
            'outro' > ../../../../../biographer-ui.js
+
+rickshaw:
+	wget https://raw.github.com/shutterstock/rickshaw/master/rickshaw.js -O js/rickshaw.js
