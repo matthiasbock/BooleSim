@@ -226,23 +226,29 @@ svg {
     line-height: 140%;
     padding-right: 15px;
 }
-	.rickshaw_legend .line .swatch {
+.rickshaw_legend .line .swatch {
 	    display: inline-block;
 	    margin-right: 3px;
 	    border-radius: 2px;
 	}
 .rickshaw_legend .label {
+	color: white;
     white-space: nowrap;
     display: inline;
 }
-.rickshaw_legend .action:hover { opacity: .6 }
 .rickshaw_legend .action {
+	color: white;
+	background-color: transparent;
     margin-right: .2em;
     font-size: 10px;
-    opacity: .2;
+    opacity: 0.4;
     cursor: pointer;
     font-size: 14px;
 }
+.rickshaw_legend .action:hover {
+	background-color: black;
+	opacity: 1;
+	}
 .rickshaw_legend .line.disabled { opacity: .4 }
 .rickshaw_legend ul {
     list-style-type: none;
