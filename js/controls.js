@@ -144,6 +144,7 @@ var Controls = function () {
 		$.getScript("js/editrule.js");
 		$.getScript("js/timeseries.js");
 //		$.getScript("js/attractors.js");
+		$.getScript("js/heatmap.js");
 		$.getScript("js/simulator.js");
 		
 		$.ajaxSetup({

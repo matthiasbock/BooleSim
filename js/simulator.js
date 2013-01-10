@@ -73,6 +73,7 @@ initializeSimulator = function (jsbgn, settings) {
 	}
 
 	createRickshawTimeseries(network.nodes, network.state);
+	createHeatmap();
 
 	var svgNode;
 	for (i in network.state) {
@@ -97,12 +98,12 @@ updateNodeColor = function (nodeid) {
 	if (network.state[nodeid] == true)
 		opacity = 1;
 
-	color = "#10d010";
+	color = "#10d010";	// green'ish
 	stroke = "black";
-	width = "1px";
+	width = "2px";
 	if (network.freeze[nodeid]) {
-		stroke = "#FF4538";
-		width = "5px";
+		stroke = "#FF4538";	// red'ish
+		width = "6px";
 	}
 	
 	$('#' + nodeid + ' :eq(0)')
@@ -173,14 +174,21 @@ updateAndContinue = function () {
 	// Update the node colors after an iteration and call run again if
 	// the Simulation has not reached steady state
 	if (changed.length > 0) {
+	
+		// update bui
 		for (i in changed)
 			updateNodeColor(changed[i]);
+		
+		// iterate again after delay
 		setTimeout(function () {
 							runSimulator();
 							}, config.simDelay);
 	} else {
 		console.log('Boolean network reached steady state.');
 		stopSimulator();
+		
+		// append new steady-state to heatmap
+		updateHeatmap();
 	}
 };
 
