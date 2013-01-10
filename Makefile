@@ -5,12 +5,12 @@ all:
 	exit
 
 bui:
-	if [ ! -e 'js/biographer' ]; then \
-		hg clone https://code.google.com/p/biographer/ js/biographer; \
+	if [ ! -e 'include/biographer' ]; then \
+		hg clone https://code.google.com/p/biographer/ include/biographer; \
 	else \
-		cd js/biographer; hg pull; \
+		cd include/biographer; hg pull; \
 	fi
-	cd js/biographer/bui/src/main/javascript; \
+	cd include/biographer/bui/src/main/javascript; \
 	cat 'intro' \
            'settings.js' \
            'core.js' \
@@ -53,4 +53,4 @@ bui:
            'outro' > ../../../../../biographer-ui.js
 
 rickshaw:
-	wget https://raw.github.com/shutterstock/rickshaw/master/rickshaw.js -O js/rickshaw.js
+	wget https://raw.github.com/shutterstock/rickshaw/master/rickshaw.js -O include/rickshaw.js
