@@ -202,7 +202,8 @@ var Simulator = function () {
 			text: rule,
 			style: "left: "+event.clientX+"; top: "+event.clientY+"; width: auto;"
 		})
-			.prependTo('#tabNetwork');
+			.prependTo('#tabNetwork')
+			.click(removeInfoBox);
 	};
 
 	/**
