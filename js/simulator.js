@@ -59,7 +59,7 @@ initializeSimulator = function (jsbgn, settings) {
 	console.log('Initializing simulator ...');
 
 	$('#buttonSimulate')
-		.click(start);
+		.click(startSimulator);
 	//$('#buttonAnalyse')
 	//	.click(findAttractors);
 
@@ -157,7 +157,7 @@ onNodeClick = function (event) {
 	updateNodeColor(nodeid);
 
 	// Start the simulation if the One click option is checked
-	if (config.oneClick && !obj.running) setTimeout(function () {
+	if (config.oneClick && !running) setTimeout(function () {
 		startSimulator();
 	}, config.simDelay);
 };
@@ -333,7 +333,7 @@ updateAndContinue = function () {
 		for (i in changed)
 			updateNodeColor(changed[i]);
 		setTimeout(function () {
-							obj.run();
+							runSimulator();
 							}, config.simDelay);
 	} else {
 		console.log('Boolean network reached steady state.');

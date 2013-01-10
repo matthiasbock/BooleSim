@@ -128,14 +128,14 @@ var Controls = function () {
 			}
 		});
 
-		$.getScript("js/jquery.simulate.js");
-		$.getScript("js/biographer-ui.js", function () {
+		$.getScript("include/jquery.simulate.js");
+		$.getScript("include/biographer-ui.js", function () {
 			bui.settings.css.stylesheetUrl = 'css/visualization-svg.css';
 		});
-		$.getScript("js/interact.js");
-		$.getScript("js/d3.v2.js");
+		$.getScript("include/interact.js");
+		$.getScript("include/d3.v2.js");
 		$.getScript("js/libSBGN.js");
-		$.getScript("js/rickshaw.js");
+		$.getScript("include/rickshaw.js");
 
 		$.getScript("js/import.js");
 		$.getScript("js/simulator.js");
@@ -241,9 +241,8 @@ var Controls = function () {
 						$('#textIteration').text(0);
 
 						// Delete any previous instance of the Simulator and initialize a new one
-						if (simulator !== null) simulator.destroy();
-
-						simulator = new Simulator();
+						//if (simulator !== null) simulator.destroy();
+						//simulator = new Simulator();
 
 						// if ($('#formatSBML').attr('checked')) simulator.scopes = true;
 
@@ -252,10 +251,10 @@ var Controls = function () {
 			//				guessSeed: $('#seedGuess').attr('checked'),
 							oneClick: optionsSimulateAfterClick
 						};
-						simulator.initialize(jsbgn, settings);
+						initializeSimulator(jsbgn, settings);
 
 						if (optionsSimulateAfterImport)
-							simulator.start()
+							startSimulator()
 						};
 
 
