@@ -12,7 +12,9 @@ createHeatmap = function() {
 					"glycerol",
 					"nitrogen",
 					"rapamycin",
-					"mitophagy"	
+					"autophagy",
+					"basal_mitophagy",
+					"elevated_mitophagy"
 				];
 	
 	var heatmap = "<tr><th colspan="+heatmapNodes.length+">encountered steady-state node state combinations</th></tr>";
@@ -32,10 +34,13 @@ appendHeatmapTable = function(states) {
 	var row = "<tr>";
 	var i;
 	for (i in states) {
+		var state = "off";
 		var color = "white";
-		if (states[i])
+		if (states[i]) {
+			state = "on";
 			color = "#10d010";
-		row +=  '<td style="background-color: '+color+';">'+states[i]+'</td>';
+		}
+		row +=  '<td style="background-color: '+color+';">'+state+'</td>';
 	}
 	row += "</tr>\n";
 	
