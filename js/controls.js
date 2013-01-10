@@ -104,7 +104,12 @@ var Controls = function () {
 											return;
 											}
 										});
-
+		$('#buttonHelp').click(function () {
+									$('#dialogHelp').dialog('open');
+									});
+		$('#buttonHelpClose').click(function () {
+									$('#dialogHelp').dialog('close');
+									});
 
 		loadAdditionalResources();
 	};
