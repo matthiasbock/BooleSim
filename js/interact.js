@@ -286,7 +286,7 @@ window.interact = (function (window) {
                 }
             },
             drag: {
-                cursor: 'move',
+                cursor: 'pointer',
                 ready: function () {
                     if (target.drag) {
                         events.add(docTarget, moveEvent, dragMove);
