@@ -73,7 +73,7 @@ initializeSimulator = function (jsbgn, settings) {
 	}
 
 	createRickshawTimeseries(network.nodes, network.state);
-	createHeatmap();
+	createSteadyStates();
 
 	var svgNode;
 	for (i in network.state) {
@@ -187,8 +187,8 @@ updateAndContinue = function () {
 		console.log('Boolean network reached steady state.');
 		stopSimulator();
 		
-		// append new steady-state to heatmap
-		updateHeatmap();
+		// append new steady-state to SteadyStates
+		updateSteadyStates();
 	}
 };
 

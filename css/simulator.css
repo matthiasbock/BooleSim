@@ -28,12 +28,12 @@
 	width:		100%;
 }
 
-#Heatmap
+#SteadyStates
 {
 	border:		1px solid black;
 }
 
-#Heatmap td
+#SteadyStates td
 {
 	text-align:	center;
 	border:		1px solid black;

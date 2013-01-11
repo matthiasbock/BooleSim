@@ -25,7 +25,7 @@
 	<ul>
 		<img style="width: 137px; float: left; padding: 5px 5px 0 0; margin: none;" alt="BoNeSim" src="img/logo.png" />
 		<!--li><a href="#graphStateTransition">Statespace</a></li-->
-		<li><a href="#tabHeatmap">Heatmap</a></li>
+		<li><a href="#tabSteadyStates">Steadystates</a></li>
 		<li><a href="#tabTimeseries">Timeseries</a></li>
 		<li><a href="#tabNetwork">Network</a></li>
 
@@ -49,22 +49,16 @@
 		<div id=legendNodes0 style="padding: none;"></div>
 	</div>
 
-	<div class=tabs id=tabHeatmap>
+	<div class=tabs id=tabSteadyStates>
 		<center>
 		<br/>
 		<br/>
-		<table id=Heatmap>
+		<table id=SteadyStates>
 		</table>
 	</div>
 
 	<!--div class=tabs id=graphStateTransition>
 		<button id=buttonAnalyse>Analyse</button>
-	</div-->
-
-	<!--div class=tabs id=plotTruthtable>
-	</div-->
-
-	<!--div class=tabs id=plotHeatmap>
 	</div-->
 </div>
 
@@ -99,11 +93,11 @@
 	<input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br/>
 	<input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br/>
 	<b>graph:</b><br/>
-	<input type=radio name="graph" id=exportSVG checked />SVG<br/>
+	<input type=radio name="export" id=exportSVG checked />SVG<br/>
 	<b>model and graph combined:</b><br/>
-	<input type=radio name="graph" id=graphjSBGN />jSBGN<br/>
-	<button id=buttonExportCancel class=dialogButton> Cancel </button>
+	<input type=radio name="export" id=graphjSBGN />jSBGN<br/>
 	<button id=buttonExportFile class=dialogButton> Export </button>
+	<button id=buttonExportCancel class=dialogButton> Cancel </button>
 </div>
 
 <!-- This dialog appears after right click on a node -->
@@ -116,17 +110,17 @@
 
 <!-- This dialog appears when "Help" is clicked -->
 <div id=dialogHelp class=dialog title="Help">
-	<b>Network:</b>
 	<br/>
 	<ul>
-	<li>left click: change node state</li>
+	<li>left click on node: change node state</li>
 	<li>right click: edit update rule</li>
 	<li>ctrl+left click: freeze/unfreeze node</li>
 	<li>mouse cursor above node: inspect update rule</li>
-	<li>drag and drop: move node</li>
-	<li>left click lines: insert a moveable corner</li>
+	<li>drag and drop node: move node</li>
+	<li>drag and drop canvas: move canvas</li>
+	<li>left click on lines: insert a moveable corner</li>
+	<li>mouse wheel: zoom</li>
 	</ul>
-	<br/>
 	<button id=buttonHelpClose class=dialogButton> Close </button>
 </div>
 
@@ -144,7 +138,7 @@ glycerol = False
 nitrogen = True
 
 glycolysis* = glucose
-pyruvate* = glycolysis or glycerol
+pyruvate* = glycolysis
 
 fermentation* = pyruvate and (not oxphos)
 ethanol* = fermentation
@@ -153,7 +147,8 @@ oxphos* = NADH and oxygen and ETC
 #petite* = pyruvate and (not oxphos)
 ROS* = oxphos
 
-acid_cycle* = pyruvate and oxphos
+acid_cycle* = (pyruvate or glycerol)
+#and oxphos
 CO2* = acid_cycle
 
 NADH* = glycolysis or acid_cycle
@@ -181,19 +176,21 @@ Msn2_4* = Psr1 and Whi2 and ((not PKA) or TORC1)
 
 Wsc1* = ROS
 #calcofluor_white = False
-Pkc1* = Wsc1
+#Pkc1* = Wsc1
 #or calcofluor_white
-Bck1* = Pkc1
-Mkk1* = Bck1
-Mkk2* = Bck1
-Slt2* = Mkk1 or Mkk2
+#Bck1* = Pkc1
+#Mkk1* = Bck1
+#Mkk2* = Bck1
+#Slt2* = Mkk1 or Mkk2
 
 Sdp1* = ROS
-Slt2_cytosol* = Slt2 and Sdp1
-Slt2_nucleus* = Slt2 and (not Sdp1)
-Rlm1* = Slt2_nucleus
+Slt2_cytosol* = Sdp1
+#and Slt2
+#Slt2_nucleus* = Slt2 and (not Sdp1)
+#Rlm1* = Slt2_nucleus
 
-fortified_cell_wall* = Rlm1 or (not Uth1)
+fortified_cell_wall* = (not Uth1)
+# or Rlm1
 
 #Sln1 branch upstream
 #Pbs2 = False
@@ -217,7 +214,7 @@ Atg32* = Slt2_cytosol or Atg33
 
 Ptc6* = (not ROS)
 #Atg33* = Msn2_4 and unknown_kinase3 and (not Ptc6)
-Atg33* = unknown_kinase3 and (not Ptc6)
+Atg33* = unknown_kinase3 and (not Ptc6) and STRE
 
 autophagy* = Atg1_13_17 and (not PKA)
 basal_mitophagy* = Atg32

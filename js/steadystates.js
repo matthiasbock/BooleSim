@@ -1,12 +1,12 @@
-var heatmapNodes = [];
+var SteadyStatesNodes = [];
 var encounteredStateCombinations = [];
 
 /*
- * create an empty table in the Heatmap tab
+ * create an empty table in the SteadyStates tab
  */
-createHeatmap = function() {
+createSteadyStates = function() {
 
-	heatmapNodes = [
+	SteadyStatesNodes = [
 					"oxygen",
 					"glucose",
 					"glycerol",
@@ -17,20 +17,20 @@ createHeatmap = function() {
 					"elevated_mitophagy"
 				];
 	
-	var heatmap = "<tr><th colspan="+heatmapNodes.length+">encountered steady-state node state combinations</th></tr>";
-	heatmap += "<tr>";
+	var SteadyStates = "<tr><th colspan="+SteadyStatesNodes.length+">encountered steady-state node state combinations</th></tr>";
+	SteadyStates += "<tr>";
 	var i;
-	for (i in heatmapNodes) {
-		heatmap += "<td>"+heatmapNodes[i]+"</td>";
+	for (i in SteadyStatesNodes) {
+		SteadyStates += "<td>"+SteadyStatesNodes[i]+"</td>";
 	}
-	heatmap += "</tr>\n";
+	SteadyStates += "</tr>\n";
 
-	// set content of Heatmap <table>
-	$("#Heatmap")
-		.html(heatmap);
+	// set content of SteadyStates <table>
+	$("#SteadyStates")
+		.html(SteadyStates);
 }
 
-appendHeatmapTable = function(states) {
+appendSteadyStatesTable = function(states) {
 	var row = "<tr>";
 	var i;
 	for (i in states) {
@@ -44,7 +44,7 @@ appendHeatmapTable = function(states) {
 	}
 	row += "</tr>\n";
 	
-	$("#Heatmap")
+	$("#SteadyStates")
 		.append(row);
 }
 
@@ -52,14 +52,14 @@ appendHeatmapTable = function(states) {
  * every time, the statespace is updated, check if
  * a new state combination has occured
  */
-updateHeatmap = function() {
+updateSteadyStates = function() {
 	var currentStateCombination = [];
 	var i;
-	for (i in heatmapNodes) {
-		currentStateCombination.push( network.state[heatmapNodes[i]] );
+	for (i in SteadyStatesNodes) {
+		currentStateCombination.push( network.state[SteadyStatesNodes[i]] );
 	}
 	if (encounteredStateCombinations.indexOf(currentStateCombination) < 0) {
-		appendHeatmapTable(currentStateCombination);
+		appendSteadyStatesTable(currentStateCombination);
 		encounteredStateCombinations.push(currentStateCombination);
 	}
 }
