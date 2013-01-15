@@ -25,7 +25,7 @@
 	<ul>
 		<img style="width: 137px; float: left; padding: 5px 5px 0 0; margin: none;" alt="BoNeSim" src="img/logo.png" />
 		<!--li><a href="#graphStateTransition">Statespace</a></li-->
-		<li><a href="#tabSteadyStates">Steadystates</a></li>
+		<li><a href="#tabSteadyStates">Steady states</a></li>
 		<li><a href="#tabTimeseries">Timeseries</a></li>
 		<li><a href="#tabNetwork">Network</a></li>
 
@@ -52,9 +52,27 @@
 	<div class=tabs id=tabSteadyStates>
 		<center>
 		<br/>
+		<b>
+		<font size=6>Passed steady states</font>
+		</b>
+		<br/>
 		<br/>
 		<table id=SteadyStates>
 		</table>
+		<br/>
+		<br/>
+		<div id="divNodeList">
+			<textarea class=nodeList id=inputNodeList>oxygen
+glucose
+glycerol
+nitrogen
+rapamycin</textarea>
+			<textarea class=nodeList id=outputNodeList>autophagy
+basal_mitophagy
+elevated_mitophagy</textarea>
+			<br/>
+			<button> Create new table </button>
+		</div>
 	</div>
 
 	<!--div class=tabs id=graphStateTransition>
