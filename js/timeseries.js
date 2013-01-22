@@ -1,102 +1,81 @@
-
-/*
- * Create a Rickshaw plotter. The time series variable is first created,
- * then the plotter, X-axis, Y-axis and finally the legend and it's 
- * node select option.
- * @param {Array} nodes The list of nodes in the graph.
- * @param {Object} state The state of the network.
- */
-createRickshawTimeseries = function (nodes, state) {
-	// number of plots = 1
-	for (var nplot = 0; nplot <= 0; nplot++) {
-		var i, timeSeries = [];
-
-		// Clear any previous plots
-		$('#plotArea' + nplot)
-			.html('');
-		$('#axisY' + nplot)
-			.html('');
-		$('#legendNodes' + nplot)
-			.html('');
-
-		// Generate the timeSeries Object for the plotter
-		for (i in state)
-		timeSeries.push({
-			color: randomColor(),
-			data: [{
-				x: 0,
-				y: +state[i]
-			}],
-			name: i
-		});
-
-		// Create the Graph, constant hold interpolation  
-		plot = new Rickshaw.Graph({
-			element: $("#plotArea" + nplot)[0],
-			width: $(window)
-				.width() * 0.8,
-			height: $(window)
-				.height() * 0.1,
-			renderer: 'line',
-			interpolation: 'step-after',
-			series: timeSeries
-		});
-
-		// Create the X & Y-axis, X is attached to the graph, whereas 
-		// Y is separate
-		var time = new Rickshaw.Fixtures.Time()
-			.unit('second');
-		time.formatter = function (d) {
-			return d.getUTCSeconds();
-		};
-		var xAxis = new Rickshaw.Graph.Axis.Time({
-			graph: plot,
-			timeUnit: time
-		});
-		var yAxis = new Rickshaw.Graph.Axis.Y({
-			graph: plot,
-			orientation: 'left',
-			ticks: 1,
-			element: $('#axisY' + nplot)[0]
-		});
-
-		// Create the legend, separate from the graph
-		var legend = new Rickshaw.Graph.Legend({
-			element: $('#legendNodes' + nplot)[0],
-			graph: plot,
-		});
-
-		// Create the choice list for the nodes, attach to legend
-		var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
-			graph: plot,
-			legend: legend
-		});
-
-		// Render the plot and select the first node
-		plot.render();
-		$('#legendNodes' + nplot + ' ul :eq(0) span ')
-			.trigger('click');
-	}
-};
-
-/*
- * Append the newly calculated node states to the graph. The plot is 
- * then updated using the render function.
- * @param {Array} nodes The list of nodes in the graph.
- * @param {Object} state The state of the network.
- */
-updateRickshawTimeseries = function (nodes, state) {
-	var i, id;
-	for (i in plot.series) {
-		if (typeof (plot.series[i]) === 'object') {
-			id = plot.series[i].name;
-			plot.series[i].data.push({
-				x: iterationCounter,
-				y: +state[id]
-			});
-			if (plot.series[i].data.length > 30)
-				plot.series[i].data.shift();
-		}
-	}
-	plot.render();
-};
+/**
+   * Construct the node label column
+   * @param {Object} state Current state of the network.
+   * @param {number} w Width of the labels.
+   * @param {number} h Height of the labels.
+   */
+  var createNodesColumn = function(state, w, h) {
+    var yPos = 0; 
+    
+    for (i in state) {
+      plot.append('svg:rect').attr('y', function(d) { return yPos; })
+          .attr('height', h).attr('width', w)
+          .attr('class', 'labels');
+      plot.append('svg:text').attr('y', function(d) { return yPos; })
+          .attr('dx', 10).attr('dy', 15)
+          .text(i)
+      yPos += h;
+    }  
+  }
+  
+  /**
+   * Construct a column with all the states.
+   * @param {Object} state Current state of the network.
+   */
+  var createStateColumn = function(state) {
+    var xOffset = parseInt($('rect.labels').attr('width'));
+    var h = parseInt($('rect.labels').attr('height'));
+    var maxColumns = 40;
+    
+    // Calculate position of the column
+    var yPos = 0, xPos = xOffset + (iterationCounter % maxColumns) * h; 
+    var color;
+    
+    // Replace previous column
+    removeStateColumn(iterationCounter - maxColumns);
+    
+    for (i in state) {
+      if (state[i]) color = 'red'; else color = 'green';
+      // Add a rectangle of required color
+      plot.append('svg:rect').attr('y', function(d) { return yPos; }).attr('x', xPos)
+          .attr('height', h).attr('width', h)
+          .attr('fill', color)
+          .attr('class', iterationCounter);
+      yPos += h;
+    }  
+    // Iteration count text on the bottom
+    plot.append('svg:text').attr('y', function(d) { return yPos; }).attr('x', xPos)
+          .attr('dx', 5).attr('dy', 15)
+          .attr('class', iterationCounter)
+          .text(iterationCounter);
+    // Add the marker for current iteration
+    plot.append('svg:rect').attr('height', yPos).attr('width', 7)
+          .attr('id', 'currMarker')
+          .attr('x', xPos + h);      
+  }
+  
+  /**
+   * Delete a column before replacing it.
+   * @param {number} index The index of the column to be deleted.
+   */
+  var removeStateColumn = function(index) {
+    $('rect.' + index).remove();
+    $('text.' + index).remove();
+    d3.selectAll('#currMarker').remove();
+  }
+  /**
+   * Create the Heatmap Plotter. 
+   * @param {Array} nodes The list of nodes in the graph.
+   * @param {Object} state The state of the network.
+   */
+  var createPlotter = function(nodes, state) {
+    
+    // Clear any previous plots
+    $('#tabTimeseries').html('');
+    var w = 100, h = 20;
+    
+    // Use d3 to create the initial svg with the start states
+    plot = d3.select('#tabTimeseries').append('svg:svg');
+    createNodesColumn(state, w, h);
+    createStateColumn(state);
+  };
