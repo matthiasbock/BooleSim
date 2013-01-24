@@ -72,7 +72,7 @@ initializeSimulator = function (jsbgn, settings) {
 		}
 	}
 
-	createRickshawTimeseries(network.nodes, network.state);
+	createPlotter(network.nodes, network.state);
 	createSteadyStates();
 
 	var svgNode;
@@ -127,6 +127,9 @@ onNodeClick = function (event) {
 	else
 		network.freeze[nodeid] = ! network.freeze[nodeid];
 	updateNodeColor(nodeid);
+  
+  //Update the value in the plot
+  createStateColumn(network.state);
 
 	// Start the simulation if the One click option is checked
 	if (config.oneClick && !running) setTimeout(function () {
@@ -198,15 +201,12 @@ updateAndContinue = function () {
 runSimulator = function () {
 	if (!(running)) return;
 
-	// update timeseries
-	updateRickshawTimeseries(network.nodes, network.state);
-	
-	// update iteration counter
-	$('#textIteration')
-		.text(iterationCounter++);
-
 	// Get the next states from the current state
 	updateAndContinue();
+  
+  // update iteration counter
+  $('#textIteration').text(++iterationCounter);   
+  createStateColumn(network.state);
 };
 
 
