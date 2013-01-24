@@ -250,7 +250,10 @@ svg {
 	opacity: 1;
 	}
 .rickshaw_legend .line.disabled { opacity: .4 }
+
 .rickshaw_legend ul {
+  -webkit-column-count:3
+  width: 300px;
     list-style-type: none;
     margin: 0;
     padding: 0;
