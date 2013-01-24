@@ -28,20 +28,6 @@
 	width:		100%;
 }
 
-#tabTimeseries
-{
-  width:100%;
-  height:100%;
-}
-
-#tabTimeseries > div
-{
-  display:inline-block;
-  vertical-align:top;
-  margin:10px;
-  padding:0;
-}
-
 #SteadyStates
 {
 	border:		1px solid black;
@@ -53,26 +39,23 @@
 	border:		1px solid black;
 }
 
-#divNodeList
-{
-	border: 1px solid black;
-	border-radius: 15px;
-	width: 330px;
-	padding: 15px;
+#tabTimeseries > svg {
+  margin: 20px;
+  min-width: 800px;
 }
 
-textarea.nodeList
-{
-	border-radius: 5px;
-	width:	160px;
-	height:	100px;
-	font-size:	7pt;
+#tabTimeseries rect.labels {
+  fill: white;
+}
+#tabTimeseries text {
+  fill: black;
+  font-size: 12px;
 }
 
-#axisY
-{
-  width:40px;
+#currMarker {
+  fill: black;
 }
+
 
 #buttonImportDialog
 {
