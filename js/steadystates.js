@@ -62,6 +62,18 @@ appendSteadyStatesTable = function(stateCombination) {
 		.append(row);
 }
 
+workaroundChromiumArrayBug = function(stateCombination) {
+	var result = "";
+	for (i in stateCombination) {
+		if (stateCombination[i]) {
+			result += "1";
+		} else {
+			result += "0";
+		}
+		}
+	return result;
+}
+
 /*
  * every time, the statespace is updated, check if
  * a new state combination has occured
@@ -75,8 +87,9 @@ updateSteadyStates = function() {
 	for (i in networkOutputNodes) {
 		currentStateCombination.push( network.state[networkOutputNodes[i]] );
 	}
-	if (encounteredStateCombinations.indexOf(currentStateCombination) < 0) {
+	s = workaroundChromiumArrayBug(currentStateCombination);
+	if (encounteredStateCombinations.indexOf(s) < 0) {
+		encounteredStateCombinations.push(s);
 		appendSteadyStatesTable(currentStateCombination);
-		encounteredStateCombinations.push(currentStateCombination);
 	}
 }
