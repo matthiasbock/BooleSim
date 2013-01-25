@@ -9,7 +9,7 @@ HTML5-capable internet browsers are required for proper rendering.
 
 Download using
 
-git clone https://github.com/matthiasbock/BONESIM.git
+git clone https://github.com/matthiasbock/BoNeSim.git
 
 After downloading drag'n'drop index.html into your web browser.
 
@@ -20,6 +20,6 @@ http://biographer.googlecode.com/
 
 Please report problems:
 
-https://github.com/matthiasbock/BONESIM/issues
+https://github.com/matthiasbock/BoNeSim/issues
 
 Have fun!
