@@ -42,18 +42,37 @@
 #tabTimeseries > svg {
   margin: 20px;
   min-width: 800px;
+  min-height: 800px;
 }
 
-#tabTimeseries rect.labels {
-  fill: white;
-}
-#tabTimeseries text {
+#tabTimeseries text{
   fill: black;
   font-size: 12px;
 }
 
 #currMarker {
   fill: black;
+}
+
+#legend {
+  padding: 10px;
+}
+
+#legend > ul > li {
+  display: inline-block;
+  list-style-type: none;
+}
+.legend {
+  height: 20px;
+  width: 20px;
+}
+
+#legendOn {
+  background-color: red;
+}
+
+#legendOff {
+  background-color: green;
 }
 
 

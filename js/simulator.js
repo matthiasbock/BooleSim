@@ -72,7 +72,6 @@ initializeSimulator = function (jsbgn, settings) {
 		}
 	}
 
-	createPlotter(network.nodes, network.state);
 	createSteadyStates();
 
 	var svgNode;
@@ -129,6 +128,7 @@ onNodeClick = function (event) {
 	updateNodeColor(nodeid);
   
   //Update the value in the plot
+  iterationCounter += 2;
   createStateColumn(network.state);
 
 	// Start the simulation if the One click option is checked
@@ -205,8 +205,9 @@ runSimulator = function () {
 	updateAndContinue();
   
   // update iteration counter
-  $('#textIteration').text(++iterationCounter);   
-  createStateColumn(network.state);
+  $('#textIteration').text(++iterationCounter); 
+  if (plot !== null)  
+    createStateColumn(network.state);
 };
 
 

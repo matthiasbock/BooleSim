@@ -26,7 +26,7 @@ var Controls = function () {
 		// Load the jQuery UI tabs
 		$('#tabs').tabs();
 		$('#tabs').tabs('select', '#tabNetwork');
-		$('#tabs').bind('tabsselect', changeTab);
+		$('#tabs').bind('tabsshow', changeTab);
 
 		// initialize all the jQuery UI components
 		/*$('#sliderZoom').slider({
@@ -187,7 +187,8 @@ var Controls = function () {
 		var graph = null;
 
 		if (ui.index === 0) graph = network;
-		else if (ui.index === 1) graph = transition;
+		else if (ui.index === 1) createPlotter();
+    else graph = transition;
 		// Exit if the graph has not been imported yet
 		if (graph === null) return;
 
