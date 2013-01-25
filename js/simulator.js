@@ -40,6 +40,7 @@ ruleFunctions = {};
 running = false;
 iterationCounter = 0;
 plot = null;
+states = [];
 
 	
 /*
@@ -59,6 +60,7 @@ initializeSimulator = function (jsbgn, settings) {
   running = false;
   iterationCounter = 0;
   plot = null;
+  states = [];
 
 	console.log('Initializing simulator ...');
 
@@ -75,6 +77,9 @@ initializeSimulator = function (jsbgn, settings) {
 			network.freeze[i] = false;
 		}
 	}
+  
+  states.push({});
+  $.extend(states[0], network.state);
 
 	createSteadyStates();
 
@@ -132,8 +137,12 @@ onNodeClick = function (event) {
 	updateNodeColor(nodeid);
   
   //Update the value in the plot
-  iterationCounter += 2;
-  createStateColumn(network.state);
+  states[iterationCounter] = {};
+  $.extend(states[iterationCounter], network.state);
+  if (plot !== null) {
+    iterationCounter += 2;
+    createStateColumn(network.state, iterationCounter);
+  }
 
 	// Start the simulation if the One click option is checked
 	if (config.oneClick && !running) setTimeout(function () {
@@ -177,6 +186,8 @@ synchronousUpdate = function (state) {
 updateAndContinue = function () {
 	var changed, i;
 	changed = synchronousUpdate(network.state);
+  states.push({});
+  $.extend(states[iterationCounter + 1], network.state);
 
 	// Update the node colors after an iteration and call run again if
 	// the Simulation has not reached steady state
@@ -210,8 +221,8 @@ runSimulator = function () {
   
   // update iteration counter
   $('#textIteration').text(++iterationCounter); 
-  if (plot !== null)  
-    createStateColumn(network.state);
+  if (plot !== null)
+    createStateColumn(network.state, iterationCounter);
 };
 
 

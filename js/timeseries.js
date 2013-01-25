@@ -25,16 +25,17 @@ var plotW = 100;
   /**
    * Construct a column with all the states.
    * @param {Object} state Current state of the network.
+   * @param {number} count Iteration Counter.
    */
-  var createStateColumn = function(state) {
+  var createStateColumn = function(state, count) {
     var maxColumns = 40;
     
     // Calculate position of the column
-    var yPos = 0, xPos = plotW + (iterationCounter % maxColumns) * plotH; 
+    var yPos = 0, xPos = plotW + (count % maxColumns) * plotH; 
     var color;
     
     // Replace previous column
-    removeStateColumn(iterationCounter - maxColumns);
+    removeStateColumn(count - maxColumns);
     
     for (i in state) {
       if (state[i]) color = 'red'; else color = 'green';
@@ -42,14 +43,14 @@ var plotW = 100;
       plot.append('svg:rect').attr('y', function(d) { return yPos; }).attr('x', xPos)
           .attr('height', plotH).attr('width', plotH)
           .attr('fill', color)
-          .attr('class', iterationCounter);
+          .attr('class', count);
       yPos += plotH;
     }  
     // Iteration count text on the bottom
     plot.append('svg:text').attr('y', function(d) { return yPos; }).attr('x', xPos)
           .attr('dx', 5).attr('dy', 15)
-          .attr('class', iterationCounter)
-          .text(iterationCounter);
+          .attr('class', count)
+          .text(count);
     // Add the marker for current iteration
     plot.append('svg:rect').attr('height', yPos).attr('width', 7)
           .attr('id', 'currMarker')
@@ -77,5 +78,8 @@ var plotW = 100;
     // Use d3 to create the initial svg with the start states
     plot = d3.select('#tabTimeseries').append('svg:svg');
     createNodesColumn(network.state);
-    createStateColumn(network.state);
+    
+    for (j = iterationCounter - iterationCounter % 40; j <= iterationCounter; j++)
+      createStateColumn(states[j], j);
+    
   };
