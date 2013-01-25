@@ -32,11 +32,12 @@ rule2function = function (rule) {
 };
 
 
-running = false;
+
 obj = null;
 config = null;
 network = null;
 ruleFunctions = {};
+running = false;
 iterationCounter = 0;
 plot = null;
 
@@ -55,6 +56,9 @@ initializeSimulator = function (jsbgn, settings) {
 	config = settings;
 	network.state = {};
 	network.freeze = {};
+  running = false;
+  iterationCounter = 0;
+  plot = null;
 
 	console.log('Initializing simulator ...');
 
