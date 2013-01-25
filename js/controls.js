@@ -381,31 +381,32 @@ var Controls = function () {
 		$('#dialogExport').dialog('close');
 
 		// Get the bui.Graph instance of the select graph to export
-		var graph, bn, content;
-		if ($('#exportNetwork').attr('checked')) graph = network;
-		else if ($('#exportStateTransition').attr('checked')) graph = transition;
-		else {
-			// Export the update rules to a Boolean Net format file.
-			if (!$('#formatSBML').attr('checked')) {
-				if ($('#exportNetworkRBoolNet').attr('checked')) bn = simulator.exportRBoolNet();
-				else bn = simulator.exportPythonBooleanNet();
-				content = "data:text/plain," + encodeURIComponent(bn);
-				window.open(content, 'tmp');
-			}
-			return;
-		}
+		var graph, bn, content, jsbgn, svg;
+		graph = network;
 
-		var jsbgn;
-		// Check the file format to which the graph has to be exported
-		if ($('#graphSBGN').attr('checked')) {
-			jsbgn = graph.toJSON();
-			var sbgn = null;
-			console.log('Wait for Lian to finish his jsbgn reader');
-		} else if ($('#graphjSBGN').attr('checked')) {
+		// export R
+		if ($('#exportNetworkRBoolNet').attr('checked')) {
+			bn = exportRBoolNet(network);
+			content = "data:text/plain," + encodeURIComponent(bn);
+			window.open(content, 'tmp');
+		} else
+
+		// export Python
+		if ($('#exportNetworkPyBooleanNet').attr('checked')) {
+			bn = exportPythonBooleanNet(network);
+			content = "data:text/plain," + encodeURIComponent(bn);
+			window.open(content, 'tmp');
+		} else
+
+		// export jSBGN
+		if ($('#exportjSBGN').attr('checked')) {
 			jsbgn = JSON.stringify(graph.toJSON());
 			content = "data:text/plain," + encodeURIComponent(jsbgn);
 			window.open(content, 'tmp');
-		} else if ($('#graphSVG').attr('checked')) {
+		} else
+
+		// export SVG
+		if ($('#exportSVG').attr('checked')) {
 			var svg = graph.rawSVG();
 			content = "data:image/svg+xml," + encodeURIComponent(svg);
 			window.open(content, 'tmp');

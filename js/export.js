@@ -4,7 +4,7 @@
  * difference is logical operators between JS and R.
  * @returns {string} The R BoolNet file data.
  */
-exportRBoolNet = function () {
+exportRBoolNet = function (network) {
 	var rbn = 'targets, factors\n';
 	var i, r;
 
@@ -25,7 +25,7 @@ exportRBoolNet = function () {
  * difference is logical operators between JS and Python.
  * @returns {string} The Python BooleanNet file data.
  */
-exportPythonBooleanNet = function () {
+exportPythonBooleanNet = function (network) {
 	var pbn = '';
 	var i, r;
 
