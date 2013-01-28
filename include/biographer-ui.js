@@ -18,7 +18,8 @@
 // Use the correct document accordingly with window argument (sandbox)
 var document = window.document,
 	navigator = window.navigator,
-	location = window.location;// can't make this variable private because of the JsDoc toolkit.
+	location = window.location;
+// can't make this variable private because of the JsDoc toolkit.
 /**
  * @namespace The whole biographer-ui library can be accessed through this var.
  */
@@ -45,7 +46,7 @@ bui.settings = {
      * @field
      *  if this is true all handles on edges (not splines) will be distributed equally on a straight line from source to target as soon as the source or target are moved
      */
-    straightenEdges : true,
+    straightenEdges : false,
 
     /**
      * @field
@@ -116,7 +117,8 @@ bui.settings = {
             height : ['data', 'height'],
             subNodes : ['data', 'subnodes'],
             modification : ['data', 'modification'],
-            statevariable : ['data', 'statevariable']
+            statevariable : ['data', 'statevariable'],
+            color : ['data', 'color']
         },
         edge : {
             source : 'source',
@@ -124,7 +126,8 @@ bui.settings = {
             style : ['data', 'style'],
             type : ['data', 'type'],
             handles : ['data', 'handles'],
-            points : ['data', 'points']
+            points : ['data', 'points'],
+            pointtypes : ['data', 'pointtypes']
         }
 
     },
@@ -134,7 +137,7 @@ bui.settings = {
      * The url from which the CSS file should be imported and CSS classes
      */
     css : {
-        stylesheetUrl : '../static/bui/css/visualization-svg.css',
+        stylesheetUrl : 'resources/css/visualization-svg.css',
         classes : {
             invisible : 'hidden',
             selected : 'selected',
@@ -143,7 +146,8 @@ bui.settings = {
             compartment : 'compartment',
             process : 'process',
             perturbation : 'perturbation',
-	    statevariable : 'statevariable',
+            annotation : 'annotation',
+            statevariable : 'statevariable',
             smallText : 'small',
             textDimensionCalculation : {
                 generic : 'textDimensionCalculation',
@@ -176,7 +180,7 @@ bui.settings = {
      */
     style : {
         graphReduceCanvasPadding : 30,
-        edgeHandleRadius : 4,
+        edgeHandleRadius : 8,
         nodeCornerRadius : 15,
         adaptToLabelNodePadding : {
             top : 5,
@@ -215,7 +219,7 @@ bui.settings = {
                 horizontal : 20,
                 vertical : 20
             },
-            modificationLabel : 'long' // either 'long' or 'short'
+            modificationLabel : 'longlabel' // either 'longlabel' or 'shortlabel'
         },
         // x/y coordinates as % of a node's size (1 = 100%)
         // T = top, L = left, R = right, B = bottom, CX = Center X,
@@ -232,6 +236,7 @@ bui.settings = {
         markerWidthCorrection : 0.25 // (1 / .lineHover#stroke-width) (see CSS)
     }
 };
+
 (function(bui) {
 
     var readyFunctions = [];
@@ -334,7 +339,8 @@ var circularShapeLineEndCalculationHookWithoutPadding =
                 topBottom : 0,
                 leftRight : 0
             });
-};(function(bui) {
+};
+(function(bui) {
 
     /**
      * @namespace Namespace of utility functionality
@@ -850,21 +856,29 @@ var circularShapeLineEndCalculationHookWithoutPadding =
     };
     bui.util.clone = function(graph, degree, select_drawables){
             var suspendHandle = graph.suspendRedraw(20000);
-            all_drawables = graph.drawables();
+            var all_drawables = graph.drawables();
+            var select_drawables_ids = {};
+            if(select_drawables !== undefined){
+		for (var i=0;i<select_drawables.length;i++){
+		    select_drawables_ids[select_drawables[i].id()] = 1;
+		}
+	    }
             var new_nodes = [];
             // create a counting dictionary for the nodes
             var degree_count = {};
             var drawable, edge, old_node_id, new_node;
             for (var key in all_drawables) {
-                drawable = all_drawables[key];
-                if ((drawable.identifier()=='bui.UnspecifiedEntity')||(drawable.identifier()=='bui.SimpleChemical')||(drawable.identifier()=='bui.RectangularNode')||(drawable.identifier()=='bui.Phenotype')||(drawable.identifier()=='bui.NucleicAcidFeature')||(drawable.identifier()=='bui.Macromolecule')){
+                var drawable = all_drawables[key];
+                if ((drawable.identifier()=='UnspecifiedEntity')||(drawable.identifier()=='SimpleChemical')||(drawable.identifier()=='RectangularNode')||(drawable.identifier()=='Phenotype')||(drawable.identifier()=='NucleicAcidFeature')||(drawable.identifier()=='Macromolecule')){
                     degree_count[drawable.id()] = 0;
                 }
             }
+
             // count edges connecting the relevant nodes
+            var all_drawables = graph.drawables();
             for (var key in all_drawables) {
-                drawable = all_drawables[key];
-                if (drawable.identifier() == 'bui.Edge'){
+                var drawable = all_drawables[key];
+                if (drawable.identifier() in {'Edge':1,'Spline':1}){
                     if (drawable.source().id() in degree_count){
                         degree_count[drawable.source().id()] = degree_count[drawable.source().id()] + 1;
                     }
@@ -874,25 +888,27 @@ var circularShapeLineEndCalculationHookWithoutPadding =
                 }
             }
             // go through all the nodes with a higher than appreciated degree
+            var old_node_ids = {};
             var auto_indent = 1000;
             for (var key in degree_count) {
-                if(select_drawables !== undefined && !(key in select_drawables)) continue;
-                drawable = all_drawables[key];
+                if(select_drawables !== undefined && !(key in select_drawables_ids)) continue;
+                var drawable = all_drawables[key];
                 if (degree_count[drawable.id()] > degree){
-                    old_node_id = drawable.id();
+                    var old_node_id = drawable.id();
+		    old_node_ids[old_node_id] = 1;
                     // create a new node for every time the old node is referenced
                     for (var edge_key in all_drawables){
-                        edge = all_drawables[edge_key];
-                        if ((edge.identifier() == 'bui.Edge')&&((edge.source().id() == old_node_id)||(edge.target().id() == old_node_id))){
+                        var edge = all_drawables[edge_key];
+                        if ((edge.identifier() == 'Edge')&&((edge.source().id() == old_node_id)||(edge.target().id() == old_node_id))){
                             // create a new node
                             ++auto_indent;
-                            new_node = graph.add(bui[drawable.identifier().substr(4)])
+                            var new_node = graph.add(bui[drawable.identifier()])
                                 .visible(true)
                                 .label(drawable.label())
                                 .parent(drawable.parent())
-                                //.addClass('cloneMarker')
                                 .position(drawable.position().x, drawable.position().y)
-                                .size(drawable.size().height, drawable.size().width);
+                                .size(drawable.size().width, drawable.size().height)
+                                .clonemarker(true);
                             // reroute the edge
                             new_nodes.push(new_node);
                             if (edge.source().id() == old_node_id){
@@ -905,12 +921,9 @@ var circularShapeLineEndCalculationHookWithoutPadding =
                 }
             }
             for (var key in all_drawables) {
-                if(select_drawables !== undefined && !(key in select_drawables)) continue;
-                drawable = all_drawables[key];
-                if (drawable.id() in degree_count){
-                    if (degree_count[drawable.id()] > degree){
-                        drawable.remove();
-                    }
+                var drawable = all_drawables[key];
+                if (drawable.id() in old_node_ids){
+                    drawable.remove();
                 }
             }
             graph.unsuspendRedraw(suspendHandle);
@@ -919,37 +932,39 @@ var circularShapeLineEndCalculationHookWithoutPadding =
 
 
     bui.util.combine = function(graph, select_drawables){
-            var suspendHandle = graph.suspendRedraw(20000);
-            all_drawables = graph.drawables();
-            // create new node
-            var drawable = all_drawables[Object.keys(select_drawables)[0]];
-            var new_node = graph.add(bui[drawable.identifier().substr(4)]) 
-                            .visible(true)
-                    .label(drawable.label())
-                                .parent(drawable.parent())
-                    //.addClass('cloneMarker')
-                    .position(drawable.position().x, drawable.position().y)
-                            .size(drawable.size().height, drawable.size().width);
-            // redraw edges
-            for (var edge_key in all_drawables){
-            edge = all_drawables[edge_key];
-                if (edge.identifier() == 'bui.Edge'){
-                    for (var node_key in select_drawables){
-                        if (edge.source().id() == all_drawables[node_key].id()){
-                            all_drawables[edge_key].source(new_node);
-                        }
-                        if (edge.target().id() == all_drawables[node_key].id()){
-                            all_drawables[edge_key].target(new_node);
-                        }
+        var suspendHandle = graph.suspendRedraw(20000);
+        var all_drawables = graph.drawables();
+        // create new node
+        var drawable = select_drawables[0];
+        var new_node = graph.add(bui[drawable.identifier()]) 
+            .visible(true)
+            .label(drawable.label())
+            .parent(drawable.parent())
+            .position(drawable.position().x, drawable.position().y)
+            .size(drawable.size().width, drawable.size().height);
+        // redraw edges
+        for (var edge_key in all_drawables){
+            var edge = all_drawables[edge_key];
+            if (edge.identifier() in {'Edge':1,'Spline':1}){
+		for (var node_key=0; node_key<select_drawables.length; ++node_key){
+	 	    var node_id = select_drawables[node_key].id();
+                    if (edge.source().id() == node_id){
+                        all_drawables[edge_key].source(new_node);
                     }
-                }
+                    if (edge.target().id() == node_id){
+                        all_drawables[edge_key].target(new_node);
+                    }
+                 }
             }
-            // remove select_drawables
-            for (var node_key in select_drawables){
-                all_drawables[node_key].remove();
-            }
-            // redraw ALL THE NODES
-            graph.unsuspendRedraw(suspendHandle);
+        }
+        // remove select_drawables
+        for (var node_key=0; node_key<select_drawables.length;++node_key){
+            select_drawables[node_key].remove();
+        }
+	select_drawables = [];
+        // redraw ALL THE NODES
+        graph.unsuspendRedraw(suspendHandle);
+	return new_node;
     } 
 
 })(bui);
@@ -1040,10 +1055,10 @@ var nodeMapping = {}, processNodeMapping = {}, edgeMarkerMapping = {},
  * @param {String} long Long name of the SBO term
  * @param {String} short Short name (abbreviation of the SBO term
  */
-var addModificationMapping = function(keys, long, short) {
+var addModificationMapping = function(keys, longlabel, shortlabel) {
     var val = {
-        long : long,
-        short : short
+        longlabel : longlabel,
+        shortlabel : shortlabel
     };
 
     for (var i = 0; i < keys.length; i++) {
@@ -1101,7 +1116,7 @@ var getSBOForInstance = function(mapping, instance) {
 
 /**
  * Determine the SBO ID for a modification label using the
- * modificationsMapping, both labels, i.e. short and long, will be matched
+ * modificationsMapping, both labels, i.e. shortlabel and longlabel, will be matched
  * against the first parameter.
  *
  * @param {String} label The label for which the SBO ID should be determined.
@@ -1114,8 +1129,8 @@ var getModificationSBOForLabel = function(label) {
         if (modificationMapping.hasOwnProperty(sbo)) {
             var mapping = modificationMapping[sbo];
 
-            if (label === mapping.short.toLowerCase() ||
-                    label === mapping.long.toLowerCase()) {
+            if (label === mapping.shortlabel.toLowerCase() ||
+                    label === mapping.longlabel.toLowerCase()) {
                 return bui.util.toNumber(sbo);
             }
         }
@@ -1156,7 +1171,8 @@ var getSBOForMarkerId = function(id) {
   bui.util.getModificationSBOForLabel = getModificationSBOForLabel;
   bui.util.getSBOForInstance = getSBOForInstance;
   bui.util.retrieveFrom = retrieveFrom;
-})(bui);(function(bui) {
+})(bui);
+(function(bui) {
     var identifier = 'bui.Observable';
 
     /**
@@ -1382,7 +1398,8 @@ var getSBOForMarkerId = function(id) {
     };
 
     bui.util.setSuperClass(bui.Observable, bui.Object);
-})(bui);(function(bui) {
+})(bui);
+(function(bui) {
     /**
      * @namespace Generator functions for connecting arcs can be found as
      * properties of this object.
@@ -1681,11 +1698,12 @@ var getSBOForMarkerId = function(id) {
      */
     bui.connectingArcs.necessaryStimulation.id = 'necessaryStimulation';
 })(bui);
+
 (function(bui) {
     // used to identify and compare the graph instances
     var graphCounter = 0;
 
-    var identifier = 'bui.Graph';
+    var identifier = 'Graph';
 
     /**
      * @private
@@ -1821,13 +1839,13 @@ var getSBOForMarkerId = function(id) {
     var wheelZoom = function (graph, event) {
         var privates = graph._privates(identifier);
         
-        if (!privates.enableZooming) {
+        if (!privates.enableZooming || !event.altKey) {
             return event;
         }
         
         event.preventDefault();
         
-        var wheelDelta = event.wheelDelta || event.detail,
+        var wheelDelta = event.wheelDelta || event.deltaY * -1 || event.detail,
             ds = 0.2 * (wheelDelta > 0? 1: -1),
             newScale = privates.scale * (1 + ds),
             dx,
@@ -1893,34 +1911,6 @@ var getSBOForMarkerId = function(id) {
 
         privates.connectingArcs = {};
 
-        privates.cloneMarker = document.createElementNS(bui.svgns, 'pattern');
-        privates.cloneMarker.setAttribute('id', 'cloneMarker');
-        privates.cloneMarker.setAttribute('patternUnits','objectBoundingBox');
-        privates.cloneMarker.setAttribute('x','0');
-        privates.cloneMarker.setAttribute('y', '70%');
-        privates.cloneMarker.setAttribute('width', '1000');
-        privates.cloneMarker.setAttribute('height', '100');
-        privates.cloneRect = document.createElementNS(bui.svgns, 'rect');
-        privates.cloneRect.setAttribute('fill', 'black');
-        privates.cloneRect.setAttribute('width' , '1000');
-        privates.cloneRect.setAttribute('height' , '100');
-        privates.cloneMarker.appendChild(privates.cloneRect);
-        privates.defsGroup.appendChild(privates.cloneMarker);
-
-        privates.stateVarExistence = document.createElementNS(bui.svgns, 'pattern');
-        privates.stateVarExistence.setAttribute('id', 'stateVariableExistence');
-        privates.stateVarExistence.setAttribute('patternUnits','objectBoundingBox');
-        privates.stateVarExistence.setAttribute('x','50%');
-        privates.stateVarExistence.setAttribute('y', '0');
-        privates.stateVarExistence.setAttribute('width', '100');
-        privates.stateVarExistence.setAttribute('height', '100');
-        privates.existanceRect = document.createElementNS(bui.svgns, 'rect');
-        privates.existanceRect.setAttribute('fill', 'black');
-        privates.existanceRect.setAttribute('width' , '100');
-        privates.existanceRect.setAttribute('height' , '100');
-        privates.stateVarExistence.appendChild(privates.existanceRect);
-        privates.defsGroup.appendChild(privates.stateVarExistence);
-
         privates.stateVarLocation = document.createElementNS(bui.svgns, 'pattern');
         privates.stateVarLocation.setAttribute('id', 'stateVariableLocation');
         privates.stateVarLocation.setAttribute('patternUnits','objectBoundingBox');
@@ -1945,7 +1935,11 @@ var getSBOForMarkerId = function(id) {
             }
         }
         
-        privates.root.addEventListener('mousewheel', mouseWheel.createDelegate(this));
+        privates.root.addEventListener(
+                ('onmousewheel' in document)
+                ? 'mousewheel'
+                : 'wheel',
+                mouseWheel.createDelegate(this));
             
         // Add interact.js event listeners
         privates.root.addEventListener('interactgesturemove', gestureMove.createDelegate(this));
@@ -2046,6 +2040,9 @@ var getSBOForMarkerId = function(id) {
     };
 
     bui.Graph.prototype = {
+	identifier : function() {
+	    return identifier;
+	},
         /**
          * @description
          * Retrieve the graph's id.
@@ -2122,6 +2119,14 @@ var getSBOForMarkerId = function(id) {
          */
         nodeGroup : function() {
             return this._privates(identifier).nodeGroup;
+        },
+        /**
+         * Return the defs group of the svg so node classes can draw clone markers, ...
+         *
+         * @return {} SVG defsGroup
+         */
+        defsGroup : function() {
+            return  this._privates(identifier).defsGroup;
         },
 
         /**
@@ -2276,6 +2281,43 @@ var getSBOForMarkerId = function(id) {
         },
 
         /**
+         * @description
+         * Get the graph coordinates that correspond to a point on the page
+         * This does not take into account the offset of the graph's SVG Element
+         *
+         * @param {Number} [x] The x value of the cordinates
+         * @param {Number} [y] The y value of the cordinates
+         * @return {Object} An object with properties x and y which are the transformed coordinates
+         */
+        toGraphCoords : function(x, y) {
+            var privates = this._privates(identifier);
+
+            return {
+                x: x / privates.scale - privates.x,
+                y: y / privates.scale - privates.y
+            };
+        },
+
+        /**
+         * @description
+         * Get the page coordinates that correspond to a point on the graph
+         * This does not take into account the offset of the graph's SVG Element
+         *
+         * @param {Number} [x] The x value of the cordinates
+         * @param {Number} [y] The y value of the cordinates
+         * @return {Object} An object with properties x and y which are the transformed coordinates
+         */
+        toPageCoords : function(x, y) {
+            var privates = this._privates(identifier);
+
+            return {
+                x: (x + privates.x) * privates.scale,
+                y: (y + privates.y) * privates.scale
+            };
+        },
+
+        /**
+        /**
          * Fit the Graph to the viewport, i.e. scale the graph down to show
          * the whole graph or (in the case  of a very small graph) scale it
          * up.
@@ -2323,6 +2365,8 @@ var getSBOForMarkerId = function(id) {
                 params.id = 'drawable'+counter_id
             else
                 params.id = id;
+            if (privates.drawables.hasOwnProperty(id)) console.log("graph: adding duplicate id " + id);
+            
             params.graph = this;
 
             drawable = new constructor(params);
@@ -2568,8 +2612,9 @@ var getSBOForMarkerId = function(id) {
                     if (privates.drawables.hasOwnProperty(i)) {
                         drawable = privates.drawables[i];
 
-                        if (drawable.bottomRight !== undefined &&
-                                drawable.hasParent() === false) {
+                        if ((drawable.bottomRight !== undefined) &&
+                                (drawable.hasParent() === false) &&
+                                (drawable.identifier() !== 'SplineEdgeHandle')) {
                             topLeft = drawable.position();
 
                             drawable.move(minX, minY, duration);
@@ -2579,7 +2624,22 @@ var getSBOForMarkerId = function(id) {
             }
 
             return this;
-        }
+        },
+        /**
+         * get or set the language
+         * fluent interface
+         *
+         * @return string current SBGN language
+         */
+         language : function(lang){
+            if(lang === undefined){
+                return bui.settings.SBGNlang;
+            }
+            if(lang in {'ER':1,'PD':1,'AF':1}) bui.settings.SBGNlang = lang;
+            return this;
+         }
+        
+
     };
 
     bui.util.setSuperClass(bui.Graph, bui.Observable);
@@ -2611,6 +2671,7 @@ var getSBOForMarkerId = function(id) {
         wheel : bui.util.createListenerTypeId()
     };
 })(bui);
+
 (function(bui) {
     var identifier = 'bui.Drawable';
 
@@ -2684,6 +2745,9 @@ var getSBOForMarkerId = function(id) {
          * all listeners will be unbound.
          */
         remove : function() {
+            var privates = this._privates(identifier);
+            if (privates.inremove) return; // avoid cyclic remove call when attached Drawables are removing this node again
+            privates.inremove=true;
             this.fire(bui.Drawable.ListenerType.remove, [this]);
             this.unbind();
         },
@@ -2929,6 +2993,7 @@ var getSBOForMarkerId = function(id) {
         classes :  bui.util.createListenerTypeId()
     };
 })(bui);
+
 (function(bui) {
 
     var identifier = 'bui.Node';
@@ -2988,7 +3053,7 @@ var getSBOForMarkerId = function(id) {
         }
         nodeGroup.removeEventListener('interactdragstart', privates.interact.dragStart);
         nodeGroup.removeEventListener('interactdragmove', privates.interact.dragMove);
-        nodeGroup.removeEventListener('interactdragend', privates.interact.dragMove);
+        nodeGroup.removeEventListener('interactdragend', privates.interact.dragEnd);
         nodeGroup.removeEventListener('interactresizestart', privates.interact.resizeStart);
         nodeGroup.removeEventListener('interactresizemove', privates.interact.resizeMove);
         nodeGroup.removeEventListener('interactresizeend', privates.interact.resizeMove);
@@ -3154,7 +3219,7 @@ var getSBOForMarkerId = function(id) {
         // interact.js event listeners
         privates.nodeGroup.addEventListener('interactdragstart', privates.interact.dragStart);
         privates.nodeGroup.addEventListener('interactdragmove', privates.interact.dragMove);
-        privates.nodeGroup.addEventListener('interactdragend', privates.interact.dragMove);
+        privates.nodeGroup.addEventListener('interactdragend', privates.interact.dragEnd);
         privates.nodeGroup.addEventListener('interactresizestart', privates.interact.resizeStart);
         privates.nodeGroup.addEventListener('interactresizemove', privates.interact.resizeMove);
         privates.nodeGroup.addEventListener('interactresizeend', privates.interact.resizeMove);
@@ -3196,6 +3261,10 @@ var getSBOForMarkerId = function(id) {
         privates.height = this._minHeight;
         privates.parent = this.graph();
         privates.children = [];
+        privates.color  = {
+            background: '',
+            border: ''
+        };
         this.visible(true);
         
         // create interact listener function delegates
@@ -3374,7 +3443,7 @@ var getSBOForMarkerId = function(id) {
             var pos = this.absolutePosition();
             return {
                 x : pos.x + size.width / 2,
-                y : pos.y + size.height / 2,
+                y : pos.y + size.height / 2
             };
         },
 
@@ -3652,6 +3721,40 @@ var getSBOForMarkerId = function(id) {
             this.moveAbsolute(x - size.width / 2, y - size.height / 2);
 
         },
+
+        /**
+         * Set or retrieve the current color
+         *
+         * @param {Object} [options] object with propertied background and/or label
+         * which are the new colors to be set. Omit to retrieve current colors.
+         * @return {bui.Labelable|Object} Current colors are returned when you
+         *   don't pass any parameter, fluent interface otherwise.
+         */
+        color : function(options) {
+            var privates = this._privates(identifier),
+            changed = false;
+            
+            if (typeof options !== 'object') {
+                // Return object giving background and label text color
+                return privates.color;
+            }
+
+            for (var prop in privates.color) {
+                if (privates.color.hasOwnProperty(prop) && typeof options[prop] === 'string') {
+                    options[prop] = options[prop].toLowerCase();
+                    changed = changed || options[prop] !== privates.color[prop];
+                    privates.color[prop] = options[prop];
+                }
+            }
+            
+           if(changed) {
+                //Fire the colorchanged
+                this.fire(bui.Node.ListenerType.color, [this, options]);
+            }
+            
+            return this;
+        },
+
         /**
          * Retrieve the current parent or set it
          *
@@ -3807,21 +3910,23 @@ var getSBOForMarkerId = function(id) {
          * Used to calculate line endpoints. Generally spoken this method
          * will only be used by the class {@link bui.StraightLine}.
          *
-         * @param {bui.Node} otherNode
+         * @param {bui.Node| Number, Number } otherNode or x,y position
          * @return {Object} an object with x and y properties
          */
-        calculateLineEnd : function(otherNode) {
-            if (this.visible() === false) {
-                return this.center();
-            }
+        calculateLineEnd : function(otherNode,y) {
+//             if (this.visible() === false) {
+//                 return this.center();
+//             }
 
             var position = this.absoluteCenter(),
-                    size = this.size(),
-                    otherPosition = otherNode.absoluteCenter();
+                    size = this.size();
+                    
+            // get other position from otherNode or from x,y parameters
+            var otherPosition = (Object.prototype.toString.call(otherNode).slice(8,-1) == "Number" ? {x:otherNode,y:y} : otherNode.absoluteCenter());
 
             var padding = bui.settings.style.edgeToNodePadding;
-            var widthWithPadding = size.width + padding.leftRight * 2,
-                    heightWithPadding = size.height + padding.topBottom * 2;
+            var widthWithPadding = (this.visible() ? size.width : 0) + padding.leftRight * 2,
+                    heightWithPadding = (this.visible() ? size.height : 0) + padding.topBottom * 2;
 
             var deltaX = otherPosition.x - position.x,
                     deltaY = otherPosition.y - position.y;
@@ -4028,9 +4133,12 @@ var getSBOForMarkerId = function(id) {
         /** @field */
         resizeMove : bui.util.createListenerTypeId(),
         /** @field */
-        resizeEnd : bui.util.createListenerTypeId()
+        resizeEnd : bui.util.createListenerTypeId(),
+        /** @field */
+        color : bui.util.createListenerTypeId()
     };
 })(bui);
+
 
 (function(bui) {
     var identifier = 'bui.Labelable';
@@ -4067,7 +4175,8 @@ var getSBOForMarkerId = function(id) {
                     aggregatedText.join(' ')));
             tspan.setAttributeNS(null, 'x', line.horizontalIndention);
             tspan.setAttributeNS(null, 'dy', previousHeight);
-            tspan.style.setProperty('fill', privates.color.label);
+            //***tspan.style.setProperty('fill', privates.color.label);
+            tspan.style.setProperty('fill', this.color().label);
             privates.labelElement.appendChild(tspan);
 
             previousHeight = line.maxHeight;
@@ -4110,7 +4219,7 @@ var getSBOForMarkerId = function(id) {
         this.size(totalWidth, nodeHeight);
         privates.labelElement.setAttributeNS(null, 'x', padding.left);
         privates.labelElement.setAttributeNS(null, 'y', maxHeight);
-        privates.labelElement.style.setProperty('fill', privates.color.label);
+        privates.labelElement.style.setProperty('fill', this.color().label);
     };
 
     /**
@@ -4161,19 +4270,15 @@ var getSBOForMarkerId = function(id) {
         privates.label = this._label;
         privates.adaptSizeToLabel = this._adaptSizeToLabel;
         privates.labelElement = null;
-        privates.color = {
-            background: '',
-            label: '',
-            border: ''
-        };
         privates.svgClasses = this._svgClasses;
         privates.calculationClasses = this._calculationClasses;
+        this.color().label  = '';
 
         var listener = labelableLabelChanged.createDelegate(this);
         this.bind(bui.Labelable.ListenerType.label,
                 listener,
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 listener,
                 listenerIdentifier(this));
         this.bind(bui.Labelable.ListenerType.adaptSizeToLabel,
@@ -4221,49 +4326,6 @@ var getSBOForMarkerId = function(id) {
             return privates.label;
         },
         
-        /**
-         * Set or retrieve the current color
-         *
-         * @param {Object} [options] object with propertied background and/or label
-         * which are the new colors to be set. Omit to retrieve current colors.
-         * @return {bui.Labelable|Object} Current colors are returned when you
-         *   don't pass any parameter, fluent interface otherwise.
-         */
-        color : function(options) {
-            var privates = this._privates(identifier),
-            changed = false;
-            
-            if (!options ||
-                ((options.background === null || options.background === undefined) &&
-                 (options.label      === null || options.label      === undefined) &&
-                 (options.border     === null || options.border     === undefined))) {
-                // Return object giving background and label text color
-                return privates.color;
-            }
-            
-            if (typeof options.background === 'string') {
-                options.background = options.background.toLowerCase();
-                changed = changed || options.background !== privates.color.background;
-                privates.color.background = options.background;
-            }
-            if (typeof options.label === 'string') {
-                options.label = options.label.toLowerCase();
-                changed = changed || options.label !== privates.color.label;
-                privates.color.label = options.label;
-            }
-            if (typeof options.border === 'string') {
-                options.border = options.border.toLowerCase();
-                changed = changed || options.border !== privates.color.border;
-                privates.color.border = options.border;
-            }
-            if(changed) {
-                //Fire the colorchanged
-                this.fire(bui.Labelable.ListenerType.color, [this, options]);
-            }
-            
-            return this;
-        },
-
         /**
          * Set or retrieve whether the node adapts to the label size
          *
@@ -4347,6 +4409,7 @@ var getSBOForMarkerId = function(id) {
                     dataFormat = bui.settings.dataFormat;
 
             updateJson(json, dataFormat.node.label, privates.label);
+            if (privates.color) updateJson(json, dataFormat.node.color, privates.color);
 
             return json;
         }
@@ -4364,13 +4427,12 @@ var getSBOForMarkerId = function(id) {
         /** @field */
         adaptSizeToLabel : bui.util.createListenerTypeId(),
         /** @field */
-        labelClass : bui.util.createListenerTypeId(),
-        /** @field */
-        color : bui.util.createListenerTypeId()
+        labelClass : bui.util.createListenerTypeId()
     };
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.EdgeHandle';
+    var identifier = 'EdgeHandle';
 
     /**
      * @private
@@ -4428,17 +4490,28 @@ var getSBOForMarkerId = function(id) {
         identifier : function() {
             return identifier;
         },
+        edge : function(e){
+          var privates = this._privates(identifier);
+          if (e !==undefined){
+            privates.edge=e;
+            return this;
+          } else {
+            return privates.edge;
+          }
+        },
         includeInJSON : false,
         _circle : null,
         _forceRectangular : true,
         _enableResizing : false,
-        _calculationHook : circularShapeLineEndCalculationHookWithoutPadding
+//        _calculationHook : circularShapeLineEndCalculationHookWithoutPadding
+        _calculationHook : circularShapeLineEndCalculationHook
     };
 
     bui.util.setSuperClass(bui.EdgeHandle, bui.Node);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Association';
+    var identifier = 'Association';
 
     /**
      * @private
@@ -4508,8 +4581,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.Association, bui.Node);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Dissociation';
+    var identifier = 'Dissociation';
 
     /**
      * @private
@@ -4583,8 +4657,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.Dissociation, bui.Node);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.LogicalOperator';
+    var identifier = 'LogicalOperator';
 
     /**
      * @private
@@ -4644,7 +4719,7 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
 
@@ -4683,7 +4758,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.LogicalOperator, bui.Labelable);
 })(bui);
+
 (function(bui) {
+    var identifier = 'SplineEdgeHandle';
 
     /**
      * @class
@@ -4701,12 +4778,16 @@ var getSBOForMarkerId = function(id) {
     };
 
     bui.SplineEdgeHandle.prototype = {
+        identifier : function() {
+            return identifier;
+        },
         includeInJSON : false
     };
 
     bui.util.setSuperClass(bui.SplineEdgeHandle, bui.EdgeHandle);
-})(bui);(function(bui) {
-    var identifier = 'bui.RectangularNode';
+})(bui);
+(function(bui) {
+    var identifier = 'RectangularNode';
 
     // generate a path's arc data parameter
     // http://www.w3.org/TR/SVG/paths.html#PathDataEllipticalArcCommands
@@ -4736,43 +4817,48 @@ var getSBOForMarkerId = function(id) {
      * @param {Number} br Bottom border radius of the rectangular shape
      * @return {String} a path's data attribute value
      */
-    var generatePathData = function(width, height, tr, br) {
+    var generatePathData = function(width, height, tr, br, shift) {
         var data = [];
 
+        var sx = 0, sy = 0
+        if (shift != undefined){
+            sx = shift.x;
+            sy = shift.y
+        }
         // start point in top-middle of the rectangle
-        data.push('M' + width / 2 + ',' + 0);
+        data.push('M' + (width / 2 + sx) +  ',' + sy);
 
         // next we go to the right
-        data.push('H' + (width - tr));
+        data.push('H' + (width - tr + sx));
 
         if (tr > 0) {
             // now we draw the arc in the top-right corner
-            data.push('A' + arcParameter(tr, tr, 0, 0, 1, width, tr));
+            data.push('A' + arcParameter(tr, tr, 0, 0, 1, width+sx, tr+sy));
         }
 
         // next we go down
-        data.push('V' + (height - br));
+        data.push('V' + (height - br + sy));
 
         if (br > 0) {
             // now we draw the arc in the lower-right corner
-            data.push('A' + arcParameter(br, br, 0, 0, 1, width - br,
-                    height));
+            data.push('A' + arcParameter(br, br, 0, 0, 1, width - br +sx,
+                    height+sy));
         }
 
         // now we go to the left
-        data.push('H' + br);
+        data.push('H' + (br+sx));
 
         if (br > 0) {
             // now we draw the arc in the lower-left corner
-            data.push('A' + arcParameter(br, br, 0, 0, 1, 0, height - br));
+            data.push('A' + arcParameter(br, br, 0, 0, 1, sx, height - br+sy));
         }
 
         // next we go up
-        data.push('V' + tr);
+        data.push('V' + (tr+sy));
 
         if (tr > 0) {
             // now we draw the arc in the top-left corner
-            data.push('A' + arcParameter(tr, tr, 0, 0, 1, tr, 0));
+            data.push('A' + arcParameter(tr, tr, 0, 0, 1, tr+sx, sy));
         }
 
         // and we close the path
@@ -4799,6 +4885,18 @@ var getSBOForMarkerId = function(id) {
         var size = this.size();
         privates.rect.setAttributeNS(null, 'd', generatePathData(size.width,
                 size.height, privates.topRadius, privates.bottomRadius));
+        if (privates.is_multimer == true){
+            privates.multimer_rect.setAttributeNS(null, 'd', generatePathData(size.width, 
+                size.height, privates.topRadius, privates.bottomRadius, {x: 9, y:9}));
+        }
+        if (privates.is_cloned == true){
+            privates.clone_rect.setAttributeNS(null, 'd', generatePathData(size.width, 
+                size.height, privates.topRadius, privates.bottomRadius));
+            privates.clippath_path.setAttributeNS(null, 'width', size.width);
+            privates.clippath_path.setAttributeNS(null, 'height', size.height / 3);
+            privates.clippath_path.setAttributeNS(null, 'y', 2*(size.height/3));
+        }
+
     };
 
     /**
@@ -4847,13 +4945,15 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.RectangularNode.ListenerType.bottomRadius,
                 listener,
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
 
         var privates = this._privates(identifier);
         privates.topRadius = 0;
         privates.bottomRadius = 0;
+        privates.is_multimer = false;
+        privates.is_cloned = false;
 
         initialPaint.call(this);
 
@@ -4911,7 +5011,79 @@ var getSBOForMarkerId = function(id) {
             }
 
             return privates.bottomRadius;
+        },
+        /**
+         * Set this node's multimer state.
+         *
+         * @param {Bool} [flag] optional flag to set multimer state
+         * @return {bui.RectangularNode|Bool} Fluent interface if you pass
+         *   a parameter, the current multimer status otherwise.
+         */
+        multimer : function(flag) {
+            var privates = this._privates(identifier);
+            if (flag !== undefined) {
+                if (flag!=privates.is_multimer){
+                    var container = this.nodeGroup();
+                    privates.is_multimer = flag;
+                    if (flag==true){
+                        privates.multimer_rect = document.createElementNS(bui.svgns, 'path');
+                        container.insertBefore(privates.multimer_rect, container.firstChild);
+                        formChanged.call(this);
+                    }else{
+                        container.removeChild(privates.multimer_rect);
+                    }
+                }
+                return this;
+            }
+            return privates.is_multimer;
+        },
+        clonemarker : function(flag) {
+            var privates = this._privates(identifier);
+            if (flag !== undefined){
+                if (flag!=privates.is_cloned){
+                    var container = this.nodeGroup();
+                    var defsGroup = this.graph().defsGroup();
+                    privates.is_cloned = flag;
+                    if (flag==true){
+                        privates.clone_rect = document.createElementNS(bui.svgns, 'path');
+                        privates.clone_rect.style.setProperty('fill', 'black');
+                        container.appendChild(privates.clone_rect);
+                        privates.clone_rect.setAttribute('clip-path','url(#clone_'+this.id()+')');
+                        privates.clippath = document.createElementNS(bui.svgns, 'clipPath');
+                        privates.clippath.setAttribute('id', 'clone_'+this.id());
+                        privates.clippath_path = document.createElementNS(bui.svgns, 'rect')
+                        privates.clippath_path.setAttributeNS(null, 'x', 0);
+                        formChanged.call(this);
+                        privates.clippath.appendChild(privates.clippath_path);
+                        defsGroup.appendChild(privates.clippath);
+                    }else{
+                        container.removeChild(privates.clone_rect);
+                        defsGroup.removeChild(privates.clippath);
+                    }
+                }
+                return this
+            }
+            return privates.is_cloned;
+        },
+        toJSON : function() {
+          var json = bui.RectangularNode.superClazz.prototype.toJSON.call(this),
+                  privates = this._privates(identifier),
+                  dataFormat = bui.settings.dataFormat;
+          if (privates.is_cloned) {
+            json.data.clonemarker=true;
+          } else {
+            delete json.data.clonemarker;
+          }
+
+          if (privates.is_multimer) {
+            json.data.multimer=true;
+          } else {
+            delete json.data.multimer;
+          }
+
+          return json;
         }
+
     };
 
     bui.util.setSuperClass(bui.RectangularNode, bui.Labelable);
@@ -4927,8 +5099,9 @@ var getSBOForMarkerId = function(id) {
         bottomRadius : bui.util.createListenerTypeId()
     };
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.UnitOfInformation';
+    var identifier = 'UnitOfInformation';
 
     /**
      * @private
@@ -4956,14 +5129,18 @@ var getSBOForMarkerId = function(id) {
     };
 
     bui.UnitOfInformation.prototype = {
+        identifier : function() {
+            return identifier;
+        },
         auxiliaryUnit : true,
         includeInJSON : false,
         _enableResizing : false
     };
 
     bui.util.setSuperClass(bui.UnitOfInformation, bui.RectangularNode);
-})(bui);(function(bui) {
-    var identifier = 'bui.Macromolecule';
+})(bui);
+(function(bui) {
+    var identifier = 'Macromolecule';
     /**
      * @class
      * A node with the shape of an rectangle and a label inside.
@@ -4987,8 +5164,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.Macromolecule, bui.RectangularNode);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.VariableValue';
+    var identifier = 'VariableValue';
     /**
      * @private
      * Function used for the generation of listener identifiers
@@ -5008,8 +5186,9 @@ var getSBOForMarkerId = function(id) {
      * @extends bui.RectangularNode
      * @constructor
      **/
-
     var sizeChanged = function(node, width, height) {
+        var privates = this._privates(identifier)
+        if (privates.is_existence || privates.is_location) height = width;
         var pathData = [
             'M', height/2,height,         // topleft
             'L', width-height/2, height, //draw _ on top
@@ -5017,8 +5196,13 @@ var getSBOForMarkerId = function(id) {
             'L', height/2, 0,          //draw _ to left
             'C', -height/4, 0, -height/4, height, height/2, height, 
             'Z'].join(' '); //draw \ to middle left
-
-        this._privates(identifier).path.setAttributeNS(null, 'd', pathData);
+        privates.path.setAttributeNS(null, 'd', pathData);
+        if(privates.is_existence == true){
+            privates.existence_path.setAttributeNS(null, 'd', pathData)
+            privates.clippath_path.setAttributeNS(null, 'width', width/2+height/4);
+            privates.clippath_path.setAttributeNS(null, 'height', height);
+            privates.clippath_path.setAttributeNS(null, 'x', width/2);
+        }
     };
 
     /**
@@ -5052,7 +5236,7 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
         
@@ -5062,6 +5246,8 @@ var getSBOForMarkerId = function(id) {
                 [bui.settings.css.classes.textDimensionCalculation.small]);
         this.addClass('VariableValue');
         var privates = this._privates(identifier);
+        privates.is_existence = false;
+        privates.is_location = false;
         //this.adaptSizeToLabel(true);
     };
     
@@ -5076,13 +5262,47 @@ var getSBOForMarkerId = function(id) {
         /*label : function(label) {
             bui.VariableValue.superClazz.superClazz.prototype.label.apply(this,[label]);
         }*/
+        existence: function(flag){
+            var privates = this._privates(identifier);
+            if (flag !== undefined){
+                if (flag!=privates.is_existence){
+                    var container = this.nodeGroup();
+                    var defsGroup = this.graph().defsGroup();
+                    privates.is_existence = flag;
+                    if (flag===true){
+                        this.label("");
+                        privates.existence_path = document.createElementNS(bui.svgns, 'path');
+                        privates.existence_path.style.setProperty('fill', 'black');
+                        container.appendChild(privates.existence_path);
+                        privates.existence_path.setAttribute('clip-path','url(#existence_'+this.id()+')');
+                        privates.clippath = document.createElementNS(bui.svgns, 'clipPath');
+                        privates.clippath.setAttribute('id', 'existence_'+this.id());
+                        privates.clippath_path = document.createElementNS(bui.svgns, 'rect');
+                        privates.clippath_path.setAttributeNS(null, 'x', 0);
+                        sizeChanged.call(this, this, this.size().width, this.size().height);
+                        privates.clippath.appendChild(privates.clippath_path);
+                        defsGroup.appendChild(privates.clippath);
+                    }else{
+                        container.removeChild(privates.existence_path);
+                        defsGroup.removeChild(privates.clippath);
+                    }
+                }
+                return this;
+            }
+            return privates.is_existence;
+        },
+        location: function(flag){
+            //FIXME must implement location symbol here: a big T titled to the side
+            //two lines and a clippath around it
+        }
     };
 
     bui.util.setSuperClass(bui.VariableValue, bui.Labelable);
 })(bui);
 
+
 (function(bui) {
-    var identifier = 'bui.Complex';
+    var identifier = 'Complex';
 
     /**
      * @private
@@ -5093,22 +5313,37 @@ var getSBOForMarkerId = function(id) {
     var listenerIdentifier = function(Complex) {
         return identifier + Complex.id();
     };
-
-    var sizeChanged = function(node, width, height) {
+    var generatePathData = function(node, width, height, shift) {
         var cornerRadius = bui.settings.style.complexCornerRadius;
 
-        var pathData = ['M', width / 2, 0,
-                        'H', width - cornerRadius,
-                        'L', width, cornerRadius,
-                        'V', height - cornerRadius,
-                        'L', width - cornerRadius, height,
-                        'H', cornerRadius,
-                        'L', 0, height - cornerRadius,
-                        'V', cornerRadius,
-                        'L', cornerRadius, 0,
-                        'H', width / 2].join(' ');
-        
-        this._privates(identifier).path.setAttributeNS(null, 'd', pathData);
+        var sx = 0, sy = 0;
+        if (shift !== undefined){
+            sx = shift.x;
+            sy = shift.y;
+        }
+        return ['M', width / 2 +sx, sy,
+                'H', width - cornerRadius +sx,
+                'L', width +sx, cornerRadius +sx,
+                'V', height - cornerRadius +sy,
+                'L', width - cornerRadius +sx, height +sy,
+                'H', cornerRadius +sy,
+                'L', sx, height - cornerRadius +sy,
+                'V', cornerRadius +sy,
+                'L', cornerRadius +sx, sy,
+                'H', width / 2 +sx].join(' ');
+    };
+    var sizeChanged = function(node, width, height) {
+        var privates = this._privates(identifier);
+        privates.path.setAttributeNS(null, 'd', generatePathData(node,width,height));
+        if (privates.is_multimer === true){
+            privates.multimer_path.setAttributeNS(null, 'd', generatePathData(node,width,height,{x:10,y:10}));
+        }
+        if (privates.is_cloned === true){
+            privates.clone_path.setAttributeNS(null, 'd', generatePathData(node,width,height));
+            privates.clippath_path.setAttributeNS(null, 'width', width);
+            privates.clippath_path.setAttributeNS(null, 'height', height / 3);
+            privates.clippath_path.setAttributeNS(null, 'y', 2*(height/3));
+        }
     };
 
     /**
@@ -5122,32 +5357,103 @@ var getSBOForMarkerId = function(id) {
         sizeChanged.call(this, this, size.width, size.height);
         container.appendChild(privates.path);
     };
+    /**
+     * @private background/text color listener
+     */
+    var colorChanged = function() {
+        var privates = this._privates(identifier);
+        var color = this.color();
+        privates.path.style.setProperty('fill', color.background);
+        privates.path.style.setProperty('stroke', color.border);
+    };
 
     /**
      * @class
      * Class for SBGN complexes.
      *
-     * @extends bui.Node
+     * @extends bui.Labelable
      * @constructor
      */
     bui.Complex = function() {
-        bui.Node.apply(this, arguments);
-
+        bui.Labelable.apply(this, arguments);
+        
+        var colorChangedListener = colorChanged.createDelegate(this);
+        
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
+                listenerIdentifier(this));
+         this.bind(bui.Node.ListenerType.color,
+                colorChangedListener,
                 listenerIdentifier(this));
 
         initialPaint.call(this);
 
         this.addClass(bui.settings.css.classes.complex);
+        var privates = this._privates(identifier);
+        privates.is_multimer = false;
+        privates.is_cloned = false;
     };
 
     bui.Complex.prototype = {
         identifier : function() {
-            return 'Complex';
+            return identifier;
         },
         _minWidth : 90,
         _minHeight : 90,
+        /**
+         * Set this node's multimer state.
+         *
+         * @param {Bool} [flag] optional flag to set multimer state
+         * @return {bui.RectangularNode|Bool} Fluent interface if you pass
+         *   a parameter, the current multimer status otherwise.
+         */
+        multimer : function(flag) {
+            var privates = this._privates(identifier);
+            if (flag !== undefined) {
+                if (flag!=privates.is_multimer){
+                    var container = this.nodeGroup();
+                    privates.is_multimer = flag;
+                    if (flag===true){
+                        var size = this.size();
+                        privates.multimer_path = document.createElementNS(bui.svgns, 'path');
+                        container.insertBefore(privates.multimer_path, container.firstChild);
+                        sizeChanged.call(this, this, size.width, size.height);
+                    }else{
+                        container.removeChild(privates.multimer_path);
+                    }
+                }
+                return this;
+            }
+            return privates.is_multimer;
+        },
+        clonemarker : function(flag) {
+            var privates = this._privates(identifier);
+            if (flag !== undefined){
+                if (flag!=privates.is_cloned){
+                    var container = this.nodeGroup();
+                    var defsGroup = this.graph().defsGroup();
+                    privates.is_cloned = flag;
+                    if (flag===true){
+                        privates.clone_path = document.createElementNS(bui.svgns, 'path');
+                        privates.clone_path.style.setProperty('fill', 'black');
+                        container.appendChild(privates.clone_path);
+                        privates.clone_path.setAttribute('clip-path','url(#clone_'+this.id()+')');
+                        privates.clippath = document.createElementNS(bui.svgns, 'clipPath');
+                        privates.clippath.setAttribute('id', 'clone_'+this.id());
+                        privates.clippath_path = document.createElementNS(bui.svgns, 'rect');
+                        privates.clippath_path.setAttributeNS(null, 'x', 0);
+                        sizeChanged.call(this, this, this.size().width, this.size().height);
+                        privates.clippath.appendChild(privates.clippath_path);
+                        defsGroup.appendChild(privates.clippath);
+                    }else{
+                        container.removeChild(privates.clone_path);
+                        defsGroup.removeChild(privates.clippath);
+                    }
+                }
+                return this;
+            }
+            return privates.is_cloned;
+        },
         /**
          * Automatically layout child elements using a simple table layout
          * strategy. You can change the strategy's settings through the first
@@ -5263,19 +5569,36 @@ var getSBOForMarkerId = function(id) {
                     // this probably needs to go to the end of the loop
                     totalColumnWidth += size.width + settings.padding;
                 }
-
                 totalHeight += highestColumn + settings.padding;
                 totalWidth = Math.max(totalWidth, totalColumnWidth);
             }
-
             this.size(totalWidth, totalHeight);
+        },
+        toJSON : function() {
+          var json = bui.Complex.superClazz.prototype.toJSON.call(this),
+                  privates = this._privates(identifier),
+                  dataFormat = bui.settings.dataFormat;
+          if (privates.is_cloned) {
+            json.data.clonemarker=true;
+          } else {
+            delete json.data.clonemarker;
+          }
+          if (privates.is_multimer) {
+            json.data.multimer=true;
+          } else {
+            delete json.data.multimer;
+          }
+
+          return json;
         }
+
     };
 
-    bui.util.setSuperClass(bui.Complex, bui.Node);
+    bui.util.setSuperClass(bui.Complex, bui.Labelable);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Perturbation';
+    var identifier = 'Perturbation';
 
     /*
      * Generate a path's data attribute
@@ -5327,7 +5650,7 @@ var getSBOForMarkerId = function(id) {
         var privates = this._privates(identifier);
         privates.path = document.createElementNS(bui.svgns, 'path');
         sizeChanged.call(this, this, size.width, size.height);
-		colorChanged.call(this, this, this.color()), 
+		colorChanged.call(this, this, this.color());
         container.appendChild(privates.path);
     };
 
@@ -5346,7 +5669,7 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
         //var privates = this._privates(identifier);
@@ -5361,14 +5684,15 @@ var getSBOForMarkerId = function(id) {
             return identifier;
         },
         _minWidth : 80,
-        _minHeight : 60,
+        _minHeight : 60
     };
 
     bui.util.setSuperClass(bui.Perturbation, bui.Labelable);
 
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Phenotype';
+    var identifier = 'Phenotype';
 
     /*
      * Generate a path's data attribute
@@ -5439,7 +5763,7 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
         var privates = this._privates(identifier);
@@ -5454,14 +5778,15 @@ var getSBOForMarkerId = function(id) {
             return identifier;
         },
         _minWidth : 80,
-        _minHeight : 60,
+        _minHeight : 60
     };
 
     bui.util.setSuperClass(bui.Phenotype, bui.Labelable);
 
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Tag';
+    var identifier = 'Tag';
 
     /*
      * Generate a path's data attribute
@@ -5532,7 +5857,7 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
         var privates = this._privates(identifier);
@@ -5565,8 +5890,111 @@ var getSBOForMarkerId = function(id) {
     bui.util.setSuperClass(bui.Tag, bui.Labelable);
 
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Compartment';
+    var identifier = 'Annotation';
+
+    /*
+     * Generate a path's data attribute
+     *
+     * @param {Number} width Width of the shape
+     * @param {Number} height Height of the shape
+     * @return {String} a path's data attribute value
+     */
+    var sizeChanged = function(node, width, height) {
+        var pathData = [
+            'M', 0,0,         // start
+            'H', width-15, //draw _ on top to 7/8
+            'L', width, 15,
+            'V', height,
+            'H', 0,0,
+            'Z'].join(' '); //draw \ to middle left
+        var edgeData = [
+            'M', width-15, 0,
+            'L', width, 15,
+            'H', width-15,
+            
+            'Z'].join(' ');
+        this._privates(identifier).path.setAttributeNS(null, 'd', pathData);
+        this._privates(identifier).edgePath.setAttributeNS(null, 'd', edgeData);
+    };
+
+    /**
+     * @private background/text color listener
+     */
+    var colorChanged = function() {
+        var privates = this._privates(identifier);
+        var color = this.color();
+        privates.path.style.setProperty('fill', color.background);
+        privates.path.style.setProperty('stroke', color.border);
+    };
+
+    /**
+     * @private
+     * Function used for the generation of listener identifiers
+     * @param {bui.RectangularNode} RectangularNode
+     * @return {String} listener identifier
+     */
+    var listenerIdentifier = function(RectangularNode) {
+        return identifier + RectangularNode.id();
+    };
+
+    /**
+     * @private used from the constructor to improve readability
+     */
+    var initialPaint = function() {
+        var container = this.nodeGroup();
+        var size = this.size();
+        var privates = this._privates(identifier);
+        privates.path = document.createElementNS(bui.svgns, 'path');
+        privates.edgePath = document.createElementNS(bui.svgns, 'path');
+        privates.edgePath.style.setProperty('fill', 'black');
+        privates.edgePath.style.setProperty('stroke-width', '0')
+        sizeChanged.call(this, this, size.width, size.height);
+		colorChanged.call(this, this, this.color());
+        container.appendChild(privates.path);
+        container.appendChild(privates.edgePath);
+    };
+
+    /**
+     * @class
+     * A node with the shape of an rectangle and a label inside.
+     *
+     * @extends bui.Labelable
+     * @constructor
+     */
+    bui.Annotation = function() {
+        bui.Annotation.superClazz.apply(this, arguments);
+
+        var colorChangedListener = colorChanged.createDelegate(this);
+        
+        this.bind(bui.Node.ListenerType.size,
+                sizeChanged.createDelegate(this),
+                listenerIdentifier(this));
+        this.bind(bui.Node.ListenerType.color,
+                colorChangedListener,
+                listenerIdentifier(this));
+        //var privates = this._privates(identifier);
+
+        initialPaint.call(this);
+
+        this.addClass(bui.settings.css.classes.annotation);
+    };
+
+    bui.Annotation.prototype = {
+        identifier : function() {
+            return identifier;
+        },
+        _minWidth : 80,
+        _minHeight : 60
+    };
+
+    bui.util.setSuperClass(bui.Annotation, bui.Labelable);
+
+})(bui);
+
+(function(bui) {
+    var identifier = 'Compartment';
     /**
      * @private
      * Function used for the generation of listener identifiers
@@ -5585,6 +6013,17 @@ var getSBOForMarkerId = function(id) {
         privates.rect.setAttributeNS(null, 'width', width);
         privates.rect.setAttributeNS(null, 'height', height);
     };
+
+    /**
+     * @private background/text color listener
+     */
+    var colorChanged = function() {
+        var privates = this._privates(identifier);
+        var color = this.color();
+        privates.rect.style.setProperty('fill', color.background);
+        privates.rect.style.setProperty('stroke', color.border);
+    };
+
     
     /**
      * @private used from the constructor to improve readability
@@ -5601,6 +6040,7 @@ var getSBOForMarkerId = function(id) {
         privates.rect.setAttributeNS(null, 'ry', cornerRadius.y);
 
         sizeChanged.call(this, this, size.width, size.height);
+		colorChanged.call(this, this, this.color()), 
         container.appendChild(privates.rect);
     };
 
@@ -5614,9 +6054,15 @@ var getSBOForMarkerId = function(id) {
     bui.Compartment = function() {
         bui.Compartment.superClazz.apply(this, arguments);
 
+        var colorChangedListener = colorChanged.createDelegate(this);
+        
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
+        this.bind(bui.Node.ListenerType.color,
+                colorChangedListener,
+                listenerIdentifier(this));
+
 
         initialPaint.call(this);
 
@@ -5633,7 +6079,7 @@ var getSBOForMarkerId = function(id) {
 
     bui.Compartment.prototype = {
         identifier : function() {
-            return 'Compartment';
+            return identifier;
         },
         _minWidth : 90,
         _minHeight : 90,
@@ -5672,8 +6118,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.Compartment, bui.Node);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.NucleicAcidFeature';
+    var identifier = 'NucleicAcidFeature';
     /**
      * @class
      * A node with the shape of an rectangle and a label inside.
@@ -5696,8 +6143,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.NucleicAcidFeature, bui.RectangularNode);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.StateVariable';
+    var identifier = 'StateVariable';
 
     /**
      * @private
@@ -5762,7 +6210,7 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
 
@@ -5812,7 +6260,7 @@ var getSBOForMarkerId = function(id) {
 })(bui);
 
 (function(bui) {
-    var identifier = 'bui.StateVariableER';
+    var identifier = 'StateVariableER';
 
     /**
      * @private
@@ -5848,7 +6296,6 @@ var getSBOForMarkerId = function(id) {
         auxiliaryUnit : true,
         includeInJSON : false,
         _enableResizing : true,
-
         // override
         toJSON : function() {
             if (this.hasClass('existence')) 
@@ -5861,8 +6308,9 @@ var getSBOForMarkerId = function(id) {
     };
     bui.util.setSuperClass(bui.StateVariableER, bui.VariableValue);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.SimpleChemical';
+    var identifier = 'SimpleChemical';
 
     /**
      * @private
@@ -5874,12 +6322,25 @@ var getSBOForMarkerId = function(id) {
         return identifier + SimpleChemical.id();
     };
 
-    var sizeChanged = function(node, width) {
+    var sizeChanged = function(node, width, height) {
         var r = width / 2;
         var privates = this._privates(identifier);
         privates.circle.setAttributeNS(null, 'cx', r);
         privates.circle.setAttributeNS(null, 'cy', r);
         privates.circle.setAttributeNS(null, 'r', r);
+        if (privates.is_multimer === true){
+            privates.multimer_circle.setAttributeNS(null, 'cx', r+5);
+            privates.multimer_circle.setAttributeNS(null, 'cy', r+7);
+            privates.multimer_circle.setAttributeNS(null, 'r', r);
+        }
+        if (privates.is_cloned === true){
+            privates.clone_circle.setAttributeNS(null, 'cx', r);
+            privates.clone_circle.setAttributeNS(null, 'cy', r);
+            privates.clone_circle.setAttributeNS(null, 'r', r);
+            privates.clippath_path.setAttributeNS(null, 'width', width);
+            privates.clippath_path.setAttributeNS(null, 'height', height / 3);
+            privates.clippath_path.setAttributeNS(null, 'y', 2*(height/3));
+        }
     };
 
     /**
@@ -5890,6 +6351,10 @@ var getSBOForMarkerId = function(id) {
         var color = this.color();
         privates.circle.style.setProperty('fill', color.background);
         privates.circle.style.setProperty('stroke', color.border);
+        if (privates.is_multimer === true){
+            privates.multimer_circle.style.setProperty('fill', color.background);
+            privates.multimer_circle.style.setProperty('stroke', color.border);
+        }
     };
 
     /**
@@ -5900,7 +6365,7 @@ var getSBOForMarkerId = function(id) {
         var privates = this._privates(identifier);
         privates.circle = document.createElementNS(bui.svgns, 'circle');
         sizeChanged.call(this, this, this.size().width);
-		colorChanged.call(this, this, this.color()), 
+        colorChanged.call(this, this, this.color());
         container.appendChild(privates.circle);
     };
 
@@ -5920,10 +6385,12 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
-
+        var privates = this._privates(identifier);
+        privates.is_multimer = false;
+        privates.is_cloned = false;
         initialPaint.call(this);
     };
 
@@ -5931,6 +6398,77 @@ var getSBOForMarkerId = function(id) {
         identifier : function() {
             return identifier;
         },
+        /**
+         * Set this node's multimer state.
+         *
+         * @param {Bool} [flag] optional flag to set multimer state
+         * @return {bui.RectangularNode|Bool} Fluent interface if you pass
+         *   a parameter, the current multimer status otherwise.
+         */
+        multimer : function(flag) {
+            var privates = this._privates(identifier);
+            if (flag !== undefined){
+                if (flag!=privates.is_multimer){
+                    var container = this.nodeGroup();
+                    privates.is_multimer = flag;
+                    if (flag===true){
+                        privates.multimer_circle = document.createElementNS(bui.svgns, 'circle');
+                        container.insertBefore(privates.multimer_circle, container.firstChild);
+                        sizeChanged.call(this, this, this.size().width, this.size().height);
+                    }else{
+                        container.removeChild(privates.multimer_circle);
+                    }
+                }
+                return this;
+            }
+            return privates.is_multimer;
+        },
+        clonemarker : function(flag) {
+            var privates = this._privates(identifier);
+            if (flag !== undefined){
+                if (flag!=privates.is_cloned){
+                    var container = this.nodeGroup();
+                    var defsGroup = this.graph().defsGroup();
+                    privates.is_cloned = flag;
+                    if (flag===true){
+                        privates.clone_circle = document.createElementNS(bui.svgns, 'circle');
+                        privates.clone_circle.style.setProperty('fill', 'black');
+                        container.appendChild(privates.clone_circle);
+                        privates.clone_circle.setAttribute('clip-path','url(#clone_'+this.id()+')');
+                        privates.clippath = document.createElementNS(bui.svgns, 'clipPath');
+                        privates.clippath.setAttribute('id', 'clone_'+this.id());
+                        privates.clippath_path = document.createElementNS(bui.svgns, 'rect');
+                        privates.clippath_path.setAttributeNS(null, 'x', 0);
+                        sizeChanged.call(this, this, this.size().width, this.size().height);
+                        privates.clippath.appendChild(privates.clippath_path);
+                        defsGroup.appendChild(privates.clippath);
+                    }else{
+                        container.removeChild(privates.clone_circle);
+                        defsGroup.removeChild(privates.clippath);
+                    }
+                }
+                return this;
+            }
+            return privates.is_cloned;
+        },
+        toJSON : function() {
+          var json = bui.SimpleChemical.superClazz.prototype.toJSON.call(this),
+                  privates = this._privates(identifier),
+                  dataFormat = bui.settings.dataFormat;
+          if (privates.is_cloned) {
+            json.data.clonemarker=true;
+          } else {
+            delete json.data.clonemarker;
+          }
+          if (privates.is_multimer) {
+            json.data.multimer=true;
+          } else {
+            delete json.data.multimer;
+          }
+
+          return json;
+        },
+
         _minWidth : 60,
         _minHeight : 60,
         _forceRectangular : true,
@@ -5939,8 +6477,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.SimpleChemical, bui.Labelable);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.UnspecifiedEntity';
+    var identifier = 'UnspecifiedEntity';
 
     /**
      * @private
@@ -5964,6 +6503,15 @@ var getSBOForMarkerId = function(id) {
 
         privates.ellipse.setAttributeNS(null, 'rx', x);
         privates.ellipse.setAttributeNS(null, 'ry', y);
+        if (privates.is_cloned){
+            privates.clone_ellipse.setAttributeNS(null, 'cx', x);
+            privates.clone_ellipse.setAttributeNS(null, 'cy', y);
+            privates.clone_ellipse.setAttributeNS(null, 'rx', x);
+            privates.clone_ellipse.setAttributeNS(null, 'ry', y);
+            privates.clippath_path.setAttributeNS(null, 'width', width);
+            privates.clippath_path.setAttributeNS(null, 'height', height / 3);
+            privates.clippath_path.setAttributeNS(null, 'y', 2*(height/3));
+        }
     };
 
     /**
@@ -6004,11 +6552,11 @@ var getSBOForMarkerId = function(id) {
         this.bind(bui.Node.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
         var privates = this._privates(identifier);
-
+        privates.is_cloned = false;
         initialPaint.call(this);
     };
 
@@ -6016,13 +6564,54 @@ var getSBOForMarkerId = function(id) {
         identifier : function() {
             return identifier;
         },
+        clonemarker : function(flag) {
+            var privates = this._privates(identifier);
+            if (flag !== undefined){
+                if (flag!=privates.is_cloned){
+                    var container = this.nodeGroup();
+                    var defsGroup = this.graph().defsGroup();
+                    privates.is_cloned = flag;
+                    if (flag==true){
+                        privates.clone_ellipse = document.createElementNS(bui.svgns, 'ellipse');
+                        privates.clone_ellipse.style.setProperty('fill', 'black');
+                        container.appendChild(privates.clone_ellipse);
+                        privates.clone_ellipse.setAttribute('clip-path','url(#clone_'+this.id()+')');
+                        privates.clippath = document.createElementNS(bui.svgns, 'clipPath');
+                        privates.clippath.setAttribute('id', 'clone_'+this.id());
+                        privates.clippath_path = document.createElementNS(bui.svgns, 'rect')
+                        privates.clippath_path.setAttributeNS(null, 'x', 0);
+                        sizeChanged.call(this, this, this.size().width, this.size().height);
+                        privates.clippath.appendChild(privates.clippath_path);
+                        defsGroup.appendChild(privates.clippath);
+                    }else{
+                        container.removeChild(privates.clone_ellipse);
+                        defsGroup.removeChild(clippath);
+                    }
+                }
+                return this
+            }
+            return privates.is_cloned;
+        },
+        toJSON : function() {
+          var json = bui.UnspecifiedEntity.superClazz.prototype.toJSON.call(this),
+                  privates = this._privates(identifier),
+                  dataFormat = bui.settings.dataFormat;
+          if (privates.is_cloned) {
+            json.data.clonemarker=true;
+          } else {
+            delete json.data.clonemarker;
+          }
+
+          return json;
+        },
         _minWidth : 70,
-        _minHeight : 50,
+        _minHeight : 50
     }
     bui.util.setSuperClass(bui.UnspecifiedEntity, bui.Labelable);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.EmptySet';
+    var identifier = 'EmptySet';
 
     /**
      * @private
@@ -6042,7 +6631,7 @@ var getSBOForMarkerId = function(id) {
         privates.circle.setAttributeNS(null, 'r', r);
         var pathData = [
             'M', 0, width,
-            'L', width, 0, 
+            'L', width, 0,
             'Z'].join(' ');
         privates.dash.setAttributeNS(null, 'd', pathData);
         privates.dash.setAttributeNS(null, 'stroke', 'black');
@@ -6057,6 +6646,7 @@ var getSBOForMarkerId = function(id) {
         var color = this.color();
         privates.circle.style.setProperty('fill', color.background);
         privates.circle.style.setProperty('stroke', color.border);
+        privates.dash.style.setProperty('stroke', color.border);
     };
 
     /**
@@ -6068,7 +6658,7 @@ var getSBOForMarkerId = function(id) {
         privates.circle = document.createElementNS(bui.svgns, 'circle');
         privates.dash = document.createElementNS(bui.svgns, 'path');
         sizeChanged.call(this, this, this.size().width);
-		colorChanged.call(this, this, this.color()), 
+		colorChanged.call(this, this, this.color());
         container.appendChild(privates.circle);
         container.appendChild(privates.dash);
     };
@@ -6086,10 +6676,10 @@ var getSBOForMarkerId = function(id) {
 
         var colorChangedListener = colorChanged.createDelegate(this);
         
-        this.bind(bui.Node.ListenerType.size,
+        this.bind(bui.Labelable.ListenerType.size,
                 sizeChanged.createDelegate(this),
                 listenerIdentifier(this));
-        this.bind(bui.Labelable.ListenerType.color,
+        this.bind(bui.Node.ListenerType.color,
                 colorChangedListener,
                 listenerIdentifier(this));
 
@@ -6098,7 +6688,7 @@ var getSBOForMarkerId = function(id) {
 
     bui.EmptySet.prototype = {
         identifier : function() {
-            return identifier;
+            return 'EmptySet';
         },
         _minWidth : 60,
         _minHeight : 60,
@@ -6108,8 +6698,9 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.EmptySet, bui.Labelable);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Process';
+    var identifier = 'Process';
     /**
      * @class
      * Process node "process"
@@ -6134,6 +6725,8 @@ var getSBOForMarkerId = function(id) {
         identifier : function() {
             return identifier;
         },
+        clonemarker: undefined,
+        multimer: undefined,
         _enableResizing : false,
         _adaptSizeToLabel : false,
         _minWidth : bui.settings.style.processNodeMinSize.width,
@@ -6143,6 +6736,7 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.Process, bui.RectangularNode);
 })(bui);
+
 (function(bui) {
     var identifier = 'bui.AttachedDrawable';
 
@@ -6178,11 +6772,11 @@ var getSBOForMarkerId = function(id) {
         if (newX !== null) {
             newX.bind(bui.Drawable.ListenerType.remove,
                     sourceRemoveListener.createDelegate(this),
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'source');
         }
 
         if (oldX !== null) {
-            oldX.unbindAll(listenerIdentifier(this));
+            oldX.unbindAll(listenerIdentifier(this) + 'source');
         }
     };
 
@@ -6194,11 +6788,11 @@ var getSBOForMarkerId = function(id) {
         if (newX !== null) {
             newX.bind(bui.Drawable.ListenerType.remove,
                     targetRemoveListener.createDelegate(this),
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'target');
         }
 
         if (oldX !== null) {
-            oldX.unbindAll(listenerIdentifier(this));
+            oldX.unbindAll(listenerIdentifier(this) + 'target');
         }
     };
 
@@ -6209,11 +6803,11 @@ var getSBOForMarkerId = function(id) {
         var privates = this._privates(identifier);
 
         if (privates.source !== null) {
-            privates.source.unbindAll(listenerIdentifier(this));
+            privates.source.unbindAll(listenerIdentifier(this) + 'source');
         }
 
         if (privates.target !== null) {
-            privates.target.unbindAll(listenerIdentifier(this));
+            privates.target.unbindAll(listenerIdentifier(this) + 'target');
         }
     };
 
@@ -6301,8 +6895,8 @@ var getSBOForMarkerId = function(id) {
                     privates = this._privates(identifier);
 
             if (privates.source !== null) {
-                if (privates.source.identifier() == 'bui.EdgeHandle'){
-                    updateJson(json, dataFormat.edge.source, privates.source.lparent.id());
+                if (privates.source instanceof bui.EdgeHandle){
+                    updateJson(json, dataFormat.edge.source, privates.source.edge().id() + ":" + privates.source.edge().getPosition(privates.source));
                 }else if (privates.source.identifier() == 'bui.StateVariableER'|| privates.source.identifier() == 'bui.StateVariable'){
                     updateJson(json, dataFormat.edge.source, privates.source.parent().id()+':'+privates.source.toJSON());
                 }else{
@@ -6310,8 +6904,8 @@ var getSBOForMarkerId = function(id) {
                 }
             }
             if (privates.target !== null) {
-                if (privates.target.identifier() == 'bui.EdgeHandle'){
-                    updateJson(json, dataFormat.edge.target, privates.target.lparent.id());
+                if (privates.target instanceof bui.EdgeHandle){
+                    updateJson(json, dataFormat.edge.target, privates.target.edge().id() + ":" + privates.target.edge().getPosition(privates.target));
                 }else if (privates.target.identifier() == 'bui.StateVariableER'|| privates.target.identifier() == 'bui.StateVariable'){
                     updateJson(json, dataFormat.edge.target, privates.target.parent().id()+':'+privates.target.toJSON());
                 }else{
@@ -6336,6 +6930,7 @@ var getSBOForMarkerId = function(id) {
         target : bui.util.createListenerTypeId()
     };
 })(bui);
+
 (function(bui) {
     var identifier = 'bui.AbstractLine';
 
@@ -6366,6 +6961,18 @@ var getSBOForMarkerId = function(id) {
     var classesChanged = function(drawable, classString) {
         this._line.setAttributeNS(
                 null, 'class', classString);
+        marker = this._privates(identifier).marker;
+        if (marker !== null) {
+            if(classString.indexOf(bui.settings.css.classes.lineHover) !== -1  || classString.indexOf('selected') !== -1){
+                this._line.setAttributeNS(null, 'marker-end',
+                        bui.util.createMarkerAttributeValue(
+                                bui.util.getHoverId(marker)
+                        ));
+            }else{
+                this._line.setAttributeNS(null, 'marker-end',
+                        bui.util.createMarkerAttributeValue(marker));
+            }
+        }
     };
 
     /**
@@ -6382,7 +6989,8 @@ var getSBOForMarkerId = function(id) {
         var source = this.source(), target = this.target();
 
         this.visible(source !== null && target !== null &&
-                source.visible() === true && target.visible() === true);
+                    (source.visible() === true || source instanceof bui.EdgeHandle) && 
+                    (target.visible() === true || target instanceof bui.EdgeHandle));
     };
 
     /**
@@ -6390,20 +6998,20 @@ var getSBOForMarkerId = function(id) {
      */
     var sourceChanged = function(drawable, newSource, oldSource) {
         if (oldSource !== null) {
-            oldSource.unbindAll(listenerIdentifier(this));
+            oldSource.unbindAll(listenerIdentifier(this) + 'source');
         }
 
         if (newSource !== null) {
             var listener = this._sourceOrTargetDimensionChanged
                     .createDelegate(this);
             newSource.bind(bui.Node.ListenerType.absolutePosition, listener,
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'source');
             newSource.bind(bui.Node.ListenerType.size, listener,
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'source');
 
             newSource.bind(bui.Drawable.ListenerType.visible,
                     endpointVisibilityChanged.createDelegate(this),
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'source');
         }
 
         this._sourceOrTargetDimensionChanged();
@@ -6415,20 +7023,20 @@ var getSBOForMarkerId = function(id) {
      */
     var targetChanged = function(drawable, newTarget, oldTarget) {
         if (oldTarget !== null) {
-            oldTarget.unbindAll(listenerIdentifier(this));
+            oldTarget.unbindAll(listenerIdentifier(this) + 'target');
         }
 
         if (newTarget !== null) {
             var listener = this._sourceOrTargetDimensionChanged
                     .createDelegate(this);
             newTarget.bind(bui.Node.ListenerType.absolutePosition, listener,
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'target');
             newTarget.bind(bui.Node.ListenerType.size, listener,
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'target');
 
             newTarget.bind(bui.Drawable.ListenerType.visible,
                     endpointVisibilityChanged.createDelegate(this),
-                    listenerIdentifier(this));
+                    listenerIdentifier(this) + 'target');
         }
 
         this._sourceOrTargetDimensionChanged();
@@ -6460,23 +7068,9 @@ var getSBOForMarkerId = function(id) {
         var marker;
         if (active === true && this.hoverEffect()) {
             this.addClass(bui.settings.css.classes.lineHover);
-
-            marker = this._privates(identifier).marker;
-            if (marker !== null) {
-                this._line.setAttributeNS(null, 'marker-end',
-                        bui.util.createMarkerAttributeValue(
-                                bui.util.getHoverId(marker)
-                        ));
-            }
         } else {
             this.removeClass(bui.settings.css.classes.lineHover);
-
-            marker = this._privates(identifier).marker;
-            if (marker !== null) {
-                this._line.setAttributeNS(null, 'marker-end',
-                        bui.util.createMarkerAttributeValue(marker));
-            }
-        }
+       }
     };
 
     /**
@@ -6621,11 +7215,12 @@ var getSBOForMarkerId = function(id) {
                                 [this, marker.id]);
                     }
                 }
+                classesChanged.call(this, this, this.classString());//make the marker look good whatever the classes are currently
 
                 return this;
             }
 
-            return privates.marker;
+            return privates.markerId;
         },
 
         /**
@@ -6730,6 +7325,8 @@ var getSBOForMarkerId = function(id) {
                 if (sbo !== null) {
                     updateJson(json, dataFormat.drawable.sbo, sbo);
                 }
+                //updateJson(json, dataFormat.edge.type, privates.markerId); FIXME this collides with data.type indicating spline status
+                
             }
 
             return json;
@@ -6768,8 +7365,9 @@ var getSBOForMarkerId = function(id) {
         dashed : bui.settings.css.classes.lineStyle.dashed
     };
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.StraightLine';
+    var identifier = 'StraightLine';
 
     /**
      * @private
@@ -6793,6 +7391,9 @@ var getSBOForMarkerId = function(id) {
     };
 
     bui.StraightLine.prototype = {
+        identifier : function() {
+            return identifier;
+        },
         includeInJSON : false,
 
         /**
@@ -6826,35 +7427,462 @@ var getSBOForMarkerId = function(id) {
 
     bui.util.setSuperClass(bui.StraightLine, bui.AbstractLine);
 })(bui);
+
 (function(bui) {
-    var identifier = 'bui.Spline';
+    var identifier = 'Edge';
 
     /**
      * @private
      * Function used for the generation of listener identifiers
-     * @param {bui.Spline} spline
+     * @param {bui.Edge} edge
      * @return {String} listener identifier
      */
-    var listenerIdentifier = function(spline) {
-        return identifier + spline.id();
+    var listenerIdentifier = function(edge) {
+        return identifier + edge.id();
+    };
+    /**
+     * @private
+     * Function used to update SVG representation of Edge
+     */
+    
+    var updateEdge = function(){
+      var privates = this._privates(identifier);
+      if (this.source() == null || this.target() == null) return;
+ 
+//       if (privates.source.parent() == privates.target.parent()){
+//         // if source and target have same parent, make all points also children
+//         for (var i=0;i<privates.points.length;i++){
+//           var p=privates.points[i].point;
+//           if (p.parent() !== privates.source.parent()){
+//             var pos=p.absoluteCenter();
+//             p.parent(privates.source.parent());
+//             p.absoluteCenter(pos);
+//           }
+//           if (privates.isSpline){
+//             var h=privates.points[i].splineHandle;
+//             }
+//           }
+//         }
+//       }
+      if (privates.isSpline) {
+        updateSpline.call(this);
+      } else {
+        updateStraight.call(this);
+      }
+    };
+    
+    /**
+     * @private
+     * Function to calculate Spline from controlpoints and create SVG. Called by updateEdge for spline edges. Also updates spline handle positions if edge points are modified.
+     */
+    var updateSpline = function(){
+      var privates = this._privates(identifier);
+
+      var source = this.source();
+      var target = this.target();
+      
+
+      // calculate intersect point of line defined by spline handle and border of node ( this is where the edge is supposed to start or end)
+      var sourcePosition = source.calculateLineEnd(source.absoluteCenter().x+privates.sourceSplineHandleVec.x,
+                                                source.absoluteCenter().y+privates.sourceSplineHandleVec.y),
+          targetPosition = target.calculateLineEnd(target.absoluteCenter().x+privates.targetSplineHandleVec.x,
+                                                target.absoluteCenter().y+privates.targetSplineHandleVec.y);
+      //copy to privates for topLeft bottomRight prototype functions, which are needed for selection rectangles
+      privates.sourcePosition = sourcePosition;
+      privates.targetPosition = targetPosition;
+      // repositon splineHandles if they are within the node
+      var dx=sourcePosition.x-source.absoluteCenter().x,
+          dy=sourcePosition.y-source.absoluteCenter().y;
+      if (Math.abs(dx)>=Math.abs(privates.sourceSplineHandleVec.x)){
+          privates.sourceSplineHandleVec.x=dx*1.2;
+          privates.sourceSplineHandleVec.y=dy*1.2;
+      }
+      dx=targetPosition.x-target.absoluteCenter().x,
+      dy=targetPosition.y-target.absoluteCenter().y;
+      if (Math.abs(dx)>=Math.abs(privates.targetSplineHandleVec.x)){
+          privates.targetSplineHandleVec.x=dx*1.2;
+          privates.targetSplineHandleVec.y=dy*1.2;
+      }
+
+      var sourceSplineHandle = privates.sourceSplineHandle,
+          targetSplineHandle = privates.targetSplineHandle;
+      privates.positioningSplineHandles=true; // this is to indicate that position changes of spline handles are not user interactions
+      // now set spline handle positions according to source, target and edge point positions
+      sourceSplineHandle.absolutePositionCenter(source.absoluteCenter().x+privates.sourceSplineHandleVec.x,
+                                                source.absoluteCenter().y+privates.sourceSplineHandleVec.y);
+      for (var i=0;i<privates.points.length;i++){
+          privates.points[i].splineHandle.absolutePositionCenter(privates.points[i].point.absoluteCenter().x+privates.points[i].dx,
+                                                                 privates.points[i].point.absoluteCenter().y+privates.points[i].dy)
+      }
+      targetSplineHandle.absolutePositionCenter(target.absoluteCenter().x+privates.targetSplineHandleVec.x,
+                                                target.absoluteCenter().y+privates.targetSplineHandleVec.y);
+      privates.positioningSplineHandles=false;
+
+      var sourceSplineHandlePosition = sourceSplineHandle
+                      .absoluteCenter(),
+              targetSplineHandlePosition = targetSplineHandle
+                      .absoluteCenter();
+
+      var data = ['M' ,
+              sourcePosition.x,
+              sourcePosition.y,
+              'C',
+              sourceSplineHandlePosition.x,
+              sourceSplineHandlePosition.y]
+      for (var i=0;i<privates.points.length;i++){
+          var p=privates.points[i];
+          data.push.apply(data,[p.point.absoluteCenter().x+p.dx,
+                      p.point.absoluteCenter().y+p.dy,
+                      p.point.absoluteCenter().x,
+                      p.point.absoluteCenter().y,
+                      'S']);
+      }
+      data.push.apply(data,[targetSplineHandlePosition.x,
+              targetSplineHandlePosition.y,
+              targetPosition.x,
+              targetPosition.y]);
+
+
+      this._line.setAttributeNS(null, 'd', data.join(' '));
+      
+    }
+    /**
+     * @private
+     * Function to calculate straight path from controlpoints and create SVG. Called by updateEdge for straight edges. 
+     */
+    var updateStraight= function(){
+      var privates = this._privates(identifier);
+      var source = this.source();
+      var target = this.target();
+      
+      var num=privates.points.length;
+      if (bui.settings.straightenEdges){
+        if((num> 0)){
+          var sp = source.absoluteCenter();
+          var tp = target.absoluteCenter();
+          var lx = tp.x-sp.x;
+          var ly = tp.y-sp.y;
+          for(var i = 0; i<num; i++){
+              privates.points[i].point.absolutePositionCenter(sp.x+((i+1)*lx/(num+1)),sp.y+((i+1)*ly/(num+1)));
+          }
+        }
+      }
+
+      // calculate intersect point of line defined first or last line segment and border of node ( this is where the edge is supposed to start or end)
+      var sourcePosition = source.calculateLineEnd(num==0 ? target : privates.points[0].point),
+          targetPosition = target.calculateLineEnd(num==0 ? source : privates.points[num-1].point);
+      //copy to privates for topLeft bottomRight prototype functions, which are needed for selection rectangles
+      privates.sourcePosition = sourcePosition;
+      privates.targetPosition = targetPosition;
+      // create Path data
+      var data= ['M', sourcePosition.x, sourcePosition.y];
+      for (var i=0;i<num;i++){
+        var p=privates.points[i];
+        data.push('L',p.point.absoluteCenter().x, p.point.absoluteCenter().y);
+      }
+      data.push('L', targetPosition.x, targetPosition.y);
+      this._line.setAttributeNS(null, 'd', data.join(' '));
+    }
+    /**
+     * @private
+     * handler for reacting on user interaction with spline handle
+     */
+    var splineHandleChanged = function() {
+//      console.log("splineHandleChanged");
+      var privates = this._privates(identifier);
+      if (privates.positioningSplineHandles) return; // if spline handles are modified internally return
+
+      privates.sourceSplineHandleVec.x=privates.sourceSplineHandle.absoluteCenter().x-this.source().absoluteCenter().x;
+      privates.sourceSplineHandleVec.y=privates.sourceSplineHandle.absoluteCenter().y-this.source().absoluteCenter().y;
+      for (var i=0;i<privates.points.length;i++){
+        privates.points[i].dx=privates.points[i].splineHandle.absoluteCenter().x-privates.points[i].point.absoluteCenter().x;
+        privates.points[i].dy=privates.points[i].splineHandle.absoluteCenter().y-privates.points[i].point.absoluteCenter().y;
+      }
+      privates.targetSplineHandleVec.x=privates.targetSplineHandle.absoluteCenter().x-this.target().absoluteCenter().x;
+      privates.targetSplineHandleVec.y=privates.targetSplineHandle.absoluteCenter().y-this.target().absoluteCenter().y;
+
+      updateSpline.call(this); // update spline (no need to call updateEdge?)
     };
 
     /**
      * @private
+     * function called when straight edge is transformed into spline. Calculates initial spline handle positions and creates them. updates SVG.
+     */
+    var makeSpline = function(){
+      console.log('making it a spline');
+      var privates = this._privates(identifier);
+      
+      if (privates.isSpline) return;
+      privates.isSpline=true;
+      
+      // calculate some feasible values for all spline handles
+      if (privates.sourceSplineHandleVec == undefined){
+        var t=(privates.points.length ? privates.points[0].point.absoluteCenter() : this.target().absoluteCenter());
+        privates.sourceSplineHandleVec={x:(t.x-this.source().absoluteCenter().x)/4,y:(t.y-this.source().absoluteCenter().y)/4};
+      }
+      if (privates.targetSplineHandleVec == undefined){
+        var t=(privates.points.length ? privates.points[privates.points.length-1].point.absoluteCenter() : this.source().absoluteCenter());
+        privates.targetSplineHandleVec={x:(t.x-this.target().absoluteCenter().x)/4,y:(t.y-this.target().absoluteCenter().y)/4};
+      }
+      for (var i=0;i<privates.points.length;i++){
+        var t1=(i==0 ? this.source().absoluteCenter() : privates.points[i-1].point.absoluteCenter());
+        var t2=(i==privates.points.length-1 ? this.target().absoluteCenter() : privates.points[i+1].point.absoluteCenter());
+        privates.points[i].dx=-(t2.x-t1.x)/4;
+        privates.points[i].dy=-(t2.y-t1.y)/4;
+      }
+      
+      // create spline handles and add listener
+      var listener = splineHandleChanged.createDelegate(this);
+      privates.sourceSplineHandle = this.graph()
+              .add(bui.SplineEdgeHandle)
+              .bind(bui.Node.ListenerType.absolutePosition,
+                      listener,
+                      listenerIdentifier(this))
+              .edge(this)
+              .visible(privates.layoutElementsVisible);
+      privates.targetSplineHandle = this.graph()
+              .add(bui.SplineEdgeHandle)
+              .bind(bui.Node.ListenerType.absolutePosition,
+                      listener,
+                      listenerIdentifier(this))
+              .edge(this)
+              .visible(privates.layoutElementsVisible);
+      console.log('fire edgePointAdded');
+      this.fire(bui.Edge.ListenerType.edgePointAdded,
+        [this, privates.sourceSplineHandle]);
+      this.fire(bui.Edge.ListenerType.edgePointAdded,
+        [this, privates.targetSplineHandle ]);
+      for (var i=0;i<privates.points.length;i++){
+        privates.points[i].splineHandle=this.graph()
+                .add(bui.SplineEdgeHandle)
+                .bind(bui.Node.ListenerType.absolutePosition,
+                  listener,
+                  listenerIdentifier(this))
+                .edge(this)
+                .visible(privates.layoutElementsVisible);
+        this.fire(bui.Edge.ListenerType.edgePointAdded,
+          [this, privates.points[i].splineHandle]);
+      }
+      // create spline handle helper lines
+      privates.sourceHelperLine = this.graph()
+              .add(bui.StraightLine)
+              .lineStyle(bui.AbstractLine.Style.dotted)
+              .hoverEffect(false)
+              .target(this.source())
+              .source(privates.sourceSplineHandle)
+              .visible(privates.layoutElementsVisible);
+
+      privates.targetHelperLine = this.graph()
+              .add(bui.StraightLine)
+              .lineStyle(bui.AbstractLine.Style.dotted)
+              .hoverEffect(false)
+              .target(this.target())
+              .source(privates.targetSplineHandle)
+              .visible(privates.layoutElementsVisible);
+      for (var i=0;i<privates.points.length;i++){
+        privates.points[i].helperLine=this.graph()
+                .add(bui.StraightLine)
+                .lineStyle(bui.AbstractLine.Style.dotted)
+                .hoverEffect(false)
+                .source(privates.points[i].splineHandle)
+                .target(privates.points[i].point)
+                .visible(privates.layoutElementsVisible);
+      }
+      updateSpline.call(this);
+    }
+    /**
+     * @private
+     * function called when spline edge is transformed into straight edge. updates SVG.
+     */
+    var makeStraight = function(){
+      var privates = this._privates(identifier);
+      if (!privates.isSpline) return;
+      for (var i=0;i<privates.points.length;i++){
+        var p=privates.points[i];
+        p.splineHandle.unbindAll(listenerIdentifier(this));
+        p.splineHandle.remove();
+        p.helperLine.remove();
+      }
+      privates.sourceSplineHandle.unbindAll(listenerIdentifier(this));
+      privates.sourceSplineHandle.remove();
+      privates.targetSplineHandle.unbindAll(listenerIdentifier(this));
+      privates.targetSplineHandle.remove();
+      privates.sourceHelperLine.remove();
+      privates.targetHelperLine.remove();
+      privates.isSpline=false;
+      updateStraight.call(this);
+    }
+    /**
+     * @private
+     * function to find closest point on edge to given x,y position (for inserting edge point on right position
+     * @param {x,y} position of new point
+     * @return {idx} index of point after new point
+     */
+    var findClosest = function(x,y){ 
+      var privates = this._privates(identifier);
+      if (privates.points.length==0) return 0;
+      var mind=-1;
+      var closest=-1;
+      for (var i=0;i<=privates.points.length;i++){
+        var p1=(i==0 ? this.source().absolutePositionCenter() : privates.points[i-1].point.absolutePositionCenter());
+        var p2=(i==privates.points.length ? this.target().absolutePositionCenter() : privates.points[i].point.absolutePositionCenter());
+        var a={x: p2.x-p1.x, y: p2.y-p1.y};
+        var b={x: x-p1.x , y: y-p1.y};
+        var d=(a.x*b.y-a.y*b.x)/Math.sqrt(a.x*a.x+a.y*a.y); // distance to connecting lines
+        var s=a.x*b.x+a.y*b.y;
+        if (s<0) { // new point before p1
+          d=Math.sqrt(b.x*b.x+b.y*b.y);
+        } else {
+          b={x: x-p2.x , y: y-p2.y};
+          s=-a.x*b.x-a.y*b.y;
+          if (s<0){ // new point behind p2
+            d=Math.sqrt(b.x*b.x+b.y*b.y);
+          }
+        }
+        if (mind==-1 || mind>d){
+          mind=d;
+          closest=i;
+        }
+      }
+      return closest;
+    }
+    /**
+     * @private
+     * function to add a point to edge. 
+     * 
+     * @param {x,y} position of new point
+     * @param {type} type of edge point (nothing or "Ourcome")
+     * @param {position} index at which to insert in list of points
+     * @param {dx,dy} spline handle vector if edge is spline
+     * @return {idx} index of point after new point
+     */
+    var _addPoint = function(x, y, type, position, dx, dy){
+      var privates = this._privates(identifier);
+      
+      if (position<0) { // position -1 is after last element
+        position=privates.points.length+1+position;
+      };
+      
+      var point = undefined;
+      
+      point = this.graph()
+                  .add(bui.EdgeHandle)
+                  .edge(this);
+      
+      if (type == "Outcome"){
+          point.addClass('Outcome');// the stylesheet must fill the circle black
+          point.size(12,12);
+          point.visible(this.visible());
+      } else {
+          point.visible(privates.layoutElementsVisible)
+               .addClass('edgeHandle');   //let the stylesheet make it grey
+      }
+                  
+      point.absolutePositionCenter(x, y);
+      
+      var pth={point: point}; // object which contains all point data
+
+      if (privates.isSpline){
+        if (dx == undefined || dy == undefined || (dx==0 && dy==0)){ // make some feasible default spline handles
+          var t1=(position==0? this.source().absolutePositionCenter() : privates.points[position-1].point.absolutePositionCenter());
+          var t2=(position==privates.points.length? this.target().absolutePositionCenter() : privates.points[position].point.absolutePositionCenter());
+          pth.dx=-(t2.x-t1.x)/4;
+          pth.dy=-(t2.y-t1.y)/4;
+        } else {
+          pth.dx=dx;
+          pth.dy=dy;
+        }
+        pth.splineHandle = this.graph()
+              .add(bui.SplineEdgeHandle)
+              .bind(bui.Node.ListenerType.absolutePosition,
+                      splineHandleChanged.createDelegate(this),
+                      listenerIdentifier(this))
+              .edge(this)
+              .visible(privates.layoutElementsVisible);
+        pth.helperLine=this.graph()
+                .add(bui.StraightLine)
+                .lineStyle(bui.AbstractLine.Style.dotted)
+                .hoverEffect(false)
+                .source(pth.splineHandle)
+                .target(pth.point)
+                .visible(privates.layoutElementsVisible);
+
+      }
+      point.bind(bui.Node.ListenerType.absolutePosition, updateEdge.createDelegate(this), listenerIdentifier(this))
+      point.bind(bui.Drawable.ListenerType.remove,
+              this.removePoint.createDelegate(this),
+              listenerIdentifier(this));
+
+      privates.points.splice(position, 0, pth); // add point at position position
+      
+      this.fire(bui.Edge.ListenerType.edgePointAdded,
+        [this, pth.splineHandle]);
+      this.fire(bui.Edge.ListenerType.edgePointAdded,
+        [this, point]);
+
+      return point;
+      
+    }
+    /**
+     * @private
+     * listener to source or target movement. checks if source and target move syncronously. if yes, moves all edge points as well;
+     */
+    var detectWholeEdgeMove = function(node,x,y){
+      var privates = this._privates(identifier);
+      var type=(node==this.source() ? "source" : "target");
+      var dx=0,dy=0;
+      if (privates.detectMove.prev[type]){
+        dx=x-privates.detectMove.prev[type].x;
+        dy=y-privates.detectMove.prev[type].y;
+      }
+      if ((dx!=0 || dy!=0) && dx==privates.detectMove.last.dx && dy==privates.detectMove.last.dy && privates.detectMove.last.type != type){
+        // source and target moved by same amount
+        for (var i=0;i<privates.points.length;i++){
+          var pos=privates.points[i].point.absolutePositionCenter();
+          privates.points[i].point.absolutePositionCenter(pos.x+dx,pos.y+dy);
+        }
+      }
+      privates.detectMove.prev[type]={x:x,y:y};
+      privates.detectMove.last={type:type,dx:dx,dy:dy};
+    }
+    /*
+     * @private
+     * if edge is a loop, make initial edge a spline which is a loop of a size similar to the node size
+     */
+    var fixLoopEdge=function(){
+       var privates = this._privates(identifier);
+       if (privates.points && privates.points.length) return; // then the user should know on its own
+       var size=this.source().size();
+       privates.sourceSplineHandleVec={x:size.width,y:-size.height};
+       privates.targetSplineHandleVec={x:-size.width,y:-size.height};
+       makeSpline.call(this);
+    }
+    /**
+     * @private
      * Source changed event listener
      */
-    var sourceChanged = function(node, source) {
+    var sourceChanged = function(node, source, old) {
         var privates = this._privates(identifier);
-        privates.sourceHelperLine.target(source);
+        if (privates.isSpline) privates.sourceHelperLine.target(source);
+        if (old !== undefined && old !== null) old.unbindAll(listenerIdentifier(this) + 'source');
+        if (source !== undefined && source !== null) source.bind(bui.Node.ListenerType.absolutePosition,
+                    detectWholeEdgeMove.createDelegate(this),
+                    listenerIdentifier(this) + 'source');
+        if (source && source == this.target()) fixLoopEdge.call(this);
     };
 
     /**
      * @private
      * Target changed event listener
      */
-    var targetChanged = function(node, target) {
+    var targetChanged = function(node, target, old) {
         var privates = this._privates(identifier);
-        privates.targetHelperLine.target(target);
+        if (privates.isSpline) privates.targetHelperLine.target(target);
+        if (old !== undefined && old !== null) old.unbindAll(listenerIdentifier(this) + 'target');
+        if (target !== undefined && target !== null) target.bind(bui.Node.ListenerType.absolutePosition,
+                    detectWholeEdgeMove.createDelegate(this),
+                    listenerIdentifier(this) + 'target');
+        if (target && target == this.source()) fixLoopEdge.call(this);
     };
 
     /**
@@ -6866,203 +7894,243 @@ var getSBOForMarkerId = function(id) {
             this.layoutElementsVisible(false);
         }
     };
-
     /**
      * @private mouse click listener
      */
     var lineMouseClick = function(event) {
-        if (event.ctrlKey === true) {
-            this.layoutElementsVisible(!this.layoutElementsVisible());
+        if (event.ctrlKey === true){
+           var scale = 1 / this.graph().scale(),
+                graph = this.graph(),
+                graphTranslate = graph.translate(),
+                graphHtmlTopLeft = graph.htmlTopLeft();
+
+            this.addPoint(((event.pageX - graphHtmlTopLeft.x) * scale) - graphTranslate.x,
+                          ((event.pageY - graphHtmlTopLeft.y) * scale) - graphTranslate.y);
+            this.layoutElementsVisible(true);
         }
     };
 
     /**
      * @class
-     * A drawable which has both, a source and a target
+     * An edge which contains multiple segments, can be spline or straight
      *
      * @extends bui.AbstractLine
      * @constructor
      */
-    bui.Spline = function(args){
-        bui.Spline.superClazz.apply(this, arguments);
-
-        this.bind(bui.AttachedDrawable.ListenerType.source,
-                sourceChanged.createDelegate(this),
-                listenerIdentifier(this));
-        this.bind(bui.AttachedDrawable.ListenerType.target,
-                targetChanged.createDelegate(this),
-                listenerIdentifier(this));
-        this.bind(bui.Drawable.ListenerType.visible,
-                visibilityChanged.createDelegate(this),
-                listenerIdentifier(this));
+    bui.Edge = function(args){
+        bui.Edge.superClazz.apply(this, arguments);
     };
 
-    bui.Spline.prototype = {
+    bui.Edge.prototype = {
+        identifier : function() {
+            return identifier;
+        },
         /**
          * @private initial paint
          */
         _initialPaint : function() {
             var privates = this._privates(identifier);
-            privates.layoutElementsVisible = true;
-            privates.points=[];
-            privates.sourceSplineHandlePos={x:0,y:0};
-            privates.targetSplineHandlePos={x:0,y:0};
             this._line = document.createElementNS(bui.svgns, 'path');
             this.graph().edgeGroup().appendChild(this._line);
-            this.addClass(bui.settings.css.classes.invisible);
+//            this.addClass(bui.settings.css.classes.invisible);
+            privates.layoutElementsVisible = false;
+            privates.points = [];
+            privates.marker = null;
+            privates.lineStyle = null;
+            privates.isSpline = false;
+            privates.detectMove={prev:{}};
 
-            var listener = this._splineHandleChanged
-                    .createDelegate(this);
-            privates.sourceSplineHandle = this.graph()
-                    .add(bui.SplineEdgeHandle)
-                    .bind(bui.Node.ListenerType.absolutePosition,
-                            listener,
-                            listenerIdentifier(this))
-                    .visible(privates.layoutElementsVisible);
-            privates.targetSplineHandle = this.graph()
-                    .add(bui.SplineEdgeHandle)
-                    .bind(bui.Node.ListenerType.absolutePosition,
-                            listener,
-                            listenerIdentifier(this))
-                    .visible(privates.layoutElementsVisible);
-
-            privates.sourceHelperLine = this.graph()
-                    .add(bui.StraightLine)
-                    .lineStyle(bui.AbstractLine.Style.dotted)
-                    .hoverEffect(false)
-                    .source(privates.sourceSplineHandle)
-                    .visible(privates.layoutElementsVisible);
-
-            privates.targetHelperLine = this.graph()
-                    .add(bui.StraightLine)
-                    .lineStyle(bui.AbstractLine.Style.dotted)
-                    .hoverEffect(false)
-                    .source(privates.targetSplineHandle)
-                    .visible(privates.layoutElementsVisible);
-
+            this.bind(bui.AttachedDrawable.ListenerType.source,
+                    sourceChanged.createDelegate(this),
+                    listenerIdentifier(this));
+            this.bind(bui.AttachedDrawable.ListenerType.target,
+                    targetChanged.createDelegate(this),
+                    listenerIdentifier(this));
+            this.bind(bui.Drawable.ListenerType.visible,
+                    visibilityChanged.createDelegate(this),
+                    listenerIdentifier(this));
             jQuery(this._line).click(lineMouseClick.createDelegate(this));
-        },
-        /**
-         * @private spline handle position changed; update control point vectors
-         */
-        _splineHandleChanged : function() {
-           var privates = this._privates(identifier);
-           if (privates.positioningSplineHandles) return;
-              privates.sourceSplineHandlePos.x=privates.sourceSplineHandle.absoluteCenter().x-this.source().absoluteCenter().x;
-              privates.sourceSplineHandlePos.y=privates.sourceSplineHandle.absoluteCenter().y-this.source().absoluteCenter().y;
-           for (var i=0;i<privates.points.length;i++){
-                 privates.points[i].x=privates.points[i].splineHandle.absoluteCenter().x-privates.points[i].point.absoluteCenter().x;
-                 privates.points[i].y=privates.points[i].splineHandle.absoluteCenter().y-privates.points[i].point.absoluteCenter().y;
-           }
-              privates.targetSplineHandlePos.x=privates.targetSplineHandle.absoluteCenter().x-this.target().absoluteCenter().x;
-              privates.targetSplineHandlePos.y=privates.targetSplineHandle.absoluteCenter().y-this.target().absoluteCenter().y;
-           this._sourceOrTargetDimensionChanged();
-           /*           var changed=false;
-           if (privates.sourceSplineHandlePos.x!=privates.sourceSplineHandle.absoluteCenter().x-this.source().absoluteCenter().x){
-              privates.sourceSplineHandlePos.x=privates.sourceSplineHandle.absoluteCenter().x-this.source().absoluteCenter().x;
-              changed=true;
-           }
-           if (privates.sourceSplineHandlePos.y!=privates.sourceSplineHandle.absoluteCenter().y-this.source().absoluteCenter().y){
-              privates.sourceSplineHandlePos.y=privates.sourceSplineHandle.absoluteCenter().y-this.source().absoluteCenter().y;
-              changed=true;
-           }
-           for (var i=0;i<privates.points.length;i++){
-              if (privates.points[i].x!=privates.points[i].SplineHandle.absoluteCenter().x-privates.points[i].point.absoluteCenter().x){
-                  privates.points[i].x=privates.points[i].SplineHandle.absoluteCenter().x-privates.points[i].point.absoluteCenter().x;
-                  changed=true;
-              }
-              if (privates.points[i].y!=privates.points[i].SplineHandle.absoluteCenter().y-privates.points[i].point.absoluteCenter().y){
-                  privates.points[i].y=privates.points[i].SplineHandle.absoluteCenter().y-privates.points[i].point.absoluteCenter().y;
-                  changed=true;
-              }
-           }
-           if (privates.targetSplineHandlePos.x!=privates.targetSplineHandle.absoluteCenter().x-this.target().absoluteCenter().x){
-               privates.targetSplineHandlePos.x=privates.targetSplineHandle.absoluteCenter().x-this.target().absoluteCenter().x;
-               changed=true;
-           }
-           if (privates.targetSplineHandlePos.y!=privates.targetSplineHandle.absoluteCenter().y-this.target().absoluteCenter().y){
-               privates.targetSplineHandlePos.y=privates.targetSplineHandle.absoluteCenter().y-this.target().absoluteCenter().y;
-               changed=true;
-           }
-           if (changed) { // this detects whether SplineHandle is changed external (not via _sourceOrTargetDimensionChanged itself)
-              this._sourceOrTargetDimensionChanged();
-           }*/
+            
         },
         /**
          * @private Source / target position and size listener
          */
         _sourceOrTargetDimensionChanged : function() {
-            var target = this.target(),
-                    source = this.source();
-
-            if (target !== null && source !== null) {
-
-                var privates = this._privates(identifier);
-                privates.positioningSplineHandles=true;
-                privates.sourceSplineHandle.absolutePositionCenter(source.absoluteCenter().x+privates.sourceSplineHandlePos.x,
-                                                         source.absoluteCenter().y+privates.sourceSplineHandlePos.y);
-                for (var i=0;i<privates.points.length;i++){
-                    privates.points[i].splineHandle.absolutePositionCenter(privates.points[i].point.absoluteCenter().x+privates.points[i].x,
-                                                                           privates.points[i].point.absoluteCenter().y+privates.points[i].y)
-                }
-                privates.targetSplineHandle.absolutePositionCenter(target.absoluteCenter().x+privates.targetSplineHandlePos.x,
-                                                    target.absoluteCenter().y+privates.targetSplineHandlePos.y);
-                                                    
-                var sourceSplineHandle = privates.sourceSplineHandle,
-                        targetSplineHandle = privates.targetSplineHandle;
-
-                var sourcePosition = source
-                        .calculateLineEnd(sourceSplineHandle),
-                        targetPosition = target
-                                .calculateLineEnd(targetSplineHandle);
-                // repositon splineHandles if they ar within the node
-                var dx=sourcePosition.x-source.absoluteCenter().x,
-                    dy=sourcePosition.y-source.absoluteCenter().y;
-                if (Math.abs(dx)>=Math.abs(privates.sourceSplineHandlePos.x)){
-                   privates.sourceSplineHandlePos.x=dx*1.2;
-                   privates.sourceSplineHandlePos.y=dy*1.2;
-                   privates.sourceSplineHandle.absolutePositionCenter(source.absoluteCenter().x+privates.sourceSplineHandlePos.x,
-                                                                      source.absoluteCenter().y+privates.sourceSplineHandlePos.y);
-                }
-                dx=targetPosition.x-target.absoluteCenter().x,
-                dy=targetPosition.y-target.absoluteCenter().y;
-                if (Math.abs(dx)>=Math.abs(privates.targetSplineHandlePos.x)){
-                   privates.targetSplineHandlePos.x=dx*1.2;
-                   privates.targetSplineHandlePos.y=dy*1.2;
-                   privates.targetSplineHandle.absolutePositionCenter(target.absoluteCenter().x+privates.targetSplineHandlePos.x,
-                                                                      target.absoluteCenter().y+privates.targetSplineHandlePos.y);
-                }
-                privates.positioningSplineHandles=false;
-                var sourceSplineHandlePosition = sourceSplineHandle
-                                .absoluteCenter(),
-                        targetSplineHandlePosition = targetSplineHandle
-                                .absoluteCenter();
-
-                var data = ['M' ,
-                        sourcePosition.x,
-                        sourcePosition.y,
-                        'C',
-                        sourceSplineHandlePosition.x,
-                        sourceSplineHandlePosition.y]
-                for (var i=0;i<privates.points.length;i++){
-                   var p=privates.points[i];
-                   data.push.apply(data,[p.point.absoluteCenter().x+p.x,
-                               p.point.absoluteCenter().y+p.y,
-                               p.point.absoluteCenter().x,
-                               p.point.absoluteCenter().y,
-                               'S']);
-                }
-                data.push.apply(data,[targetSplineHandlePosition.x,
-                        targetSplineHandlePosition.y,
-                        targetPosition.x,
-                        targetPosition.y]);
-
-
-                this._line.setAttributeNS(null, 'd', data.join(' '));
+	         //console.log("_sourceOrTargetDimensionChanged");
+           // fk: why is this called when the node is moved??? is this correct? fkt name does not sound like that, is it just the naming?
+           // th: its just naming. this reacts on everything that happens to source/target (i.e. change,position,size) and is a virtual method in AbstractLine
+            updateEdge.call(this);
+        },
+        /**
+        * method to return length of edge (in segments).
+        * 
+        * @return {length} number of points+1
+        */
+        length : function(){
+          return this._privates(identifier).points.length+1;
+        },
+        /**
+        * method to add a point to edge. 
+        * 
+        * @param {x,y} position of new point
+        * @param {type} type of edge point (nothing or "Ourcome")
+        * @param {position} index at which to insert in list of points
+        * @param {dx,dy} spline handle vector if edge is spline
+        * @return {bui.Node} created EdgeHandle
+        */
+        addPoint : function(x,y,type,position,dx,dy){
+          var privates = this._privates(identifier);
+          if (x==undefined){
+            var p1=this.source().absolutePositionCenter();
+            var p2=(privates.points.length ? privates.points[0].point.absolutePositionCenter() : this.target().absolutePositionCenter());
+            x=(p1.x+p2.x)/2;
+            y=(p1.y+p2.y)/2;
+          }
+          if (position==undefined) position=findClosest.call(this,x,y);
+          var point=_addPoint.call(this,x,y,type,position,dx,dy);
+          updateEdge.call(this);
+          return point;
+        },
+        /**
+        * method to update position and spline vector of a point  
+        * 
+        * @param {idx} index of the point in edge
+        * @param {x,y} new position of point
+        * @param {dx,dy} spline handle vector if edge is spline
+        * @return {bui.Edge} fluent interface
+        */
+        updatePoint : function(idx,x,y,dx,dy,duration){
+          var privates = this._privates(identifier);
+          if (idx===undefined || idx<0 || idx>=privates.points.length) {
+            console.log("updatePoint expects point idx in current range of edge points");
+            return this;
+          }
+          if (privates.isSpline){
+            if (dx===undefined || dy===undefined) {
+              console.log("edge is spline, but dx,dy in updatePoint not set.");
+              return this; 
             }
+            
+            privates.points[idx].dx=dx;
+            privates.points[idx].dy=dy;
+          }
+          privates.points[idx].point.absolutePositionCenter(x,y,duration); // this triggers updateEdge automatically
+          return this;
+        },
+        /**
+        * method to get point at specified index
+        * 
+        * @param {Number} index of point
+        * @return {bui.EdgeHandle} the point
+        */
+        getPoint : function(idx){
+          return this._privates(identifier).points[idx].point;
+        },
+        /**
+        * method to get index of a spcified point in list of edge points
+        * 
+        * @param {bui.EdgeHandle} point the point
+        * @return {Number} index of point
+        */
+        getPosition : function(point){
+          var privates = this._privates(identifier);
+          var pos=-1;
+          for (var i=0;i<privates.points.length;i++){
+            if (privates.points[i].point == point) pos=i;
+          }
+          return pos;
+        },
+        /**
+        * method to remove a point from edge.
+        *
+        * @param {point} index of point or the point itself
+        * @return {bui.Edge} fluent interface
+        */
+        removePoint: function (point) {
+          var privates = this._privates(identifier);
+          var index=-1;
+          if (Object.prototype.toString.call(point).slice(8,-1) == "Number"){
+            index=point;
+          } else {
+            for (var i=0;i<privates.points.length;i++){
+              if (privates.points[i].point==point) index=i;
+            }
+          }
+          if (index<0) return;
+          if (index>=privates.points.length) return;
+          var pth=privates.points.splice(index, 1)[0];
+          pth.point.unbindAll(listenerIdentifier(this));
+          pth.point.remove();
+          if (privates.isSpline) {
+            pth.splineHandle.unbindAll(listenerIdentifier(this));
+            pth.splineHandle.remove();
+            pth.helperLine.remove();
+          }
+          updateEdge.call(this);
+          
+          return this;
         },
 
-        /**
+         /**
+         * check or set whether Edge is spline or straight
+         *
+         * @param {Boolean} [setSpline] Pass true for splines, false
+         *   for straight lines.
+         * @return {bui.Spline|Boolean} Fluent interface in case you pass
+         *   a parameter, the current spline status otherwise.
+         */
+        spline : function(setSpline) {
+            var privates = this._privates(identifier);
+            if (setSpline !== undefined) {
+              
+              if (privates.isSpline!=setSpline){
+                if (setSpline) {
+                  makeSpline.call(this);
+                } else {
+                  makeStraight.call(this);
+                }
+              }
+              return this;
+            } else {
+              return privates.isSpline;
+            }
+        },
+         /**
+         * set source spline handle vector
+         *
+         * @param {int,int} [dx,dy] vector to be set
+         * @return {bui.Edge|{x,y}} Fluent interface in case you pass
+         *   a parameter, the current spline vector otherwise.
+         */
+ 
+        sourceSplineHandle : function(dx,dy){
+          var privates = this._privates(identifier);
+          if (dx == undefined) {
+            return privates.sourceSplineHandleVec;
+          } else {
+            privates.sourceSplineHandleVec={x:dx,y:dy};
+	    updateSpline.call(this);
+            return this;
+          }
+        },
+         /**
+         * set target spline handle vector
+         *
+         * @param {int,int} [dx,dy] vector to be set
+         * @return {bui.Edge|{x,y}} Fluent interface in case you pass
+         *   a parameter, the current spline vector otherwise.
+         */
+        targetSplineHandle : function(dx,dy){
+          var privates = this._privates(identifier);
+          if (dx === undefined) {
+            return privates.targetSplineHandleVec;
+          } else {
+            privates.targetSplineHandleVec={x:dx,y:dy};
+            updateSpline.call(this);
+            return this;
+          }
+        },
+         /**
          * Show or hide the layout elements of this Spline. The layout
          * elements include two edgeSplineHandles and two lines. The handles
          * are used to modify the shape of the line while the two lines are
@@ -7079,573 +8147,24 @@ var getSBOForMarkerId = function(id) {
             if (visible !== undefined) {
                 privates.layoutElementsVisible = visible;
 
-                privates.sourceSplineHandle.visible(visible);
-                privates.targetSplineHandle.visible(visible);
-                for (var i=0;i<privates.points.length;i++){
-                   privates.points[i].splineHandle.visible(visible);
-                   privates.points[i].helperLine.visible(visible);
-                   privates.points[i].point.visible(visible);
+                if (privates.isSpline) {
+                  privates.sourceSplineHandle.visible(visible);
+                  privates.targetSplineHandle.visible(visible);
+                  privates.sourceHelperLine.visible(visible);
+                  privates.targetHelperLine.visible(visible);
+		}
+		for (var i=0;i<privates.points.length;i++){
+       if (visible || ! privates.points[i].point.hasClass("Outcome")) privates.points[i].point.visible(visible);
+                  if (privates.isSpline){
+		     privates.points[i].splineHandle.visible(visible);
+		     privates.points[i].helperLine.visible(visible);
+		   } 
                 }
-                privates.sourceHelperLine.visible(visible);
-                privates.targetHelperLine.visible(visible);
 
                 return this;
             }
 
             return privates.layoutElementsVisible;
-        },
-
-        /**
-         * Set the additional spline point positions and optionally animate them.
-         * 
-         * @param {Object[]} positions An array of positions, i.e. [x1,y1,x2,y2,...]
-         *   contains the spline point coordinates except source and target positions (these are directly taken form source and target)
-         * @param {Number} [duration] Optional duration for an animation. The
-         *   default value assumes no animation. Refer to {@link bui.Node#move}
-         *   for additional information about this parameter.
-         * @return {bui.Spline} Fluent interface
-         */
-        setSplinePoints : function(positions, duration) {
-           var privates = this._privates(identifier);
-           var dl=positions.length/2-privates.points.length;
-           if (dl<0){
-              for (var i=privates.points.length-dl;i<privates.points.length;i++){
-                 delete privates.points[i].splineHandle;
-                 delete privates.points[i].helperLine;
-                 delete privates.points[i].point;
-              }
-           }
-           if (dl>0){
-              var listener = this._sourceOrTargetDimensionChanged
-              .createDelegate(this);
-              var listener2 = this._splineHandleChanged
-              .createDelegate(this);
-              for (var i=privates.points.length;i<positions.length/2;i++){
-                 privates.points[i]={x:0,y:0};
-                  privates.points[i].splineHandle=this.graph()
-                     .add(bui.SplineEdgeHandle)
-                     .bind(bui.Node.ListenerType.absolutePosition,
-                       listener2,
-                       listenerIdentifier(this))
-                       .visible(privates.layoutElementsVisible);
-                  privates.points[i].point=this.graph()
-                     .add(bui.EdgeHandle)
-                     .bind(bui.Node.ListenerType.absolutePosition,
-                       listener,
-                       listenerIdentifier(this))
-                       .visible(privates.layoutElementsVisible);
-                  privates.points[i].helperLine=this.graph()
-                       .add(bui.StraightLine)
-                       .lineStyle(bui.AbstractLine.Style.dotted)
-                       .hoverEffect(false)
-                       .source(privates.points[i].splineHandle)
-                       .target(privates.points[i].point)
-                       .visible(privates.layoutElementsVisible);
-              }
-           }
-           for (var i=0;i<positions.length;i+=2){
-              var n=i/2;
-              privates.points[n].point.moveAbsoluteCenter(bui.util.toNumber(positions[i]),bui.util.toNumber(positions[i+1]),duration);
-           }
-        },
-        /**
-         * Set the spline handle positions and optionally animate them.
-         * 
-         * @param {Object[]} positions An array of positions, i.e. [x1,y1,x2,y2,...]
-         *   contains the spline handle coordinates relative to the spline points.
-         * @param {Number} [duration] Optional duration for an animation. The
-         *   default value assumes no animation. Refer to {@link bui.Node#move}
-         *   for additional information about this parameter.
-         * @return {bui.Spline} Fluent interface
-         */
-        setSplineHandlePositions : function(positions, duration) {
-            var privates = this._privates(identifier);
-            var target = this.target(),
-                    source = this.source();
-            privates.sourceSplineHandlePos.x=bui.util.toNumber(positions[0]);
-            privates.sourceSplineHandlePos.y=bui.util.toNumber(positions[1]);
-            for (var i=2;i<positions.length-2;i+=2){
-               var n=(i-2)/2;
-               if (privates.points[n]){
-                  privates.points[n].x=bui.util.toNumber(positions[i]);
-                  privates.points[n].y=bui.util.toNumber(positions[i+1]);
-               } else {
-                  throw "not enough spline points set for spline handles"
-               }
-            }
-            privates.targetSplineHandlePos.x=bui.util.toNumber(positions[i]);
-            privates.targetSplineHandlePos.y=bui.util.toNumber(positions[i+1]);
-            this._sourceOrTargetDimensionChanged();
-            return this;
-        },
-
-        /**
-         * This emulates the behavior of Edge 
-         */
-        marker : function(markerID){
-          if (markerID !== undefined){
-            return bui.Spline.superClazz.prototype.marker.call(this,markerID);
-          } else {
-            return bui.Spline.superClazz.prototype.markerId.call(this);
-          }
-        },
-
-        // overridden
-        toJSON : function() {
-            var json = bui.Spline.superClazz.prototype.toJSON.call(this),
-                    dataFormat = bui.settings.dataFormat,
-                    privates = this._privates(identifier);
-
-            var handles = [privates.sourceSplineHandlePos.x,privates.sourceSplineHandlePos.y];
-            var points = [];
-            for (var i=0;i<privates.points.length;i++){
-               var pos=privates.points[i].point.absoluteCenter()
-               points.push.apply(points,[pos.x,pos.y]);
-               handles.push.apply(handles,[privates.points[i].x,privates.points[i].y]);
-            }
-            handles.push.apply(handles,[privates.targetSplineHandlePos.x,privates.targetSplineHandlePos.y]);
-            updateJson(json, dataFormat.edge.handles, handles);
-            updateJson(json, dataFormat.edge.points, points);
-            //updateJson(json, dataFormat.edge.type, 'curve');
-
-            return json;
-        }
-    };
-
-    bui.util.setSuperClass(bui.Spline, bui.AbstractLine);
-})(bui);
-(function(bui) {
-    var identifier = 'bui.Edge';
-
-    /**
-     * @private
-     * Function used for the generation of listener identifiers
-     * @param {bui.Edge} edge
-     * @return {String} listener identifier
-     */
-    var listenerIdentifier = function(edge) {
-        return identifier + edge.id();
-    };
-
-    /**
-     * @private listener to the source's and target's visibility listener
-     */
-    var endpointVisibilityChanged = function() {
-        var source = this.source(), target = this.target();
-
-        this.visible(source !== null && source.visible() === true &&
-                target !== null && target.visible() === true);
-    };
-
-    /**
-     * @private source changed listener
-     */
-    var sourceChanged = function(edge, source, old) {
-        var privates = this._privates(identifier);
-        privates.lines[0].source(source);
-
-        if (old !== null) {
-            old.unbindAll(listenerIdentifier(this));
-        }
-
-        if (source !== null) {
-            source.bind(bui.Drawable.ListenerType.visible,
-                endpointVisibilityChanged.createDelegate(this),
-                listenerIdentifier(this));
-            source.bind(bui.Node.ListenerType.absolutePosition, recalculatePoints.createDelegate(this), listenerIdentifier(this));
-        }
-    };
-
-    /**
-     * @private target changed listener
-     */
-    var targetChanged = function(edge, target, old) {
-        var privates = this._privates(identifier);
-        privates.lines[privates.lines.length - 1].target(target);
-
-        if (old !== null) {
-            old.unbindAll(listenerIdentifier(this));
-        }
-
-        if (target !== null) {
-            target.bind(bui.Drawable.ListenerType.visible,
-                endpointVisibilityChanged.createDelegate(this),
-                listenerIdentifier(this));
-            target.bind(bui.Node.ListenerType.absolutePosition, recalculatePoints.createDelegate(this), listenerIdentifier(this));
-        }
-    };
-
-    /**
-     * @private Set the visibility of the edge handles
-     */
-    var setEdgeHandleVisibility = function(make_visible) {
-        var privates = this._privates(identifier);
-
-        var edgeHandlesVisible = this.visible() === true &&
-                privates.edgeHandlesVisible === true;
-        var handles = privates.handles;
-        for (var i = 0; i < handles.length; i++) {
-            //handles[i].visible(edgeHandlesVisible);
-            //FIXME horrible horrible hack, but the whole edge disappears if the node is set to invisible!
-            if (! handles[i].hasClass('Outcome')){
-                if (make_visible !== undefined){
-                    console.log('setEdgeHandleVisibility: '+make_visible);
-                    if (make_visible === false) handles[i].size(1,1);
-                    else handles[i].size(12,12);
-                }else{
-                    var size = handles[i].size();
-                    if (size.width == 1){
-                        handles[i].size(12,12);
-                    } else{
-                        handles[i].size(1,1);
-                    }
-                }
-            }
-        }
-        var lines = privates.lines;
-        for (var i = 0; i < lines.length; i++) {
-            lines[i].visible(true);
-        }
-    };
-
-    /**
-     * @private visibility changed listener
-     */
-    var visibilityChanged = function(edge, visible) {
-        var privates = this._privates(identifier);
-
-        var lines = privates.lines;
-        for (var i = 0; i < lines.length; i++) {
-            lines[i].visible(visible);
-        }
-
-        setEdgeHandleVisibility.call(this);
-    };
-
-    /**
-     * Redraw the lines. This function is called after the addition of drag
-     * handles.
-     */
-    var redrawLines = function() {
-        var suspendHandle = this.graph().suspendRedraw(200);
-
-        var privates = this._privates(identifier);
-
-        // deleting old lines
-        var lines = privates.lines;
-        for(var i = 0; i < lines.length; i++) {
-            lines[i].remove();
-        }
-
-        var handles = privates.handles,
-                graph = this.graph(),
-                clickListener = lineClicked.createDelegate(this),
-                mouseDownListener = lineMouseDown.createDelegate(this),
-                mouseEnterListener = lineMouseEnter.createDelegate(this),
-                mouseLeaveListener = lineMouseLeave.createDelegate(this),
-                listenerId = listenerIdentifier(this),
-                sourceNode = this.source(),
-                targetNode = null,
-                lineStyle = privates.lineStyle;
-
-        lines = [];
-
-        var addLine = function() {
-            var line = graph
-                    .add(bui.StraightLine)
-                    .source(sourceNode)
-                    .target(targetNode)
-                    .lineStyle(lineStyle)
-                    .bind(bui.AbstractLine.ListenerType.mouseEnter,
-                            mouseEnterListener,
-                            listenerId)
-                    .bind(bui.AbstractLine.ListenerType.mouseLeave,
-                            mouseLeaveListener,
-                            listenerId);
-
-            if (bui.settings.enableModificationSupport === true) {
-                line.bind(bui.AbstractLine.ListenerType.click,
-                            clickListener,
-                            listenerId)
-                    .bind(bui.AbstractLine.ListenerType.mousedown,
-                            mouseDownListener,
-                            listenerId);
-
-            }
-
-            lines.push(line);
-            sourceNode = targetNode;
-        };
-
-        for(i = 0; i < handles.length; i++) {
-            targetNode = handles[i];
-            addLine();
-        }
-
-        targetNode = this.target();
-        addLine();
-
-        privates.lines = lines;
-
-        if (privates.marker !== null) {
-            lines[lines.length - 1].marker(privates.marker);
-        }
-
-        this.graph().unsuspendRedraw(suspendHandle);
-    };
-
-    /**
-     * Add a handle after the given node. The node may be any of the line's
-     * edge handles. If the node can't be matched the edge handle will be added
-     * to the beginning.
-     *
-     * @param {bui.Node} node An edge handle
-     * @param {Number} x X-coordinate at which the edge handle should be added.
-     * @param {Number} y Y-coordinate at which the edge handle should be added.
-     */
-    var addHandleAfter = function(node, x, y) {
-        var privates = this._privates(identifier);
-
-        var handle = this.graph()
-                .add(bui.EdgeHandle)
-                .visible(privates.edgeHandlesVisible);
-        handle.positionCenter(x, y);
-
-        var index = privates.handles.indexOf(node);
-
-        if (index === -1) {
-            index = 0;
-        } else {
-            // we want to add the handle after the node
-            index++;
-        }
-
-        privates.handles.splice(index, 0, handle);
-        handle.lparent = this;
-        handle.bind(bui.Drawable.ListenerType.remove,
-                this.removePoint.createDelegate(this),
-                listenerIdentifier(this));
-
-        redrawLines.call(this);
-
-        return handle;
-    };
-
-    /**
-     * @private line mouse down event listener
-     */
-    var lineMouseDown = function(line, event) {
-        if (event.ctrlKey !== true) {
-            var scale = 1 / this.graph().scale(),
-                graph = this.graph(),
-                graphTranslate = graph.translate(),
-                graphHtmlTopLeft = graph.htmlTopLeft();
-
-            addHandleAfter.call(this, line.source(),
-                    ((event.pageX - graphHtmlTopLeft.x) * scale) - graphTranslate.x,
-                    ((event.pageY - graphHtmlTopLeft.y) * scale) - graphTranslate.y)
-                    .startDragging(event.pageX, event.pageY);
-        }
-    };
-
-    /**
-     * @private line clicked listener
-     */
-    var lineClicked = function(line, event) {
-        if (event.ctrlKey === true) {
-            this.edgeHandlesVisible(!this.edgeHandlesVisible());
-        }
-    };
-
-    /**
-     * @private line mouseEnter listener
-     */
-    var lineMouseEnter = function() {
-        var privates = this._privates(identifier);
-
-        var lines = privates.lines;
-        for(var i = 0; i < lines.length; i++) {
-            lines[i].hoverEffectActive(true);
-        }
-    };
-
-    /**
-     * @private line mouseLeave listener
-     */
-    var lineMouseLeave = function() {
-        var privates = this._privates(identifier);
-
-        var lines = privates.lines;
-        for(var i = 0; i < lines.length; i++) {
-            lines[i].hoverEffectActive(false);
-        }
-    };
-    /*
-     *
-     */
-    var recalculatePoints = function() {
-        if (bui.settings.straightenEdges){
-            var privates = this._privates(identifier);
-            
-            if((privates.handles.length > 0) && (privates.lines[0].source() != null) && (privates.lines[privates.lines.length - 1].target() != null)){
-                var sp = privates.lines[0].source().absoluteCenter();
-                var tp = privates.lines[privates.lines.length - 1].target().absoluteCenter();
-                var devby = 1/(privates.handles.length+3);
-                var lx = tp.x-sp.x;
-                var ly = tp.y-sp.y;
-                for(var i = 0; i<privates.handles.length; i++){
-                    privates.handles[i].positionCenter(sp.x+((i+2)*devby*lx),sp.y+((i+2)*devby*ly));
-                }
-                redrawLines.call(this);
-            }
-        }
-    }
-
-    /**
-     * @class
-     * Edges between nodes are represented through this class. This class is
-     * responsible for the generation of edge handles.
-     *
-     * @extends bui.AttachedDrawable
-     * @constructor
-     */
-    bui.Edge = function() {
-        bui.Edge.superClazz.apply(this, arguments);
-
-        var privates = this._privates(identifier);
-        privates.edgeHandlesVisible = true;
-        privates.handles = [];
-        privates.lines = [];
-        privates.marker = null;
-        privates.lineStyle = null;
-        redrawLines.call(this);
-
-        this.bind(bui.AttachedDrawable.ListenerType.source,
-                sourceChanged.createDelegate(this),
-                listenerIdentifier(this));
-        this.bind(bui.AttachedDrawable.ListenerType.target,
-                targetChanged.createDelegate(this),
-                listenerIdentifier(this));
-        this.bind(bui.Drawable.ListenerType.visible,
-                visibilityChanged.createDelegate(this),
-                listenerIdentifier(this));
-        
-    };
-
-    bui.Edge.prototype = {
-        identifier : function() {
-            return identifier;
-        },
-        addPoint : function(x, y, type){
-            var privates = this._privates(identifier);
-            var handle = undefined
-            
-            if (type == 'Outcome'){
-                //SBO:0000409
-                //An outcome is represented by a black dot located on the arc of a statement
-                //The diameter of the dot has to be larger than the thickness of the arc.
-                //-----------------------------
-                handle = this.graph()
-                    .add(bui.EdgeHandle)
-                    //.bind(bui.Node.ListenerType.absolutePosition, listener, listenerIdentifier(this))
-                    .size(12,12)
-                    .visible(true);
-                handle.addClass('Outcome');// the stylesheet must fill the circle black
-            }else if ((type == 'and')||(type == 'or')||(type == 'not')||(type == 'delay')){
-                //SBO:0000174 ! or
-                //SBO:0000173 ! and
-                //...
-                handle = this.graph()
-                    .add(bui.LogicalOperator, type)
-                    .visible(true);
-                handle.addClass('LogicalOperator');
-            } else{
-                handle = this.graph()
-                    .add(bui.EdgeHandle)
-                    //.bind(bui.Node.ListenerType.absolutePosition, listener, listenerIdentifier(this))
-                    .visible(true);
-                handle.addClass('edgeHandle');//let the stylesheet make it grey
-            }
-            handle.lparent = this;
-            handle.positionCenter(x, y);
-            
-            index = 0;
-            privates.handles.splice(index, 0, handle);
-            handle.bind(bui.Drawable.ListenerType.remove,
-                    this.removePoint.createDelegate(this),
-                    listenerIdentifier(this));
-            redrawLines.call(this);
-            return handle;
-        },
-        
-        /**
-         * Remove the given handle from the edge's list of edge handles if it is
-         * a handle of this edge
-         *
-         * @param {bui.EdgeHandle} the handle to be removed
-         * @return {bui.Edge} Fluent interface
-         */
-        removePoint: function (handle) {
-            var privates = this._privates(identifier),
-                index = privates.handles.indexOf(handle);
-
-            if (index !== -1) {
-                privates.handles.splice(index, 1);
-                handle.lparent = null;
-                redrawLines.call(this);
-            }
-            return this;
-        },
-        recalculatePoints : function(){
-            recalculatePoints.call(this)
-        },
-        handles : function(){
-            var privates = this._privates(identifier);
-            return privates.handles;
-        },
-        edgeHandlesVisible : function(visible) {
-            var privates = this._privates(identifier);
-
-            if (visible !== undefined) {
-                privates.edgeHandlesVisible = visible;
-
-                setEdgeHandleVisibility.call(this, visible);
-
-                return this;
-            }
-
-            return privates.edgeHandlesVisible;
-        },
-
-        /**
-         * Set the marker, i.e. a symbol at the end of the line.
-         *
-         * @param {Object} [markerId] Marker type identification.
-         *   The appropriate identifications can be retrieved through the id
-         *   property of the connecting arcs generation functions. Example:
-         *
-         *   bui.connectingArcs.stimulation.id
-         * @return {bui.Edge|String} The id of the current marker when
-         *   you omit the parameter. In case you pass a parameter it will be
-         *   set as a new marker and the current instance will be removed
-         *   (fluent interface).
-         */
-        marker : function(markerId) {
-            var privates = this._privates(identifier);
-
-            if (markerId !== undefined) {
-                if (markerId === null) {
-                    privates.marker = null;
-                } else {
-                    privates.marker = markerId;
-                }
-
-                redrawLines.call(this);
-
-                return this;
-            }
-
-            return privates.marker;
         },
 
         /**
@@ -7663,45 +8182,65 @@ var getSBOForMarkerId = function(id) {
             redrawLines.call(this);
             return this;
         },
-
-        // overridden
+        /* top
+        */
+        absolutePosition: function(){
+          var privates = this._privates(identifier);
+          var x =0, y=0;
+          x= (privates.sourcePosition.x>privates.targetPosition.x)? privates.targetPosition.x :privates.sourcePosition.x;
+          y= (privates.sourcePosition.y>privates.targetPosition.y)? privates.targetPosition.y :privates.sourcePosition.y;
+          return {x:x, y:y};
+        },
+        absoluteBottomRight: function(){
+          var privates = this._privates(identifier);
+          var x =0, y=0;
+          x= (privates.sourcePosition.x<privates.targetPosition.x)? privates.targetPosition.x :privates.sourcePosition.x;
+          y= (privates.sourcePosition.y<privates.targetPosition.y)? privates.targetPosition.y :privates.sourcePosition.y;
+          return {x:x, y:y};
+        },
         toJSON : function() {
             var json = bui.Edge.superClazz.prototype.toJSON.call(this),
-                    dataFormat = bui.settings.dataFormat,
-                    privates = this._privates(identifier);
+                dataFormat = bui.settings.dataFormat,
+                privates = this._privates(identifier);
 
-            if (privates.lineStyle !== null &&
-                    privates.lineStyle !== bui.AbstractLine.Style.solid) {
-                updateJson(json, dataFormat.edge.style, privates.lineStyle);
-            }
-
-            if (privates.handles.length > 0) {
-                //log('toJSON called iterating handles');
-                var handles = [];
-
-                for (var i = 0; i < privates.handles.length; i++) {
-                    var position = privates.handles[i].absoluteCenter();
-                    handles.push(position);
+            var handles = [], points = [], pointtypes = [];
+            if (privates.isSpline) handles.push({x:privates.sourceSplineHandleVec.x,y:privates.sourceSplineHandleVec.y});
+            if (privates.points.length > 0) {
+              
+              for (var i = 0; i < privates.points.length; i++) {
+                var position = privates.points[i].point.absoluteCenter();
+                points.push({x:position.x,y:position.y});
+                if (privates.isSpline) {
+                  var ps = privates.points[i].splineHandle.absoluteCenter();
+                  handles.push({x:ps.x-position.x,y:ps.y-position.y});
                 }
-                //log('got this '+JSON.stringify(handles));
-                updateJson(json, dataFormat.edge.handles, handles);
-            }
-
-            if (privates.marker !== null) {
-                var sbo = getSBOForMarkerId(privates.marker);
-
-                if (sbo !== null) {
-                    updateJson(json, dataFormat.drawable.sbo, sbo);
+                if (privates.points[i].point.hasClass('Outcome')){
+                  pointtypes[i]='Outcome';
                 }
+              }
             }
+            if (privates.isSpline) handles.push({x:privates.targetSplineHandleVec.x,y:privates.targetSplineHandleVec.y});
+            if (privates.isSpline) updateJson(json, dataFormat.edge.type, "spline");
+            if (points.length) updateJson(json, dataFormat.edge.points, points);
+            if (handles.length) updateJson(json, dataFormat.edge.handles, handles);
+            if (pointtypes.length) updateJson(json, dataFormat.edge.pointtypes, pointtypes);
+
             //console.log('rock edge '+JSON.stringify(json));
 
             return json;
         }
+
     };
 
-    bui.util.setSuperClass(bui.Edge, bui.AttachedDrawable);
+    bui.util.setSuperClass(bui.Edge, bui.AbstractLine);
+    
+    bui.Edge.ListenerType = {
+    /** @field */
+      edgePointAdded : bui.util.createListenerTypeId()
+    }
+
 })(bui);
+
 /*
  * All these functions and variables are defined in the util.js file as
  * the specific node types need access for the variables for the JSON
@@ -7709,25 +8248,26 @@ var getSBOForMarkerId = function(id) {
  */
 
 addMapping(nodeMapping, [285], bui.UnspecifiedEntity);
-addMapping(nodeMapping, [247, 240, 245], bui.SimpleChemical);
-addMapping(nodeMapping, [245, 252], bui.Macromolecule);
-addMapping(nodeMapping, [250, 251], bui.NucleicAcidFeature);
+addMapping(nodeMapping, [247, 240, 245, 421], bui.SimpleChemical);
+addMapping(nodeMapping, [245, 252, 420], bui.Macromolecule);
+addMapping(nodeMapping, [250, 251, 419], bui.NucleicAcidFeature);
 addMapping(nodeMapping, [405, 357], bui.Perturbation);
 addMapping(nodeMapping, [358], bui.Phenotype);
-addMapping(nodeMapping, [253], bui.Complex);
-addMapping(nodeMapping, [290], bui.Compartment);
+addMapping(nodeMapping, [253, 418], bui.Complex);
+addMapping(nodeMapping, [289, 290], bui.Compartment);
 addMapping(nodeMapping, [375, 167, 379, 396], bui.Process);
 addMapping(nodeMapping, [-1], bui.Helper);
 addMapping(nodeMapping, [110001], bui.VariableValue);
 addMapping(nodeMapping, [110002, 110004], bui.Tag);
 //SBO:0000395 ! encapsulating process
-addMapping(nodeMapping, [395, 412,110003], bui.RectangularNode);//Annotation
+addMapping(nodeMapping, [395, 412], bui.RectangularNode);//Annotation
 //SBO:0000409 ! interaction outcome
 addMapping(nodeMapping, [177,409], bui.Association);
 addMapping(nodeMapping, [180], bui.Dissociation);
 addMapping(nodeMapping, [174,173,238,225], bui.LogicalOperator);
 addMapping(nodeMapping, [291], bui.EmptySet);
 addMapping(nodeMapping, [110005], bui.EdgeHandle);
+addMapping(nodeMapping, [110003], bui.Annotation);
 addMapping(processNodeMapping, [375, 167], bui.Process);
 
 
@@ -7742,7 +8282,7 @@ addMapping(edgeMarkerMapping, [459, 462, 170], bui.connectingArcs.stimulation.id
 addMapping(edgeMarkerMapping, [15, 394], bui.connectingArcs.substrate.id);
 addMapping(edgeMarkerMapping, [11, 393], bui.connectingArcs.production.id);
 addMapping(edgeMarkerMapping, [461], bui.connectingArcs.necessaryStimulation.id);
-addMapping(edgeMarkerMapping, [13], bui.connectingArcs.catalysis.id);
+addMapping(edgeMarkerMapping, [13,172], bui.connectingArcs.catalysis.id);
 addMapping(edgeMarkerMapping, [411], bui.connectingArcs.absoluteStimulation.id);
 
 
@@ -7766,6 +8306,7 @@ addModificationMapping([111100], 'PTM_glycosaminoglycan', 'GA');
 addModificationMapping([111100], 'PTM_oxidation', '0');
 addModificationMapping([111100], 'PTM_sumoylation', 'S');
 */
+
 (function(bui) {
 
     /**
@@ -7839,10 +8380,23 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
             }
         }
 
-        if(('clone_marker' in nodeJSON.data)&&(nodeJSON.data.clone_marker == true)){
-            node.addClass('cloneMarker');
+        if(('clonemarker' in nodeJSON.data)&&(nodeJSON.data.clonemarker === true)){
+            node.clonemarker(true);
         }
+        if((nodeJSON.sbo >= 418) && (nodeJSON.sbo <= 421) ){
+            node.multimer(true);
+        }
+        if(nodeJSON.data.multimer === true) node.multimer(true);
 
+        if (bui.util.propertySetAndNotNull(nodeJSON, ['data','color'])){
+          if (Object.prototype.toString.call(nodeJSON.data.color).slice(8,-1) == "String"){
+            node.color({background: nodeJSON.data.color});
+          } else {
+          
+            node.color(nodeJSON.data.color);
+          }
+          
+        }
         node.size(size.width, size.height)
                 .visible(true);
 
@@ -7875,7 +8429,7 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
                 if(bui.settings.SBGNlang == 'ER'){
                     statevar.size(60,14)
                     if(variables[i] == 'existence'){
-                        statevar.label('').addClass('existence').size(14,14);
+                        statevar.existence(true).size(15,15);
                     }
                     if(variables[i] == 'location'){
                         statevar.label('').addClass('location').size(14,14);
@@ -7895,9 +8449,9 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
                 var label, mapping = retrieveFrom(modificationMapping,
                         modification[0]);
 
-                label = mapping.short;
+                label = mapping.shortlabel;
 
-                if (bui.settings.style.importer.modificationLabel === 'long') {
+                if (bui.settings.style.importer.modificationLabel === 'longlabel') {
                     label += '@' + modification[1];
                 }
 
@@ -8037,11 +8591,17 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
     var addAllEdges = function(graph, data, generatedNodes) {
         var edges = data.edges;
 
-        var edge_stack = [];
+        var edge_stack = [], edge_stack2 = edges.slice(); // make a shallow copy of edges array
         var drawables = graph.drawables();
         var generatedEdges = {};
-        for (var i = 0; i < edges.length; i++) {
-            var edgeJSON = edges[i], edge;
+        var last_len=edge_stack2.length+1;
+        while (last_len>edge_stack2.length){ // repeat until no more edges from edge_Stack can be added
+          last_len=edge_stack2.length
+          edge_stack = edge_stack2;
+          edge_stack2 = [];
+          for (var i = 0; i < edge_stack.length; i++) {
+          
+            var edgeJSON = edge_stack[i], edge;
 
             if ((edgeJSON.source === undefined)||(edgeJSON.target===undefined)){
                 continue;
@@ -8049,7 +8609,7 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
             var source = undefined;
             //if there are ports defined (molecule:domain-port) make them to the target
             if (edgeJSON.source.indexOf(':') != -1){
-                node_ids = edgeJSON.source.split(':');
+                var node_ids = edgeJSON.source.split(':');
                 source = generatedNodes[node_ids[0]];
                 if (source !== undefined) {
                     children = source.children();
@@ -8063,10 +8623,29 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
             }else{
                 var source = generatedNodes[edgeJSON.source];
             }
+            // still undefined? may be an edge
+            if(source === undefined){
+              var idx=-1;
+              var source_edge= undefined;
+              if (edgeJSON.source.indexOf(':') != -1){
+                var ids = edgeJSON.source.split(':');
+                idx = ids[1];
+                source_edge = generatedEdges[ids[0]];
+              } else {
+                source_edge = generatedEdges[edgeJSON.source];
+              }
+              if (source_edge !== undefined) {
+                if (idx>=0){
+                  source = source_edge.getPoint(idx);
+                } else {
+                  source = source_edge.addPoint(undefined,undefined,"Outcome");
+                }
+              }
+            }
             var target = undefined;
             //if there are ports defined (molecule:domain-port) make them to the target
             if (edgeJSON.target.indexOf(':') != -1){
-                node_ids = edgeJSON.target.split(':');
+                var node_ids = edgeJSON.target.split(':');
                 target = generatedNodes[node_ids[0]];
                 if (target !== undefined) {
                     var children = target.children();
@@ -8080,40 +8659,51 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
             }else{
                 target = generatedNodes[edgeJSON.target];
             }
+            // still undefined? may be an edge
+            if(target === undefined){
+              var idx=-1;
+              var target_edge= undefined;
+              if (edgeJSON.target.indexOf(':') != -1){
+                var ids = edgeJSON.target.split(':');
+                idx = ids[1];
+                target_edge = generatedEdges[ids[0]];
+              } else {
+                target_edge = generatedEdges[edgeJSON.target];
+              }
+              if (target_edge !== undefined) {
+                if (idx>=0){
+                  target = target_edge.getPoint(idx);
+                } else {
+                  target = target_edge.addPoint();
+                }
+              }
+            }
+            // if source or target are still undefined they might reference an edge which is not yet added
             if ((source === undefined)||(target === undefined)) {
-                edge_stack.push(edgeJSON);
+                edge_stack2.push(edgeJSON);
                 continue;
             }
 
             // ensuring that the data property exists
             edgeJSON.data = edgeJSON.data || {};
 
-            if (edgeJSON.data.handles !== undefined && edgeJSON.data.handles.length>=4) {
-                edge = graph.add(bui.Spline, edgeJSON.id)
-                    .layoutElementsVisible(false);
-
-                edge.json(edgeJSON).source(source).target(target);
-
-                if (edgeJSON.data.points !== undefined) {
-                    edge.setSplinePoints(edgeJSON.data.points);
+            edge = graph.add(bui.Edge, edgeJSON.id);
+            edge.json(edgeJSON).source(source).target(target);
+            var spline=(edgeJSON.data.type=='curve' || edgeJSON.data.type=='spline');
+            edge.spline(spline);
+            if (spline){
+              edge.sourceSplineHandle(edgeJSON.data.handles[0].x,edgeJSON.data.handles[0].y);
+              edge.targetSplineHandle(edgeJSON.data.handles[edgeJSON.data.handles.length-1].x,edgeJSON.data.handles[edgeJSON.data.handles.length-1].y);
+            }
+            if(edgeJSON.data.points !== undefined){
+              for(var j=0; j<edgeJSON.data.points.length; j ++){
+                var type = (edgeJSON.data.pointtypes ? edgeJSON.data.pointtypes[j] : undefined);
+                if (spline){
+                  edge.addPoint(edgeJSON.data.points[j].x, edgeJSON.data.points[j].y,type,undefined,edgeJSON.data.handles[j+1].x,edgeJSON.data.handles[j+1].y)
+                } else {
+                  edge.addPoint(edgeJSON.data.points[j].x, edgeJSON.data.points[j].y,type)
                 }
-                if (edgeJSON.data.handles !== undefined) {
-                    edge.setSplineHandlePositions(edgeJSON.data.handles);
-                }
-            } else {
-                edge = graph.add(bui.Edge, edgeJSON.id);
-                edge.json(edgeJSON).source(source).target(target);
-                if(edgeJSON.data.points !== undefined){
-                    for(var j=0; j<edgeJSON.data.points.length; j += 2){
-                        edge.addPoint(edgeJSON.data.points[j], edgeJSON.data.points[j+1])
-                    }
-                }
-                if(edgeJSON.data.handles !== undefined){
-                    for(var eh=0; eh<edgeJSON.data.handles.length; ++eh){
-                        var pos = edgeJSON.data.handles[eh];
-                        edge.addPoint(pos.x, pos.y);
-                    }
-                }
+              }
             }
 
 
@@ -8153,111 +8743,28 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
             }
 
             edge.visible(true);
-            generatedEdges[edgeJSON.id] = edge;
+            generatedEdges[edgeJSON.id] = edge;   
+          }
         }
+        if (edge_stack2.length){
+          log('Edge stack still contains '+String(edge_stack2.length)+' edges');
+          for(var i = 0; i<edge_stack2.length; i++){
+              var flag = true;
+              if ((generatedNodes[edge_stack2[i].source] === undefined) && (generatedEdges[edge_stack2[i].source] === undefined)){
+                  log('Edge source '+edge_stack2[i].source+' could not be found. Edge ID: '+edge_stack2[i].id);
+                  flag = false;
+              }
+              if ((generatedNodes[edge_stack2[i].target] === undefined) && (generatedEdges[edge_stack2[i].target] === undefined)){
+                  log('Edge target '+edge_stack2[i].target+' could not be found. Edge ID: '+edge_stack2[i].id);
+                  flag = false;
+              }
+              if (flag) log('found but not added: '+JSON.stringify(edge_stack2[i]));
+              //log('Edge source '+edge_stack[i].source+' or target ' + edge_stack[i].target + ' could not be found.');
+          } 
 
-        var last_len = edge_stack.length + 1;
-        //console.log('edge_stack: ',edge_stack.length);
-        while ((edge_stack.length > 0) && (edge_stack.length<last_len)){
-            last_len = edge_stack.length;
-            for(var i = 0; i<edge_stack.length;i++){
-                var source_edge = undefined;
-                var target_edge = undefined;
-                var edgeJSON = edge_stack[i];
-                //alert(edge_stack.length+'Processing '+JSON.stringify(edgeJSON));
-                //---------------------------
-                var target = undefined;
-                if (edgeJSON.target.indexOf(':') != -1){
-                    node_ids = edgeJSON.target.split(':');
-                    target = generatedNodes[node_ids[0]];
-                    if (target !== undefined) {
-                        var children = target.children();
-                        for(var j = 0;j<children.length;j++){
-                            if((children[j].label() == node_ids[1])||(children[j].hasClass(node_ids[1]))){
-                                target = drawables[children[j].id()];
-                                break;
-                            }
-                        }
-                    }
-                }else{ target = generatedNodes[edgeJSON.target]; }
-
-                if(target === undefined){
-                    target_edge = generatedEdges[edgeJSON.target];
-                    if (target_edge === undefined) continue;  
-                    target = target_edge.addPoint(0,0);
-                }
-                //---------------------------
-                var source = undefined; 
-                if (edgeJSON.source.indexOf(':') != -1){
-                    node_ids = edgeJSON.source.split(':');
-                    source = generatedNodes[node_ids[0]];
-                    if (source !== undefined) {
-                        children = source.children();
-                        for(var j = 0;j<children.length;j++){
-                            if((children[j].label() == node_ids[1])||(children[j].hasClass(node_ids[1]))){
-                                source = drawables[children[j].id()];
-                                break;
-                            }
-                        }
-                    }
-                }else{ source = generatedNodes[edgeJSON.source]; }
-
-                if(source===undefined){
-                    source_edge = generatedEdges[edgeJSON.source];
-                    if (source_edge === undefined) continue;  
-                    source = source_edge.addPoint(0,0, 'Outcome');//FIXME this does not give the proper positions ... y???
-                }
-                //---------------------------
-                //---------------------------
-                if ((source === undefined)||(target === undefined)) continue
-                rm_elem = edge_stack.splice(i,1);
-                //alert('success '+JSON.stringify(rm_elem));
-                //check if edge source and target produce overlaying edges
-                /*if(source_edge != undefined || target_edge != undefined){
-                    if source_edge.source()
-                }*/
-                edge = graph.add(bui.Edge, edgeJSON.id);
-                edge.source(source).target(target);//.json(edgeJSON);
-                var marker = retrieveFrom(edgeMarkerMapping, edgeJSON.sbo);
-                edge.marker(marker.klass);
-                if(edgeJSON.data.handles !== undefined){
-                    for(var eh=0; eh<edgeJSON.data.handles.length; ++eh){
-                        var pos = edgeJSON.data.handles[eh];
-                        edge.addPoint(pos.x, pos.y);
-                    }
-                }
-                generatedEdges[edgeJSON.id] = edge;
-            }
         }
-        //recalculate all edge points this should be prevented if points were specified
-        for(edge_id in generatedEdges){
-            var edge = generatedEdges[edge_id];
-            if (edge.identifier() == 'bui.Edge'){
-                var handles = edge.handles();
-                for(var i=0; i<handles.length; i++){
-                    var curpos = handles[i].positionCenter(); 
-                    if(curpos.x==0 && curpos.y==0){
-                        edge.recalculatePoints();
-                        break;
-                    }
-                }
-            }
-        }
-        for(var i = 0; i<edge_stack.length; i++){
-            var flag = true;
-            if ((generatedNodes[edge_stack[i].source] === undefined) && (generatedEdges[edge_stack[i].source] === undefined)){
-                log('Edge source '+edge_stack[i].source+' could not be found. Edge ID: '+edge_stack[i].id);
-                flag = false;
-            }
-            if ((generatedNodes[edge_stack[i].target] === undefined) && (generatedEdges[edge_stack[i].target] === undefined)){
-                log('Edge target '+edge_stack[i].target+' could not be found. Edge ID: '+edge_stack[i].id);
-                flag = false;
-            }
-            if (flag) log('found but not added: '+JSON.stringify(edge_stack[i]));
-            //log('Edge source '+edge_stack[i].source+' or target ' + edge_stack[i].target + ' could not be found.');
-        } 
-        log('Edge stack still contains '+String(edge_stack.length)+' edges');
-    };
+        
+      };
 
     /**
      * Align nodes according to their parent-child relationships. Childs
@@ -8439,21 +8946,59 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
                 log('Warning: Can\'t update edge for json edge id ' +
                         edgeJSON.id + ' because the edge can\'t be found.');
                 continue;
-            } else if (!bui.util.propertySetAndNotNull(edgeJSON,
-                    ['data', 'type'], ['data', 'handles'])) {
-                continue;
-            } else if (edgeJSON.data.type !== 'curve') {
-                continue;
             }
-
+            var isSpline=(edgeJSON.data.type == 'curve' || edgeJSON.data.type == 'spline');
+            var points=[];
+            if (bui.util.propertySetAndNotNull(edgeJSON,['data', 'points'])) {
+                points=edgeJSON.data.points;
+            }
+            var handles=[];
+            if (isSpline && (!bui.util.propertySetAndNotNull(edgeJSON,['data', 'handles']) || edgeJSON.data.handles.length+2!=points.length)) { 
+              log('no/wrong data.handles property for spline edge');
+              isSpline=false;
+            }
+            edge.spline(isSpline); // update spline status
+            if (isSpline){
+              handles=edgeJSON.data.handles
+              edge.sourceSplineHandle(handles[0].x,handles[0].y);
+              edge.targetSplineHandle(handles[handles.length-1].x,handles[handles.length-1].y);
+            }
+            for (var k=edge.length()-2;k>=points.length;k--){
+              edge.removePoint(k);
+            }
+            for (var k=0;k<points.length;k++){
+                //var type = (pointtypes ? pointtypes[j] : undefined); //WARNING cannot update type yet
+              if (isSpline){
+                edge.updatePoint(k,points[k].x, points[k].y,handles[k+1].x,handles[k+1].y,duration);
+              } else {
+                edge.updatePoint(k,points[k].x, points[k].y,undefined,undefined,duration);
+              }
+              
+            }
+            for (var k=edge.length();k<points.length;k++){
+              var type = (pointtypes ? pointtypes[j] : undefined);
+              if (isSpline){
+                edge.addPoint(points[k].x, points[k].y,type,undefined,handles[k+1].x,handles[k+1].y)
+              } else {
+                edge.addPoint(points[k].x, points[k].y,type)
+              }
+            }
             edge.setSplineHandlePositions(edgeJSON.data.handles, duration);
             edge.setSplinePoints(edgeJSON.data.points, duration);
         }
     };
 })(bui);
 
+
 (function(bui){
    bui.layouter={};
+   var arraytoxy=function(array){
+     var xyar=[];
+     for (var i=0;i<array.length/2;i++){
+       xyar.push({x:array[2*i],y:array[2*i+1]});
+     }
+     return xyar;
+   }
    /* creates a string from the json data which serves as input for the layouter */
    bui.layouter.makeLayouterFormat = function(jdata){
       var cc=0; // node index counter
@@ -8573,6 +9118,7 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
       for (var i=0;i<jdata.edges.length;i++){ // create edge hash
          var e=jdata.edges[i];
          eh[idx[e.source]+'->'+idx[e.target]]=i;
+         if (e.data.type) delete e.data.type; // remove spline indicator ( defaults all edges to straight edges)
       }
       var lines=lt.split("\n");
       var minx=1000000000000000000;
@@ -8656,14 +9202,17 @@ addModificationMapping([111100], 'PTM_sumoylation', 'S');
             isx=1-isx;
          }
          if (!jdata.edges[eidx].data) jdata.edges[eidx].data={};
-         if (handles.length) jdata.edges[eidx].data.handles=handles;
-         if (points.length) jdata.edges[eidx].data.points=points;
+         if (handles.length) jdata.edges[eidx].data.handles=arraytoxy(handles);
+         if (handles.length) jdata.edges[eidx].data.type="curve";
+         if (points.length) jdata.edges[eidx].data.points=arraytoxy(points);
+ 
       }
       return jdata;
    }
 
 
 })(bui);
+
 (function(bui) {
 
 bui.grid = { 
@@ -9085,13 +9634,16 @@ bui.grid.layout = function(node_idx){
         var fields_visited = 0;
         while(true){
             //-----------------------
-            if (counter>9990) console.log('counter too high: '+counter);
+            if (counter>9999){
+                console.log('counter too high: '+counter);
+                break;
+            } 
             cx += spiral_steps[counter][0];
             cy += spiral_steps[counter][1];
             ++counter;
             //-----------------------
-            if(i in node_idx2cborder){
-                if ( node_idx2comp_empty_fields[cni] == fields_visited ) break;
+            if(node_idx2cborder[cni] !==  undefined){//is node in compartment
+                if ( node_idx2comp_empty_fields[cni] == fields_visited ) break;//all possible fileds visited
                 if(!(cx>=node_idx2cborder[cni].left && cx<=node_idx2cborder[cni].right && cy>=node_idx2cborder[cni].top && cy<=node_idx2cborder[cni].bottom && matrix_nodes[cx][cy] == undefined)){
                     continue;
                 }
@@ -9682,5 +10234,6 @@ bui.grid.bfs_tarjan = function(){
 };
 
 })(bui);
+
 window.bui = bui;
 })(window);

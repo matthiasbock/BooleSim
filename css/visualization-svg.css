@@ -67,3 +67,6 @@ line {
 .splineEdgeHandle.autoAlign circle {
     opacity: 0.2;
 }
+.Outcome {
+  fill: #000000;
+}

@@ -322,16 +322,25 @@ var Controls = function () {
 	 * @returns {bui.Graph} The graph for the network.
 	 */
 	this.importNetwork = function (jsbgn, tab) {
-		$(tab).html('');
-		var graph = new bui.Graph($(tab)[0]);
-
-		var handle = graph.suspendRedraw(20000);
-		bui.importFromJSON(graph, jsbgn);
-		// Do the layouting
-		jsbgn.connectNodes();
-		jsbgn.layoutGraph(graph);
-		jsbgn.redrawNodes(graph);
-
+    // Do the layouting
+    jsbgn.connectNodes(true);
+    jsbgn.layoutGraph();
+    jsbgn.connectNodes(false);
+    
+    // Fix Self-loop edges
+    for (i in jsbgn.edges) {
+      var edge = jsbgn.edges[i];
+      if (edge.source == edge.target) {
+        edge.data.type = 'spline';
+        edge.data.handles = [{"x":80.25,"y":-136},{"x":-92.25,"y":-119}];
+      }
+    }
+    
+    $(tab).html('');
+    var graph = new bui.Graph($(tab)[0]);
+    var handle = graph.suspendRedraw(20000);
+    bui.importFromJSON(graph, jsbgn);
+    
 		// Center the graph and optionally scale it
 		graph.reduceTopLeftWhitespace();
 		if (optionsScaleGraphToWindow)

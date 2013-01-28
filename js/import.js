@@ -11,40 +11,27 @@ var jSBGN = function () {
 };
 
 /**
- * Imports the x and y coordinates of all the nodes into the bui graph.
- * First the nodes are centered and then the edges coordinates are 
- * recalculated.
- * @param {bui.Graph} graph The bui graph instance.
- */
-jSBGN.prototype.redrawNodes = function (graph) {
-	var drawables = graph.drawables();
-	var i, j;
-
-	// Node positions updated first
-	for (i = 0; i < this.nodes.length; i++) {
-		j = this.nodes[i];
-		drawables[j.id].absolutePositionCenter(j.x, j.y);
-	}
-	// Recalculating edges coordinates based on the new nodes coordinates
-	for (i = 0; i < this.edges.length; i++) {
-		j = this.edges[i];
-		drawables[j.id].recalculatePoints();
-	}
-};
-
-/**
  * Substitutes the node id's in source and target properties 
  * of edges with the actual node objects, as required for the d3
  * layouter.
+ * @param {boolean} truth Whether the nodes should be connected or not
  */
-jSBGN.prototype.connectNodes = function () {
-	var i, j;
-	for (i in this.edges) {
-		for (j in this.nodes) {
-			if (this.edges[i].source == this.nodes[j].id) this.edges[i].source = this.nodes[j];
-			if (this.edges[i].target == this.nodes[j].id) this.edges[i].target = this.nodes[j];
-		}
-	}
+jSBGN.prototype.connectNodes = function (truth) {
+  var i, j;
+  for (i in this.edges) {
+    if (truth) {
+      for (j in this.nodes) {
+        if (this.edges[i].source == this.nodes[j].id) 
+          this.edges[i].source = this.nodes[j];
+        if (this.edges[i].target == this.nodes[j].id)
+          this.edges[i].target = this.nodes[j];
+      }
+    }
+    else {
+      this.edges[i].source = this.edges[i].source.id;
+      this.edges[i].target = this.edges[i].target.id;
+    }
+  }
 };
 
 /**
@@ -84,6 +71,14 @@ jSBGN.prototype.layoutGraph = function (graph) {
 	while (layouter.alpha() > 0.005)
 	layouter.tick();
 	layouter.stop();
+  
+  // Copy the layout data from d3 to jSBGN format
+  var node;
+  for (i = 0; i < this.nodes.length; i++) {
+    node = this.nodes[i];
+    node.data.x = node.x;
+    node.data.y = node.y;
+  }
 };
 
 
