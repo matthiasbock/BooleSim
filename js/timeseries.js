@@ -38,7 +38,7 @@ var plotW = 100;
     removeStateColumn(count - maxColumns);
     
     for (i in state) {
-      if (state[i]) color = 'red'; else color = 'green';
+      if (state[i]) color = 'green'; else color = 'red';
       // Add a rectangle of required color
       plot.append('svg:rect').attr('y', function(d) { return yPos; }).attr('x', xPos)
           .attr('height', plotH).attr('width', plotH)
