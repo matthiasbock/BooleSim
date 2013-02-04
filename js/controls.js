@@ -242,7 +242,7 @@ var Controls = function () {
 						//else jsbgn.importSBML(file, data);
             
             // Identify input/output states
-            identifyIONodes(Object.keys(jsbgn.rules), jsbgn.right);
+            identifyIONodes(jsbgn.left, jsbgn.right);
             
 						jsbgn.model = data;
 

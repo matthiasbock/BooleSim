@@ -94,7 +94,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 
 	var targetNode, sourceNode;
 	var targetID, sourceID, edgeID;
-	var rules = {}, ruleIDs, rule, right = [];
+	var rules = {}, ruleIDs, rule, right = [], left = [];
 
 	var doc = new sb.Document();
 	doc.lang(sb.Language.AF);
@@ -135,6 +135,8 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 			// Extract all the node id's in the update rule
 			ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
       right = $.unique($.merge(right, ruleIDs));
+      left.push(targetID);
+      
       
 			for (j in ruleIDs) {
 				sourceID = ruleIDs[j];
@@ -165,6 +167,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 	this.edges = jsbgn.edges;
 	this.rules = rules;
   this.right = right;
+  this.left = left;
 };
 
 
@@ -248,6 +251,8 @@ jSBGN.prototype.importGINML = function (data) {
 	this.nodes = jsbgn.nodes;
 	this.edges = jsbgn.edges;
 	this.rules = rules;
+  this.right = Object.keys(rules);
+  this.left = Object.keys(rules);
 };
 
 
