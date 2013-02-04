@@ -240,6 +240,10 @@ var Controls = function () {
 						else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
 							jsbgn.importGINML(data);
 						//else jsbgn.importSBML(file, data);
+            
+            // Identify input/output states
+            identifyIONodes(Object.keys(jsbgn.rules), jsbgn.right);
+            
 						jsbgn.model = data;
 
 						//$('#graphStateTransition').html('');
@@ -247,7 +251,7 @@ var Controls = function () {
 						obj.importNetwork(jsbgn, '#tabNetwork');
 						$('#tabs').tabs('select', '#tabNetwork');
 						$('#textIteration').text(0);
-
+            
 						// Delete any previous instance of the Simulator and initialize a new one
 						//if (simulator !== null) simulator.destroy();
 						//simulator = new Simulator();

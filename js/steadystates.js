@@ -1,24 +1,17 @@
-var networkInputNodes, networkOutputNodes = [];
 var encounteredStateCombinations = [];
+var networkInputNodes, networkOutputNodes;
 
 /*
  * create an empty table in the SteadyStates tab
  */
+
+var identifyIONodes = function(leftNodes, rightNodes) {
+  networkInputNodes = rightNodes.filter(function(i) {return leftNodes.indexOf(i) < 0;});
+  networkOutputNodes = leftNodes.filter(function(i) {return rightNodes.indexOf(i) < 0;});
+}
+ 
 createSteadyStates = function() {
 
-	networkInputNodes = [
-					"oxygen",
-					"glucose",
-					"glycerol",
-					"nitrogen",
-					"rapamycin"
-					];
-	networkOutputNodes = [
-					"autophagy",
-					"basal_mitophagy",
-					"elevated_mitophagy"
-					];
-	
 //	var html = "<tr><th colspan="+(networkInputNodes.length+networkOutputNodes.length+1)+">Passed steady states</th></tr>\n";
 	var html = "<tr><th colspan="+networkInputNodes.length+">Input nodes</th>";
 	html += '<th style="width: 10px;">&nbsp;</th>';
