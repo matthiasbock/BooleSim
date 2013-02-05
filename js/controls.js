@@ -241,8 +241,8 @@ var Controls = function () {
 							jsbgn.importGINML(data);
 						//else jsbgn.importSBML(file, data);
             
-            // Identify input/output states
-            identifyIONodes(jsbgn.left, jsbgn.right);
+						// Identify input/output states
+						identifyIONodes(jsbgn.left, jsbgn.right);
             
 						jsbgn.model = data;
 
@@ -265,9 +265,11 @@ var Controls = function () {
 						};
 						initializeSimulator(jsbgn, settings);
 
+						highlightIONodes();
+						
 						if (optionsSimulateAfterImport)
 							startSimulator()
-						};
+	};
 
 
 	/** 
@@ -308,9 +310,11 @@ var Controls = function () {
 		// close import dialog
 		$('#dialogImport').dialog('close');
 
+		// 500ms gives us enough time to display the Hourglass (next step)
+		// because the browser freezes when the Importer is started
 		window.setTimeout( function() { plaintextImporter($('#demoNetwork').html()) }, 500 );
 
-		// make the hourglass disappear
+		// make the Hourglass disappear, as soon as the browser unfreezes
 		window.setTimeout( function() {
 								document.getElementById('Hourglass').style.visibility = 'hidden';
 								}, 1000
