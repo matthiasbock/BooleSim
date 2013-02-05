@@ -15,12 +15,10 @@ var highlightIONodes = function() {
 	output_color = "#c63fb8";
 	for (i in networkInputNodes) {
 		nodeid = networkInputNodes[i];
-		console.log("Highlighting green: "+nodeid);
 		$('#'+nodeid).css('stroke', input_color);
 	}
 	for (i in networkOutputNodes) {
 		nodeid = networkOutputNodes[i];
-		console.log("Highlighting green: "+nodeid);
 		$('#'+nodeid).css('stroke', output_color);
 	}
 }
