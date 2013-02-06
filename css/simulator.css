@@ -39,13 +39,13 @@
 	border:		1px solid black;
 }
 
-#tabTimeseries > svg {
+#divTimeseries > svg {
   margin: 20px;
   min-width: 800px;
   min-height: 800px;
 }
 
-#tabTimeseries text{
+#divTimeseries text{
   fill: black;
   font-size: 12px;
 }

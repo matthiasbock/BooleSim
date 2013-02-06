@@ -73,10 +73,10 @@ var plotW = 100;
     
     if (plot !== null) return;
     
-    $('#tabTimeseries > svg').remove();
+    $('#divTimeseries > svg').remove();
     
     // Use d3 to create the initial svg with the start states
-    plot = d3.select('#tabTimeseries').append('svg:svg');
+    plot = d3.select('#divTimeseries').append('svg:svg').attr('xmlns','http://www.w3.org/2000/svg');
     createNodesColumn(network.state);
     
     for (j = iterationCounter - iterationCounter % 40; j <= iterationCounter; j++)

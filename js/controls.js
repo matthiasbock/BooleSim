@@ -429,5 +429,13 @@ var Controls = function () {
 			content = "data:image/svg+xml," + encodeURIComponent(svg);
 			window.open(content, 'tmp');
 		}
+    
+    // export Time Series
+    if ($('#exportTimeseries').attr('checked')) {
+      $('#tabs').tabs('select', '#tabTimeseries');
+			var svg = $('#divTimeseries > svg')[0].parentNode.innerHTML;
+			content = "data:image/svg+xml," + encodeURIComponent(svg);
+			window.open(content, 'tmp');
+		}
 	};
 };
