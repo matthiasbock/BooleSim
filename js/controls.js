@@ -268,7 +268,7 @@ var Controls = function () {
 						var settings = {
 							simDelay: simDelay,
 			//				guessSeed: $('#seedGuess').attr('checked'),
-							oneClick: optionsSimulateAfterClick
+							oneClick: typeof($('#optionsOneClick').attr('checked')) !== "undefined"
 						};
 						initializeSimulator(jsbgn, settings);
 
@@ -358,7 +358,7 @@ var Controls = function () {
     
 		// Center the graph and optionally scale it
 		graph.reduceTopLeftWhitespace();
-		if (optionsScaleGraphToWindow)
+		if (typeof($('#optionsScale').attr('checked')) !== "undefined")
 			graph.fitToPage();
 		graph.unsuspendRedraw(handle);
 

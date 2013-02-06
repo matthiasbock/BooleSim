@@ -2,9 +2,7 @@ var serverURL = "http://127.0.0.1:8000/biographer";
 var debug = true;
 var simDelay = 300;
 
-var optionsSimulateAfterImport = true;
-var optionsSimulateAfterClick = true;
-var optionsScaleGraphToWindow = true;
+var optionsSimulateAfterImport = false;
 
 var autoload = false;
 var autoload_file = 'autoload.net';

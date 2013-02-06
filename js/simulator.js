@@ -145,7 +145,7 @@ onNodeClick = function (event) {
   }
 
 	// Start the simulation if the One click option is checked
-	if (config.oneClick && !running) setTimeout(function () {
+	if (config.oneClick && (!running)) setTimeout(function () {
 		startSimulator();
 	}, config.simDelay);
 };
