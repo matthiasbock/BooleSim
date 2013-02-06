@@ -9,7 +9,9 @@ HTML5-capable internet browsers are required for proper rendering.
 
 Download using
 
+<pre>
 git clone https://github.com/matthiasbock/BoNeSim.git
+</pre>
 
 After downloading, open or drag'n'drop index.html into your web browser.
 
