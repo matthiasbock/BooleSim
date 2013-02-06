@@ -9,7 +9,20 @@ var identifyIONodes = function(leftNodes, rightNodes) {
   networkInputNodes = rightNodes.filter(function(i) {return leftNodes.indexOf(i) < 0;});
   networkOutputNodes = leftNodes.filter(function(i) {return rightNodes.indexOf(i) < 0;});
 }
- 
+
+var highlightIONodes = function() {
+	input_color = "#3f84c6";
+	output_color = "#c63fb8";
+	for (i in networkInputNodes) {
+		nodeid = networkInputNodes[i];
+		$('#'+nodeid).css('stroke', input_color);
+	}
+	for (i in networkOutputNodes) {
+		nodeid = networkOutputNodes[i];
+		$('#'+nodeid).css('stroke', output_color);
+	}
+}
+
 createSteadyStates = function() {
 
 //	var html = "<tr><th colspan="+(networkInputNodes.length+networkOutputNodes.length+1)+">Passed steady states</th></tr>\n";
