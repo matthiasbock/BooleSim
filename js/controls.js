@@ -14,8 +14,8 @@ $(document).ready(function () {
  */
 var Controls = function () {
 	// Private variables to hold the bui.Graph instances
-	var network = null,
-		transition = null;
+	var networkGraph = null;
+  var transitionGraph = null;
 	var obj = this;
 
 	/**
@@ -165,8 +165,8 @@ var Controls = function () {
 		var graph = null;
 
 		// Get the correct bui.Graph instance depending on the current tab.
-		if (index === 0) graph = network;
-		else if (index === 1) graph = transition;
+		if (index === 0) graph = networkGraph;
+		else if (index === 1) graph = transitionGraph;
 		// Exit if the graph has not been imported yet
 		if (graph === null) return;
 
@@ -186,9 +186,9 @@ var Controls = function () {
 		// Get the current tab index
 		var graph = null;
 
-		if (ui.index === 0) graph = network;
+		if (ui.index === 0) graph = networkGraph;
 		else if (ui.index === 1) createPlotter();
-    else graph = transition;
+    else graph = transitionGraph;
 		// Exit if the graph has not been imported yet
 		if (graph === null) return;
 
@@ -354,8 +354,8 @@ var Controls = function () {
 		$('#sliderZoom').slider('option', 'value', graph.scale());
 		$('#tabs').tabs('select', tab);
 
-		if (tab === '#graphStateTransition') transition = graph;
-		else network = graph;
+		if (tab === '#graphStateTransition') transitionGraph = graph;
+		else networkGraph = graph;
 	};
 
 	/** 
@@ -396,7 +396,7 @@ var Controls = function () {
 
 		// Get the bui.Graph instance of the select graph to export
 		var graph, bn, content, jsbgn, svg;
-		graph = network;
+		graph = networkGraph;
 
 		// export R
 		if ($('#exportNetworkRBoolNet').attr('checked')) {
