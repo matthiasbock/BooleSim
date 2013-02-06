@@ -86,6 +86,7 @@ var Controls = function () {
 		});
 
 		// bind button event listeners
+    $('#buttonResetTimeseries').click(resetTimeseries);
 		$('#buttonImportDialog').click(openImportDialog);
 		$('#buttonImportFile').click(importFile);
 		$('#buttonImportDemo').click(importDemo);
@@ -195,7 +196,13 @@ var Controls = function () {
 		// Set the slider's value to the current graph's scale 
 		$('#sliderZoom').slider('option', 'value', graph.scale());
 	};
-
+  
+  var resetTimeseries = function() {
+    plot = null;
+    iterationCounter = 0;
+    states = [];
+    createPlotter();
+  }
 	/** 
 	 * The event handler for opening the import dialog box. All the elements
 	 * are given a default value
