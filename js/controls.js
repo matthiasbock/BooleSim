@@ -201,6 +201,8 @@ var Controls = function () {
     plot = null;
     iterationCounter = 0;
     states = [];
+    states.push({});
+    $.extend(states[0], network.state);
     createPlotter();
   }
 	/** 
