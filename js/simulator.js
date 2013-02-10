@@ -52,7 +52,7 @@ states = [];
  * @param {Boolean} guessSeed Truth value for whether the guess seed for
  * SBML files should be applied.
  */
-initializeSimulator = function (jsbgn, settings) {
+initializeSimulator = function (jsbgn, settings, graph) {
 	network = jsbgn;
 	config = settings;
 	network.state = {};
@@ -79,12 +79,20 @@ initializeSimulator = function (jsbgn, settings) {
 	createSteadyStates();
 
 	var svgNode;
+  drawables = graph.drawables();
+  
 	for (i in network.state) {
 		ruleFunctions[i] = rule2function(network.rules[i]);
 		// Get the node in the SVG and bind the event handlers
 		svgNode = $('#' + i);
 		if (svgNode !== null) {
-			svgNode.click(onNodeClick);
+      drawables[i].bind(bui.Node.ListenerType.click, function () {
+        this.bind(bui.Node.ListenerType.click, onNodeClick);
+      });
+      drawables[i].bind(bui.Node.ListenerType.dragStart, function () {
+        this.unbind(bui.Node.ListenerType.click, onNodeClick);
+      });
+      drawables[i].bind(bui.Node.ListenerType.click, onNodeClick);
 			svgNode.hover(showRuleBox, removeInfoBox);
 			svgNode.bind('contextmenu', onEditRuleDialogOpen);
 			updateNodeColor(i);
@@ -124,11 +132,12 @@ updateNodeColor = function (nodeid) {
  */
 onNodeClick = function (event) {
 	// Toggle the node state
-	var nodeid = $(this).attr('id');
-	if (!event.ctrlKey)
+	var nodeid = this.id();
+  
+  //~ if (!event.ctrlKey)
 		network.state[nodeid] = ! network.state[nodeid];
-	else
-		network.freeze[nodeid] = ! network.freeze[nodeid];
+	//~ else
+		//~ network.freeze[nodeid] = ! network.freeze[nodeid];
 	updateNodeColor(nodeid);
   
   //Update the value in the plot

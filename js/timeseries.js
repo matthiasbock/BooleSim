@@ -20,7 +20,6 @@ var maxColumns = 40;
           .attr('style', 'font-size:14px')
           .attr('id', 'label' + i);
           
-          
       var width = d3.select('#label' + i).node().getBBox()['width'];
       if (width > plotW)
         plotW = width;

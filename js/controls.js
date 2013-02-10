@@ -264,7 +264,7 @@ var Controls = function () {
 			//				guessSeed: $('#seedGuess').attr('checked'),
 							oneClick: typeof($('#optionsOneClick').attr('checked')) !== "undefined"
 						};
-						initializeSimulator(jsbgn, settings);
+						initializeSimulator(jsbgn, settings, networkGraph);
             
             $('#tabs').tabs('select', '#tabNetwork');
 						highlightIONodes();
