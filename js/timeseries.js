@@ -1,10 +1,6 @@
 var plotH = 20;
 var plotW = 100;
 var maxColumns = 40;
-//~ #don't have a node change it's state, when it's moved
-//~ #jSBGN export and import,which includes the node positions and the update rules
-//~ #width for node names in the timeseries too narrow
-//~ #big iteration number in timeseries graph
 
 /**
    * Construct the node label column

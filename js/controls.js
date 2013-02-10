@@ -227,6 +227,8 @@ var Controls = function () {
 										guessed = 'Python';
 									else if ( data.indexOf(' & ') + data.indexOf(' | ') > -1 )
 										guessed = 'R';
+                  else if ( data.indexOf(' && ') + data.indexOf(' || ') > -1 )
+										guessed = 'jSBGN';
 									else if ( data.indexOf('<gxl') > -1 )
 										guessed = 'GINML';
 									else {
@@ -241,6 +243,8 @@ var Controls = function () {
 							jsbgn.importBooleanNetwork(data, ',');
 						else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
 							jsbgn.importGINML(data);
+            else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN' )
+							jsbgn.importjSBGN(data);
 						//else jsbgn.importSBML(file, data);
             
 						// Identify input/output states
@@ -420,8 +424,9 @@ var Controls = function () {
 
 		// export jSBGN
 		if ($('#exportjSBGN').attr('checked')) {
-			jsbgn = JSON.stringify(graph.toJSON());
-			content = "data:text/plain," + encodeURIComponent(jsbgn);
+			jsbgn = graph.toJSON();
+      jsbgn = $.extend(jsbgn, {rules: network.rules});
+			content = "data:application/json," + encodeURIComponent(JSON.stringify(jsbgn));
 			window.open(content, 'tmp');
 		} else
 

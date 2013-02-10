@@ -79,7 +79,7 @@ initializeSimulator = function (jsbgn, settings, graph) {
 	createSteadyStates();
 
 	var svgNode;
-  drawables = graph.drawables();
+  var drawables = graph.drawables();
   
 	for (i in network.state) {
 		ruleFunctions[i] = rule2function(network.rules[i]);

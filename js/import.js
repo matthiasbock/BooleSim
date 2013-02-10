@@ -300,3 +300,22 @@ jSBGN.prototype.importSBML = function (file, data) {
 		else this.rules[node.id] = 'update';
 	}
 };
+
+jSBGN.prototype.importjSBGN = function (data) {
+	var jsbgn = JSON.parse(data);
+
+	this.nodes = jsbgn.nodes;
+	this.edges = jsbgn.edges;
+  this.rules = jsbgn.rules;
+  
+  left = []; right = [];
+	for (i in this.rules) {
+    if (this.rules[i] !== i) {
+      var ruleIDs = this.rules[i].match(/[A-Za-z0-9_]+/g);
+      right = $.unique($.merge(right, ruleIDs));
+      left.push(i);
+    }
+	}
+  this.right = right;
+  this.left = left;
+};
