@@ -251,7 +251,6 @@ var Controls = function () {
 						//$('#graphStateTransition').html('');
 						// Import the jSBGN object into a bui.Graph instance
 						obj.importNetwork(jsbgn, '#tabNetwork');
-						$('#tabs').tabs('select', '#tabNetwork');
 						$('#textIteration').text(0);
             
 						// Delete any previous instance of the Simulator and initialize a new one
@@ -266,7 +265,8 @@ var Controls = function () {
 							oneClick: typeof($('#optionsOneClick').attr('checked')) !== "undefined"
 						};
 						initializeSimulator(jsbgn, settings);
-
+            
+            $('#tabs').tabs('select', '#tabNetwork');
 						highlightIONodes();
 						
 						if (optionsSimulateAfterImport)

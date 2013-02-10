@@ -1,5 +1,10 @@
 var plotH = 20;
 var plotW = 100;
+var maxColumns = 40;
+//~ #don't have a node change it's state, when it's moved
+//~ #jSBGN export and import,which includes the node positions and the update rules
+//~ #width for node names in the timeseries too narrow
+//~ #big iteration number in timeseries graph
 
 /**
    * Construct the node label column
@@ -12,13 +17,16 @@ var plotW = 100;
       plot.append('svg:text').attr('y', function(d) { return yPos; })
           .attr('dx', 10).attr('dy', 15)
           .text(i)
+          .attr('style', 'font-size:14px')
           .attr('id', 'label' + i);
+          
           
       var width = d3.select('#label' + i).node().getBBox()['width'];
       if (width > plotW)
-        plotW = width + 50;
+        plotW = width;
       yPos += plotH;
     }  
+    plotW += 50;
     plot.attr('height', yPos + 50);
   }
   
@@ -28,7 +36,6 @@ var plotW = 100;
    * @param {number} count Iteration Counter.
    */
   var createStateColumn = function(state, count) {
-    var maxColumns = 40;
     
     // Calculate position of the column
     var yPos = 0, xPos = plotW + (count % maxColumns) * plotH; 
@@ -50,7 +57,7 @@ var plotW = 100;
     plot.append('svg:text').attr('y', function(d) { return yPos; }).attr('x', xPos)
           .attr('dx', 5).attr('dy', 15)
           .attr('class', count)
-          .text(count);
+          .text(count % maxColumns);
     // Add the marker for current iteration
     plot.append('svg:rect').attr('height', yPos).attr('width', 7)
           .attr('id', 'currMarker')
@@ -79,7 +86,7 @@ var plotW = 100;
     plot = d3.select('#divTimeseries').append('svg:svg').attr('xmlns','http://www.w3.org/2000/svg');
     createNodesColumn(network.state);
     
-    for (j = iterationCounter - iterationCounter % 40; j <= iterationCounter; j++)
+    for (j = iterationCounter - iterationCounter % maxColumns; j <= iterationCounter; j++)
       createStateColumn(states[j], j);
     
   };
@@ -90,6 +97,7 @@ var plotW = 100;
     states = [];
     states.push({});
     $.extend(states[0], network.state);
+    $('#tabs').tabs('select', '#tabTimeseries');
     createPlotter();
   }
   
