@@ -86,7 +86,8 @@ var Controls = function () {
 		});
 
 		// bind button event listeners
-    $('#buttonResetTimeseries').click(resetTimeseries);
+    $('#buttonResetTimeseries').click(function() {
+      resetTimeseries()});
 		$('#buttonImportDialog').click(openImportDialog);
 		$('#buttonImportFile').click(importFile);
 		$('#buttonImportDemo').click(importDemo);
@@ -188,7 +189,7 @@ var Controls = function () {
 		var graph = null;
 
 		if (ui.index === 0) graph = networkGraph;
-		else if (ui.index === 1) createPlotter();
+		//~ else if (ui.index === 1) createPlotter();
     else graph = transitionGraph;
 		// Exit if the graph has not been imported yet
 		if (graph === null) return;
@@ -197,14 +198,6 @@ var Controls = function () {
 		$('#sliderZoom').slider('option', 'value', graph.scale());
 	};
   
-  var resetTimeseries = function() {
-    plot = null;
-    iterationCounter = 0;
-    states = [];
-    states.push({});
-    $.extend(states[0], network.state);
-    createPlotter();
-  }
 	/** 
 	 * The event handler for opening the import dialog box. All the elements
 	 * are given a default value
@@ -232,7 +225,7 @@ var Controls = function () {
 						if ($('#formatGuess').attr('checked')) {
 									if ( data.indexOf(' and ') + data.indexOf(' or ') > -1 )
 										guessed = 'Python';
-									else if ( data.indexOf(' && ') + data.indexOf(' || ') > -1 )
+									else if ( data.indexOf(' & ') + data.indexOf(' | ') > -1 )
 										guessed = 'R';
 									else if ( data.indexOf('<gxl') > -1 )
 										guessed = 'GINML';

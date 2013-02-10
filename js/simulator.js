@@ -58,9 +58,6 @@ initializeSimulator = function (jsbgn, settings) {
 	network.state = {};
 	network.freeze = {};
   running = false;
-  iterationCounter = 0;
-  plot = null;
-  states = [];
 
 	console.log('Initializing simulator ...');
 
@@ -78,9 +75,7 @@ initializeSimulator = function (jsbgn, settings) {
 		}
 	}
   
-  states.push({});
-  $.extend(states[0], network.state);
-
+  resetTimeseries();
 	createSteadyStates();
 
 	var svgNode;
@@ -139,10 +134,6 @@ onNodeClick = function (event) {
   //Update the value in the plot
   states[iterationCounter] = {};
   $.extend(states[iterationCounter], network.state);
-  if (plot !== null) {
-    iterationCounter += 2;
-    createStateColumn(network.state, iterationCounter);
-  }
 
 	// Start the simulation if the One click option is checked
 	if (config.oneClick && (!running)) setTimeout(function () {
@@ -186,6 +177,7 @@ synchronousUpdate = function (state) {
 updateAndContinue = function () {
 	var changed, i;
 	changed = synchronousUpdate(network.state);
+  
   states.push({});
   $.extend(states[iterationCounter + 1], network.state);
 
@@ -215,7 +207,7 @@ updateAndContinue = function () {
  */
 runSimulator = function () {
 	if (!(running)) return;
-
+  
 	// Get the next states from the current state
 	updateAndContinue();
   
@@ -243,6 +235,12 @@ startSimulator = function () {
 
 	// Start the simulation
 	running = true;
+  
+  if (iterationCounter > 0)
+    addWhitespaceTS();
+  else
+    createStateColumn(network.state, iterationCounter);
+  
 	runSimulator();
 };
 

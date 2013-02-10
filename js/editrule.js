@@ -15,8 +15,12 @@ onEditRuleDialogOpen = function (event) {
 		.val(network.rules[id]);
 	$('#buttonEdit')
 		.click(onEditRuleDialogSave);
-	$('#dialogEdit')
+  $('#dialogEdit')
 		.dialog('open');
+      
+  $('#buttonCancel').click(function() {
+      $('#dialogEdit').dialog('close');
+    });
 };
 
 /*

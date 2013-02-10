@@ -83,3 +83,18 @@ var plotW = 100;
       createStateColumn(states[j], j);
     
   };
+  
+  var resetTimeseries = function() {
+    plot = null;
+    iterationCounter = 0;
+    states = [];
+    states.push({});
+    $.extend(states[0], network.state);
+    createPlotter();
+  }
+  
+  var addWhitespaceTS = function() {
+    iterationCounter += 2;
+    createStateColumn(network.state, iterationCounter);
+  }
+  
