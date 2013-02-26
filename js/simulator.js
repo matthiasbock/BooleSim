@@ -244,12 +244,20 @@ startSimulator = function () {
 
 	// Start the simulation
 	running = true;
-  
-  if (iterationCounter > 0)
-    addWhitespaceTS();
-  else
-    createStateColumn(network.state, iterationCounter);
-  
+
+	// if it's the first simulation, timeseries graph is empty: create first column
+	if (iterationCounter == 0)
+		createStateColumn(network.state, iterationCounter);
+	else {
+		// move 2 steps to the right, delete the column inbetween
+		iterationCounter += 1;
+		removeStateColumn(iterationCounter);
+		iterationCounter += 1;
+		// reset timeseries label counter
+		timeseriesLabelCounter = 1;
+		// draw the next first timeseries column
+		createStateColumn(network.state, iterationCounter);
+	}  
 	runSimulator();
 };
 

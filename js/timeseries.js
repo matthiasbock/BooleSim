@@ -1,6 +1,7 @@
 var plotH = 20;
 var plotW = 100;
 var maxColumns = 40;
+var timeseriesLabelCounter = 0;
 
 /**
    * Construct the node label column
@@ -33,27 +34,33 @@ var maxColumns = 40;
   var createStateColumn = function(state, count) {
     
     // Calculate position of the column
-    var yPos = 0, xPos = plotW + (count % maxColumns) * plotH; 
+    var relativeX = count % maxColumns;
+    var yPos = 0, xPos = plotW + relativeX * plotH; 
     var color;
     
     // Replace previous column
-    removeStateColumn(count - maxColumns);
+    removeStateColumn(relativeX);
     
     for (i in state) {
       if (state[i]) color = 'green'; else color = 'red';
       // Add a rectangle of required color
-      plot.append('svg:rect').attr('y', function(d) { return yPos; }).attr('x', xPos)
-          .attr('height', plotH).attr('width', plotH)
-          .attr('fill', color)
-          .attr('class', count);
+      plot.append('svg:rect')
+	  .attr('class', 'rect'+relativeX)
+	  .attr('x', xPos).attr('y', function(d) { return yPos; })
+          .attr('width', plotH).attr('height', plotH)
+          .attr('fill', color);
       yPos += plotH;
     }  
+
     // Iteration count text on the bottom
-    plot.append('svg:text').attr('y', function(d) { return yPos; }).attr('x', xPos)
+    plot.append('svg:text')
+          .attr('id', 'text'+relativeX)
+	  .attr('x', xPos).attr('y', function(d) { return yPos; })
           .attr('dx', 5).attr('dy', 15)
-          .attr('class', count)
-          .text(count % maxColumns);
-    // Add the marker for current iteration
+          .text(timeseriesLabelCounter);
+    timeseriesLabelCounter += 1;
+
+    // Add the marker (cursor) for current iteration
     plot.append('svg:rect').attr('height', yPos).attr('width', 7)
           .attr('id', 'currMarker')
           .attr('x', xPos + plotH);      
@@ -64,9 +71,10 @@ var maxColumns = 40;
    * @param {number} index The index of the column to be deleted.
    */
   var removeStateColumn = function(index) {
-    $('rect.' + index).remove();
-    $('text.' + index).remove();
-    d3.selectAll('#currMarker').remove();
+	index = index % maxColumns;
+	$('.rect'+index).remove();
+	$('#text'+index).remove();
+	$('#currMarker').remove();
   }
   /**
    * Create the Heatmap Plotter. 
@@ -95,9 +103,5 @@ var maxColumns = 40;
     $('#tabs').tabs('select', '#tabTimeseries');
     createPlotter();
   }
-  
-  var addWhitespaceTS = function() {
-    iterationCounter += 2;
-    createStateColumn(network.state, iterationCounter);
-  }
+
   

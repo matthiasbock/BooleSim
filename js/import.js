@@ -126,6 +126,8 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 			// Create the node if it does not exist
 			if (!(targetID in rules))
 				targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
+
+			// assign rules (right side equation) to array of nodes (left side of equation)
 			rules[targetID] = rule;
 			if (rule === 'True' || rule === 'False') {
 				rules[targetID] = targetID;
