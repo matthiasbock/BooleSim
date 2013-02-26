@@ -205,7 +205,8 @@ TORC1* = (not nitrogen) or (rapamycin and (not fortified_cell_wall))
 Psr1* = (not PKA) or TORC1
 #Whi2* = not unknown_kinase1
 #Msn2_4* = (Psr1 or Psr2) and Whi2 and (not (PKA or unknown_kinase2))
-Msn2_4* = Psr1 and Whi2 and ((not PKA) or TORC1)
+#Msn2_4* = Psr1 and Whi2 and ((not PKA) or TORC1)
+Msn2_4* = Psr1 and Whi2 and (not PKA)
 #unknown_kinase1 = False
 #unknown_kinase2 = False
 
@@ -251,7 +252,8 @@ Ptc6* = (not ROS)
 #Atg33* = Msn2_4 and unknown_kinase3 and (not Ptc6)
 Atg33* = unknown_kinase3 and (not Ptc6) and STRE
 
-autophagy* = Atg1_13_17 and (not PKA)
+#autophagy* = Atg1_13_17 and (not PKA)
+autophagy* = Atg1_13_17
 basal_mitophagy* = Atg32
 elevated_mitophagy* = Atg32 and Atg1_13_17 and Atg8
 </script>
