@@ -2,10 +2,11 @@ Boolean Network Simulator
 ==================
 
 This software provides a browseable user interface,
-which allows the user to load protein interaction networks in various formats,
+which allows the user to load Boolean networks in various formats,
 display them and interactively simulate them.
-It's coded in JavaScript, such that it should work platform-independent.
-HTML5-capable internet browsers are required for proper rendering.
+It's coded in JavaScript, so it should work platform-independent.
+A recent version of a HTML5-capable internet browser is required for proper rendering,
+Chromium recommended (http://www.chromium.org/getting-involved/download-chromium).
 
 Download using
 
