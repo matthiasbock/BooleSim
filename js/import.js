@@ -8,6 +8,7 @@ var serverURL;
 var jSBGN = function () {
 	this.nodes = [];
 	this.edges = [];
+  this.state = {};
 };
 
 /**
@@ -111,21 +112,41 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 			// Extract the columns using the split key which is different
 			// for R and Python Boolean Net
 			cols = trimmed.split(splitKey);
-			if (cols.length != 2)
-				console.error('Error in input file, line ' + i + ': Broken update rule');
-			targetID = cols[0].trim();
+			
+      //~ if (cols.length != 2)
+				//~ console.error('Error in input file, line ' + i + ': Broken update rule');
+			
+      targetID = cols[0].trim();
+      if (splitKey === ',') {
+        if (targetID === 'targets') continue;
+      }
+      else {
+        if (targetID[targetID.length - 1] === '*') {
+          targetID = targetID.substring(0, targetID.length - 1);
+        }
+        else {
+          if ($('#seedFile').attr('checked')) {
+            rule = cols[cols.length - 1].trim();
+            for (j = 0; j < cols.length - 1; j++) {
+              targetID = cols[j].trim();
+              if (rule === 'True') this.state[targetID] = true;
+              else if (rule === 'False') this.state[targetID] = false;
+              else this.state[targetID] = controls.getRandomSeed();
+            }
+          }
+          continue;
+        }
+      }
 
 			// Replace R/Python's logical operators with JS logical operators.
 			rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
 					.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
 					.trim();
 
-			if (targetID === 'targets' && splitKey === ',') continue;
-			if (targetID[targetID.length - 1] == '*') targetID = targetID.substring(0, targetID.length - 1);
-
 			// Create the node if it does not exist
-			if (!(targetID in rules))
+			if (!(targetID in rules)) {
 				targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
+      }
 
 			// assign rules (right side equation) to array of nodes (left side of equation)
 			rules[targetID] = rule;
@@ -138,7 +159,6 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 			ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
       right = $.unique($.merge(right, ruleIDs));
       left.push(targetID);
-      
       
 			for (j in ruleIDs) {
 				sourceID = ruleIDs[j];

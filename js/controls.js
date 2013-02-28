@@ -222,6 +222,7 @@ var Controls = function () {
 						// call the appropriate importer
 						var guessed;
 						var data, jsbgn = new jSBGN();
+            
 						if ($('#formatGuess').attr('checked')) {
 									if ( data.indexOf(' and ') + data.indexOf(' or ') > -1 )
 										guessed = 'Python';
@@ -367,6 +368,10 @@ var Controls = function () {
 		if (tab === '#graphStateTransition') transitionGraph = graph;
 		else networkGraph = graph;
 	};
+  
+  this.getRandomSeed = function () {
+    return Boolean(Math.round(Math.random()));
+  }
 
 	/** 
 	 * Get the seed to be given initially to the network.
@@ -375,7 +380,7 @@ var Controls = function () {
 	this.getInitialSeed = function () {
 		if ($('#seedTrue').attr('checked')) return true;
 		else if ($('#seedFalse').attr('checked')) return false;
-		else if ($('#seedRandom').attr('checked')) return Boolean(Math.round(Math.random()));
+		else if ($('#seedRandom').attr('checked')) return this.getRandomSeed();
 		else return true;
 	};
 

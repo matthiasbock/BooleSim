@@ -55,7 +55,6 @@ states = [];
 initializeSimulator = function (jsbgn, settings, graph) {
 	network = jsbgn;
 	config = settings;
-	network.state = {};
 	network.freeze = {};
   running = false;
 
@@ -70,7 +69,8 @@ initializeSimulator = function (jsbgn, settings, graph) {
 	var i;
 	for (i in network.rules) {
 		if (network.rules[i].length !== 0) {
-			network.state[i] = controls.getInitialSeed();
+      if (!network.state.hasOwnProperty(i))
+        network.state[i] = controls.getInitialSeed();
 			network.freeze[i] = false;
 		}
 	}
