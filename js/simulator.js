@@ -130,14 +130,16 @@ updateNodeColor = function (nodeid) {
 /*
  * The event handler for left clicking a node. The node state is toggled.
  */
-onNodeClick = function (event) {
+onNodeClick = function (ob, ev) {
 	// Toggle the node state
 	var nodeid = this.id();
   
-  //~ if (!event.ctrlKey)
+  if (!ev.ctrlKey) {
 		network.state[nodeid] = ! network.state[nodeid];
-	//~ else
-		//~ network.freeze[nodeid] = ! network.freeze[nodeid];
+  }
+	else {
+		network.freeze[nodeid] = ! network.freeze[nodeid];
+  }
 	updateNodeColor(nodeid);
   
   //Update the value in the plot
@@ -169,6 +171,9 @@ synchronousUpdate = function (state) {
 			if (newState[i] !== state[i])
 				changed.push(i);
 		}
+    else {
+      newState[i] = state[i];
+    }
 	}
 	// The update is synchronous: the states are updated only after all
 	// the new states are calculated
