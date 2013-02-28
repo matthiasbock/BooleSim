@@ -273,7 +273,7 @@ var Controls = function () {
             $('#tabs').tabs('select', '#tabNetwork');
 						highlightIONodes();
 						
-						if (optionsSimulateAfterImport)
+						if (typeof($('#optionsSimulateAfterImport').attr('checked')) !== "undefined")
 							startSimulator()
 	};
 
