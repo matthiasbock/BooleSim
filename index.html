@@ -176,19 +176,21 @@ nitrogen = True
 glycolysis* = glucose
 pyruvate* = glycolysis
 
+FGM = pyruvate or glycerol or ethanol or amino_acids or nitrogen
 fermentation* = pyruvate and (not oxphos)
 ethanol* = fermentation
 
-oxphos* = NADH and oxygen and ETC
+oxphos* = acid_cycle and oxygen and ETC and (not glycolysis)
 #petite* = pyruvate and (not oxphos)
 ROS* = oxphos
 
-acid_cycle* = (pyruvate or glycerol)
+acid_cycle* = FGM
 #and oxphos
 CO2* = acid_cycle
 
-NADH* = glycolysis or acid_cycle
+#NADH* = glycolysis or acid_cycle
 ATP* = glycolysis or oxphos
+cell_death* = not ATP
 
 Gpr1* = glucose
 Gpa2* = Gpr1
@@ -197,21 +199,21 @@ Cyr1* = Ras2 or Gpa2
 Ras2* = CO2
 cAMP* = Cyr1 and ATP
 PKA* = cAMP
-
-Sch9* = glycerol
+#and (not Sch9)
 
 rapamycin = False
-TORC1* = (not nitrogen) or (rapamycin and (not fortified_cell_wall))
+TORC1* = (not FGM) or  (rapamycin and (not fortified_cell_wall))
+Sch9* = not TORC1
 
-Psr1* = (not PKA) or TORC1
+#Psr1* = (not PKA) or TORC1
 #Whi2* = not unknown_kinase1
 #Msn2_4* = (Psr1 or Psr2) and Whi2 and (not (PKA or unknown_kinase2))
 #Msn2_4* = Psr1 and Whi2 and ((not PKA) or TORC1)
-Msn2_4* = Psr1 and Whi2 and (not PKA)
+Msn2_4* = Psr1_2 and Whi2 and ((not PKA) or (not Sch9))
 #unknown_kinase1 = False
 #unknown_kinase2 = False
 
-Wsc1* = ROS
+#Wsc1* = ROS
 #calcofluor_white = False
 #Pkc1* = Wsc1
 #or calcofluor_white
@@ -236,13 +238,14 @@ fortified_cell_wall* = (not Uth1)
 #Hog1_nucleus* = Hog1 and (not Sdp1)
 
 
-Atg1* = ((not PKA) and (not Sch9)) or TORC1
-Atg13* = Atg1
-Atg1_13_17* = Atg1 and Atg13 and Atg17
+#Atg1* = (not PKA) and (not Sch9)
+#Atg13* = Atg1
+#Atg1_13_17* = Atg1 and Atg13 and Atg17
+Atg1_13_17* = (not PKA) or (not Sch9)
 
 #Atg11
 
-Rim15* = (not PKA) or TORC1 or (not Sch9)
+Rim15* = (not PKA) or (not Sch9)
 STRE* = Msn2_4 and Rim15
 Atg8* = STRE
 #and Hog1_cytosol
@@ -251,7 +254,7 @@ Atg32* = Slt2_cytosol or Atg33
 
 Ptc6* = (not ROS)
 #Atg33* = Msn2_4 and unknown_kinase3 and (not Ptc6)
-Atg33* = unknown_kinase3 and (not Ptc6) and STRE
+Atg33* = STRE and Sch9 and (not Ptc6)
 
 #autophagy* = Atg1_13_17 and (not PKA)
 autophagy* = Atg1_13_17
