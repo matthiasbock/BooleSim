@@ -9,6 +9,7 @@ var timeseriesLabelCounter = 0;
    */
   var createNodesColumn = function(state) {
     var yPos = 0; 
+    plotW = 100;
     
     for (i in state) {
       plot.append('svg:text').attr('y', function(d) { return yPos; })
@@ -97,6 +98,7 @@ var timeseriesLabelCounter = 0;
   var resetTimeseries = function() {
     plot = null;
     iterationCounter = 0;
+    timeseriesLabelCounter = 0;
     states = [];
     states.push({});
     $.extend(states[0], network.state);
