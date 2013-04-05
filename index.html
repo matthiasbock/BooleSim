@@ -48,11 +48,15 @@
       <ul>
       <li>Legend: </li>
       <li><div id=legendOn class=legend></div></li>
-      <li>True</li>
+      <li>=<b>True</b>&nbsp;&nbsp;</li>
       <li><div id=legendOff class=legend></div></li>
-      <li>False</li>
+      <li>=<b>False</b></li>
       <li><button id=buttonResetTimeseries>Reset</button></li>
       </ul>
+	<script>
+		document.getElementById('legendOn').style['background-color'] = blue;
+		document.getElementById('legendOff').style['background-color'] = yellow;
+	</script>
     </div>
     <div id=divTimeseries>
     </div>
