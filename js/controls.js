@@ -35,6 +35,9 @@ var Controls = function () {
 			stop: zoomGraph
 		});*/
 		//$('#circleProgress').hide();
+    
+    $('#legendOn').css('background-color', yellow);
+    $('#legendOff').css('background-color', blue);
 		
 		// initialize jQuery UI buttons
 		$('#buttonImportDialog').button({
