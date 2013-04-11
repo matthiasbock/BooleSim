@@ -5,7 +5,7 @@ var simDelay = 300;
 var autoload = false;
 var autoload_file = 'autoload.net';
 
-var blue = '#3b4bed';
+var blue = '#3390F7';
 var yellow = '#daf403';
 
 // If debugging or testing code

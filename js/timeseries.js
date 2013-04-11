@@ -44,8 +44,9 @@ var timeseriesLabelCounter = 0;
     
     for (i in state) {
       if (state[i])
-		color = blue;
-	else color = yellow;
+        color = yellow;
+      else 
+        color = blue;
       // Add a rectangle of required color
       plot.append('svg:rect')
 	  .attr('class', 'rect'+relativeX)

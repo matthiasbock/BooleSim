@@ -131,6 +131,9 @@ var Controls = function () {
 		});
 
 		$.getScript("include/jquery.simulate.js");
+    $.getScript("include/jquery.color-2.1.1.min.js", function() {
+      jQuery.Color.hook( "fill stroke" );
+    });
 		$.getScript("include/biographer-ui.js", function () {
 			bui.settings.css.stylesheetUrl = 'css/visualization-svg.css';
 		});

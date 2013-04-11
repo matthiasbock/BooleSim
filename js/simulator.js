@@ -105,11 +105,10 @@ initializeSimulator = function (jsbgn, settings, graph) {
  * @param {string} nodeid The node id.
  */
 updateNodeColor = function (nodeid) {
-	var opacity = 0;
-	if (network.state[nodeid] == true)
-		opacity = 1;
-
-	color = "#10d010";	// green'ish
+  if (network.state[nodeid])
+    color = yellow;
+  else
+    color = blue;
 	stroke = "black";
 	width = "2px";
 	if (network.freeze[nodeid]) {
@@ -120,10 +119,8 @@ updateNodeColor = function (nodeid) {
 	$('#' + nodeid + ' :eq(0)')
 		.css('stroke', stroke)
 		.css('stroke-width', width)
-		.css('fill', color)
-		.animate({
-				'fill-opacity': opacity
-				},
+		//~ .css('fill', color);
+    .animate({ 'fill': color },
 				config.simDelay);
 };
 	
