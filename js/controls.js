@@ -1,4 +1,6 @@
 var controls, simulator = null;
+var networkGraph = null;
+var transitionGraph = null;
 
 $(document).ready(function () {
 	// Load up the UI
@@ -14,8 +16,7 @@ $(document).ready(function () {
  */
 var Controls = function () {
 	// Private variables to hold the bui.Graph instances
-	var networkGraph = null;
-  var transitionGraph = null;
+  var prevTab = 0;
 	var obj = this;
 
 	/**
@@ -174,10 +175,8 @@ var Controls = function () {
 
 		// Get the correct bui.Graph instance depending on the current tab.
 		if (index === 0) graph = networkGraph;
-		else if (index === 1) graph = transitionGraph;
 		// Exit if the graph has not been imported yet
 		if (graph === null) return;
-
 		// Scale the bui graph to the value set by the slider
 		graph.scale(ui.value);
 		graph.reduceTopLeftWhitespace();
@@ -191,15 +190,25 @@ var Controls = function () {
 	 * @param {UI} ui Contains the index of the selected tab.
 	 */
 	var changeTab = function (event, ui) {
+    if (prevTab === 2) {
+      if (network != null) {
+        //Re-import network from the new rules
+        reloadUpdateRules();
+      }
+    }
+    else if (prevTab === 3) {
+      if (network != null) {
+        //Re-import rules from new network: Add/Delete + rules update functionality required
+        loadRulesText();
+      }
+    }
+    
+    prevTab = ui.index;
+    
 		// Get the current tab index
 		var graph = null;
-
 		if (ui.index === 0) graph = networkGraph;
-		//~ else if (ui.index === 1) createPlotter();
-    else graph = transitionGraph;
-		// Exit if the graph has not been imported yet
 		if (graph === null) return;
-
 		// Set the slider's value to the current graph's scale 
 		$('#sliderZoom').slider('option', 'value', graph.scale());
 	};
@@ -245,9 +254,9 @@ var Controls = function () {
 									console.log('Format not specified. Guessing: '+guessed);
 									}
 						if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
-							jsbgn.importBooleanNetwork(data, '=');
+							jsbgn.importBooleanNetwork(data, '=', false);
 						else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
-							jsbgn.importBooleanNetwork(data, ',');
+							jsbgn.importBooleanNetwork(data, ',', false);
 						else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
 							jsbgn.importGINML(data);
             else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN' )
@@ -263,6 +272,7 @@ var Controls = function () {
 						// Import the jSBGN object into a bui.Graph instance
 						obj.importNetwork(jsbgn, '#tabNetwork');
 						$('#textIteration').text(0);
+            
             
 						// Delete any previous instance of the Simulator and initialize a new one
 						//if (simulator !== null) simulator.destroy();

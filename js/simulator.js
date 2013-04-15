@@ -31,7 +31,26 @@ rule2function = function (rule) {
 	return Function("state", "return " + newRule + ";");
 };
 
-
+updateGraphNodes = function(state, graph) {
+  var svgNode;
+  var drawables = graph.drawables();
+  
+  for (i in state) {
+		// Get the node in the SVG and bind the event handlers
+		svgNode = $('#' + i);
+		if (svgNode !== null) {
+      drawables[i].bind(bui.Node.ListenerType.click, function () {
+        this.bind(bui.Node.ListenerType.click, onNodeClick);
+      });
+      drawables[i].bind(bui.Node.ListenerType.dragStart, function () {
+        this.unbind(bui.Node.ListenerType.click, onNodeClick);
+      });
+      drawables[i].bind(bui.Node.ListenerType.click, onNodeClick);
+			svgNode.hover(showRuleBox, removeInfoBox);
+			updateNodeColor(i);
+		}
+	}
+}
 
 obj = null;
 config = null;
@@ -78,26 +97,11 @@ initializeSimulator = function (jsbgn, settings, graph) {
   resetTimeseries();
 	createSteadyStates();
 
-	var svgNode;
-  var drawables = graph.drawables();
-  
+  ruleFunctions = {};
 	for (i in network.state) {
 		ruleFunctions[i] = rule2function(network.rules[i]);
-		// Get the node in the SVG and bind the event handlers
-		svgNode = $('#' + i);
-		if (svgNode !== null) {
-      drawables[i].bind(bui.Node.ListenerType.click, function () {
-        this.bind(bui.Node.ListenerType.click, onNodeClick);
-      });
-      drawables[i].bind(bui.Node.ListenerType.dragStart, function () {
-        this.unbind(bui.Node.ListenerType.click, onNodeClick);
-      });
-      drawables[i].bind(bui.Node.ListenerType.click, onNodeClick);
-			svgNode.hover(showRuleBox, removeInfoBox);
-			svgNode.bind('contextmenu', onEditRuleDialogOpen);
-			updateNodeColor(i);
-		}
-	}
+  }
+  updateGraphNodes(network.state, graph);
 };
 		
 /*

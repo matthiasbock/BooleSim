@@ -1,44 +1,46 @@
+var loadRulesText = function() {
+  var text = '';
+  $('#textRules').val('');
+  for (i in network.rules) {
+    text += i + ' = ' + network.rules[i] + '\n';
+  }
+  $('#textRules').val(text);
+}
 
-/*
- * The event handler for right clicking a node. Opens the Edit rule
- * dialog box.
- * @param {Event} event The event object.
- */
-onEditRuleDialogOpen = function (event) {
-	event.preventDefault();
-
-	var id = $(this)
-		.attr('id');
-	$('#textID')
-		.text(id);
-	$('#textRule')
-		.val(network.rules[id]);
-	$('#buttonEdit')
-		.click(onEditRuleDialogSave);
-  $('#dialogEdit')
-		.dialog('open');
-      
-  $('#buttonCancel').click(function() {
-      $('#dialogEdit').dialog('close');
-    });
-};
-
-/*
- * The event handler for clicking the Update rule button of the edit
- * rule dialog box. The corresponding update rule function is updated.
- */
-onEditRuleDialogSave = function (event) {
-	var rule = $('#textRule')
-		.val();
-	var id = $('#textID')
-		.text();
-	
-	// Update the rule and it's corresponding function
-	network.rules[id] = rule;
-	ruleFunctions[id] = rule2function(network.rules[id]);
-
-	$('#buttonEdit')
-		.unbind('click', onEditRuleDialogSave);
-	$('#dialogEdit')
-		.dialog('close');
-};
+var reloadUpdateRules = function() {
+  var jsbgn = new jSBGN();
+  jsbgn.importBooleanNetwork($('#textRules').val(), '=', true);
+  
+  //Nodes add/delete functions
+  //custom import graph?
+  //time series, io nodes
+  //creation?
+  console.log(jsbgn);
+  
+  var added = jsbgn.nodes.filter(function(i) {return !network.rules.hasOwnProperty(i.id);});
+  var removed = network.nodes.filter(function(i) {return !jsbgn.rules.hasOwnProperty(i.id);});
+  
+  for (i in added) {
+    var id = added[i].id;
+    network.state[id] = controls.getInitialSeed();
+    network.freeze[id] = false;
+    ruleFunctions[id] = rule2function(jsbgn.rules[id]);
+  }  
+  
+  for (i in removed) {
+    var id = removed[i].id;
+    delete network.state[id];
+    delete network.freeze[id];
+    delete ruleFunctions[id];
+  }  
+  
+  // time consuming, could be reduced
+  controls.importNetwork(jsbgn, '#tabNetwork');
+  updateGraphNodes(network.state, networkGraph);
+    
+  network.rules = jsbgn.rules;
+  network.nodes = jsbgn.nodes;
+  network.edges = jsbgn.edges;
+  network.left = jsbgn.left;
+  network.right = jsbgn.right;
+}

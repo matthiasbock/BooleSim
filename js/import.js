@@ -91,7 +91,7 @@ jSBGN.prototype.layoutGraph = function (graph) {
  * @param {string} splitKey The character separating the LHS and RHS of
  * a update rule.
  */
-jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
+jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
 	var targetNode, sourceNode;
 	var targetID, sourceID, edgeID;
@@ -99,7 +99,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 
 	var doc = new sb.Document();
 	doc.lang(sb.Language.AF);
-
+  
 	// The file consists of multiple lines with each line representing 
 	// the update rule for a node
 	var lines, cols, i, j, trimmed;
@@ -117,31 +117,35 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 				//~ console.error('Error in input file, line ' + i + ': Broken update rule');
 			
       targetID = cols[0].trim();
-      if (splitKey === ',') {
-        if (targetID === 'targets') continue;
-      }
-      else {
-        if (targetID[targetID.length - 1] === '*') {
-          targetID = targetID.substring(0, targetID.length - 1);
+      if (!reImport) {
+        if (splitKey === ',') {
+          if (targetID === 'targets') continue;
         }
         else {
-          if ($('#seedFile').attr('checked')) {
-            rule = cols[cols.length - 1].trim();
-            for (j = 0; j < cols.length - 1; j++) {
-              targetID = cols[j].trim();
-              if (rule === 'True') this.state[targetID] = true;
-              else if (rule === 'False') this.state[targetID] = false;
-              else this.state[targetID] = controls.getRandomSeed();
-            }
+          if (targetID[targetID.length - 1] === '*') {
+            targetID = targetID.substring(0, targetID.length - 1);
           }
-          continue;
+          else {
+            if ($('#seedFile').attr('checked')) {
+              rule = cols[cols.length - 1].trim();
+              for (j = 0; j < cols.length - 1; j++) {
+                targetID = cols[j].trim();
+                if (rule === 'True') this.state[targetID] = true;
+                else if (rule === 'False') this.state[targetID] = false;
+                else this.state[targetID] = controls.getRandomSeed();
+              }
+            }
+            continue;
+          }
         }
-      }
-
-			// Replace R/Python's logical operators with JS logical operators.
-			rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
+        // Replace R/Python's logical operators with JS logical operators.
+        rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
 					.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
 					.trim();
+      }
+			else {
+        rule = cols[1].trim();
+      }
 
 			// Create the node if it does not exist
 			if (!(targetID in rules)) {
@@ -183,7 +187,6 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey) {
 			}
 		}
 	}
-
 	var jsbgn = JSON.parse(sb.io.write(doc, 'jsbgn'));
 	this.nodes = jsbgn.nodes;
 	this.edges = jsbgn.edges;
