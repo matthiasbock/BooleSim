@@ -83,11 +83,6 @@ var Controls = function () {
 			minWidth: 400,
 			modal: true
 		});
-		$('#dialogEdit').dialog({
-			autoOpen: false,
-			minWidth: 400,
-			modal: true
-		});
 
 		// bind button event listeners
     $('#buttonResetTimeseries').click(function() {
@@ -413,6 +408,68 @@ var Controls = function () {
 		if (simulator !== null) simulator.stop();
 		$('#dialogExport').dialog('open');
 	};
+  
+  this.addNode = function(id) {
+    //Add node to the jSBGN
+    network.rules[id] = id;
+    var doc = new sb.Document();
+    doc.lang(sb.Language.AF);
+    doc.createNode(id).type(sb.NodeType.Macromolecule).label(id);
+    var jsbgn = JSON.parse(sb.io.write(doc, 'jsbgn'));
+    network.nodes.push(jsbgn.nodes[0]);
+    
+    network.state[id] = controls.getInitialSeed();
+    network.freeze[id] = false;
+    ruleFunctions[id] = rule2function(network.rules[id]);
+    
+    //Add node physically to the graph
+    var node = networkGraph.add(bui.Macromolecule, id);
+    node.label(id);
+    
+    var drawables = networkGraph.drawables();
+    updateGraphNode(drawables, id);
+  }
+  
+  this.deleteNode = function(id) {
+    //delete node from jSBGN
+    delete network.state[id];
+    delete network.freeze[id];
+    delete ruleFunctions[id];
+    delete network.rules[id];
+    
+    //delete node from nodes, edges, left, right
+    for (i in network.nodes) {
+      var node = network.nodes[i];
+      if (node.id == id) {
+        network.nodes.splice(i, 1);
+        break;
+      }
+    }
+    for (i in network.edges) {
+      var edge = network.edges[i];
+      if ((edge.source == id) || (edge.target == id)) {
+        network.edges.splice(i, 1);
+      }
+    }
+    for (i in network.left) {
+      var node = network.left[i];
+      if (node == id) {
+        network.left.splice(i, 1);
+        break;
+      }
+    }
+    for (i in network.right) {
+      var node = network.right[i];
+      if (node == id) {
+        network.right.splice(i, 1);
+        break;
+      }
+    }
+    
+    //delete node from graph
+    var drawables = networkGraph.drawables();
+    drawables[id].remove();
+  }
 
 	/** 
 	 * The event handler for clicking the export file button of the export

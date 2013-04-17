@@ -132,9 +132,11 @@
   margin:20px 10px 10px;
 }
 
-#textRule
+#textRules
 {
-  width:100%;
+  min-width: 800px;
+  min-height: 600px;
+  margin: 10px;
 }
 
 #fileNetwork,#checkOptions

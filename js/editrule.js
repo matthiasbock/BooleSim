@@ -36,7 +36,7 @@ var reloadUpdateRules = function() {
   
   // time consuming, could be reduced
   controls.importNetwork(jsbgn, '#tabNetwork');
-  updateGraphNodes(network.state, networkGraph);
+  updateAllGraphNodes(network.state, networkGraph);
     
   network.rules = jsbgn.rules;
   network.nodes = jsbgn.nodes;
