@@ -437,6 +437,22 @@ var Controls = function () {
     delete ruleFunctions[id];
     delete network.rules[id];
     
+    //delete node from other node's rules
+    for (i in network.rules) {
+      var rule = network.rules[i];
+      rule = rule.replace(/ /g,'');
+      var re = new RegExp('[&|]+!*' + id, 'g');
+      rule = rule.replace(re, '');
+      re = new RegExp('\\(' + id + '[&|]*', 'g');
+      rule = rule.replace(re, '');
+      var matches = rule.match(/\(!*[A-Za-z0-9_]+\)/g);
+      for (j in matches) {
+        rule = rule.replace(matches[j], matches[j].slice(1, matches[j].length - 1));
+      }
+      network.rules[i] = rule;
+      ruleFunctions[i] = rule2function(rule);
+    }
+    
     //delete node from nodes, edges, left, right
     for (i in network.nodes) {
       var node = network.nodes[i];
