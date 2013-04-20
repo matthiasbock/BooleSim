@@ -16,10 +16,6 @@
 </head>
 
 <body style="overflow-y: scroll;">
-<!-- The hourglass appears after "Import" has been clicked and is hidden as the network loading is complete -->
-<div id=Hourglass onclick="document.getElementById('Hourglass').style.visibility = 'hidden';">
-	<img src="img/Hourglass_2.png"/>
-</div>
 
 <div id=tabs>
 	<ul>
@@ -29,7 +25,8 @@
 		<li><a href="#tabTimeseries">Time series</a></li>
     <li><a href="#tabEditor">Rules</a></li>
 		<li><a href="#tabNetwork">Network</a></li>
-
+    
+    <li><button id=buttonCreate>Create</button></li>
 		<li><button id=buttonImportDialog>Import</button></li>
 		<li><button id=buttonExportDialog>Export</button></li>
 		<li><button id=buttonSimulate>Simulate / Pause</button></li>
@@ -94,6 +91,21 @@ elevated_mitophagy</textarea>
 	</div-->
 </div>
 
+<div id=dialogAddNode class=dialog title="Add Node">
+	<b>Node name/id:</b><br/>
+	<input type=text id=textNodeID /><br/>
+  
+	<button id=buttonAddNode class=dialogButton> Add </button>
+	<button id=buttonAddNodeCancel class=dialogButton> Cancel </button>
+</div>
+
+<div id=dialogDeleteNode class=dialog title="Add Node">
+	<b>Are you sure you want to delete <i id=deleteNodeID></i>?</b><br/>
+  
+	<button id=buttonDeleteNodeYes class=dialogButton> Yes </button>
+	<button id=buttonDeleteNodeNo class=dialogButton> No </button>
+</div>
+
 <!-- This dialog appears after clicking "Open" -->
 <div id=dialogImport class=dialog title="Import">
 	<b>Choose file:</b>
@@ -117,7 +129,7 @@ elevated_mitophagy</textarea>
   <div id=checkOptions>
     <b>Other Options:</b> <br>
     <input type=checkbox id=optionsOneClick />Simulate on node click
-    <input type=checkbox id=optionsScale checked />Scale Graph to fit page<br>
+    <input type=checkbox id=optionsScale />Scale Graph to fit page<br>
     <input type=checkbox id=optionsSimulateAfterImport />Simulate after importing network
   </div>
 	<button id=buttonImportFile class=dialogButton> Import </button>

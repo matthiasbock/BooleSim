@@ -12,20 +12,9 @@
   padding:0!important;
 }
 
-#Hourglass
-{
-	position:	absolute;
-	width:		4%;
-	left:			48%;
-	top:			45%;
-	visibility:	hidden;
-	cursor:		pointer;
-	z-index:	20;
-}
-
-#Hourglass img
-{
-	width:		100%;
+#tabNetwork {
+  min-width: 800px;
+  min-height: 800px;
 }
 
 #SteadyStates

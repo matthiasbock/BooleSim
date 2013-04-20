@@ -41,6 +41,11 @@ var Controls = function () {
     $('#legendOff').css('background-color', blue);
 		
 		// initialize jQuery UI buttons
+    $('#buttonCreate').button({
+			icons: {
+				primary: "ui-icon-folder-open"
+			}
+		});
 		$('#buttonImportDialog').button({
 			icons: {
 				primary: "ui-icon-folder-open"
@@ -68,6 +73,16 @@ var Controls = function () {
 		});*/
 
 		// initialize jQuery UI dialogs
+    $('#dialogAddNode').dialog({
+			autoOpen: false,
+			minWidth: 200,
+			modal: true
+		});
+    $('#dialogDeleteNode').dialog({
+			autoOpen: false,
+			minWidth: 200,
+			modal: true
+		});
 		$('#dialogImport').dialog({
 			autoOpen: false,
 			minWidth: 450,
@@ -87,13 +102,14 @@ var Controls = function () {
 		// bind button event listeners
     $('#buttonResetTimeseries').click(function() {
       resetTimeseries()});
+      
+    $('#buttonCreate').click(createDefaultNetwork);
 		$('#buttonImportDialog').click(openImportDialog);
 		$('#buttonImportFile').click(importFile);
 		$('#buttonImportDemo').click(importDemo);
 		$('#buttonImportCancel').click(function () {
-											$('#dialogImport').dialog('close');
-											document.getElementById('Hourglass').style.visibility = 'hidden';
-										});
+      $('#dialogImport').dialog('close');
+    });
 		$('#buttonExportDialog').click(openExportDialog);
 		$('#buttonExportFile').click(exportFile);
 		$('#buttonExportCancel').click(function () {
@@ -111,6 +127,13 @@ var Controls = function () {
 		$('#buttonHelpClose').click(function () {
 									$('#dialogHelp').dialog('close');
 									});
+                  
+    $('#buttonAddNodeCancel').click(function() {
+      $('#dialogAddNode').dialog('close');
+    });
+    $('#buttonDeleteNodeNo').click(function() {
+      $('#dialogDeleteNode').dialog('close');
+    });
 
 		loadAdditionalResources();
 	};
@@ -208,6 +231,10 @@ var Controls = function () {
 		$('#sliderZoom').slider('option', 'value', graph.scale());
 	};
   
+  var createDefaultNetwork = function() {
+    plaintextImporter('defaultNode* = defaultNode\n');
+  }
+  
 	/** 
 	 * The event handler for opening the import dialog box. All the elements
 	 * are given a default value
@@ -216,77 +243,73 @@ var Controls = function () {
 		// If the simulator is running stop it.
 		if (simulator !== null) simulator.stop();
 
-		// show the hourglass behind the import dialog, such that it's already there when the browser window freezes on import
-		document.getElementById('Hourglass').style.visibility = 'visible';
-
 		// Set all values to their initial states.
 		$('#fileNetwork').attr({
 			value: ''
 		});
-		$('#dropFile span').html('Drag and Drop File');
 		$('#dialogImport').dialog('open');
 	};
 
 	plaintextImporter = function (data) {
-						// Depending on the file type option checked in the import dialog box
-						// call the appropriate importer
-						var guessed;
-						var data, jsbgn = new jSBGN();
-            
-						if ($('#formatGuess').attr('checked')) {
-									if ( data.indexOf(' and ') + data.indexOf(' or ') > -1 )
-										guessed = 'Python';
-									else if ( data.indexOf(' & ') + data.indexOf(' | ') > -1 )
-										guessed = 'R';
-                  else if ( data.indexOf(' && ') + data.indexOf(' || ') > -1 )
-										guessed = 'jSBGN';
-									else if ( data.indexOf('<gxl') > -1 )
-										guessed = 'GINML';
-									else {
-										alert('Sorry,\nthe format of your network file could not be detected.\nPlease try to specify it manually.\nThank you!');
-										return;
-										}
-									console.log('Format not specified. Guessing: '+guessed);
-									}
-						if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
-							jsbgn.importBooleanNetwork(data, '=', false);
-						else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
-							jsbgn.importBooleanNetwork(data, ',', false);
-						else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
-							jsbgn.importGINML(data);
-            else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN' )
-							jsbgn.importjSBGN(data);
-						//else jsbgn.importSBML(file, data);
-            
-						// Identify input/output states
-						identifyIONodes(jsbgn.left, jsbgn.right);
-            
-						jsbgn.model = data;
+    // Depending on the file type option checked in the import dialog box
+    // call the appropriate importer
+    var guessed;
+    var data, jsbgn = new jSBGN();
+    
+    if ($('#formatGuess').attr('checked')) {
+      if ( data.indexOf(' and ') + data.indexOf(' or ') + data.indexOf('*') > -1 )
+        guessed = 'Python';
+      else if ( data.indexOf(' & ') + data.indexOf(' | ') > -1 )
+        guessed = 'R';
+      else if ( data.indexOf(' && ') + data.indexOf(' || ') > -1 )
+        guessed = 'jSBGN';
+      else if ( data.indexOf('<gxl') > -1 )
+        guessed = 'GINML';
+      else {
+        alert('Sorry,\nthe format of your network file could not be detected.\nPlease try to specify it manually.\nThank you!');
+        return;
+      }
+      console.log('Format not specified. Guessing: '+guessed);
+    }
+    if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
+      jsbgn.importBooleanNetwork(data, '=', false);
+    else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
+      jsbgn.importBooleanNetwork(data, ',', false);
+    else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
+      jsbgn.importGINML(data);
+    else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN' )
+      jsbgn.importjSBGN(data);
+    //else jsbgn.importSBML(file, data);
+    
+    // Identify input/output states
+    identifyIONodes(jsbgn.left, jsbgn.right);
+    
+    jsbgn.model = data;
 
-						//$('#graphStateTransition').html('');
-						// Import the jSBGN object into a bui.Graph instance
-						obj.importNetwork(jsbgn, '#tabNetwork');
-						$('#textIteration').text(0);
-            
-            
-						// Delete any previous instance of the Simulator and initialize a new one
-						//if (simulator !== null) simulator.destroy();
-						//simulator = new Simulator();
+    //$('#graphStateTransition').html('');
+    // Import the jSBGN object into a bui.Graph instance
+    obj.importNetwork(jsbgn, '#tabNetwork');
+    $('#tabNetwork').bind('contextmenu', addNodeDialog);
+    $('#textIteration').text(0);
+    
+    // Delete any previous instance of the Simulator and initialize a new one
+    //if (simulator !== null) simulator.destroy();
+    //simulator = new Simulator();
 
-						// if ($('#formatSBML').attr('checked')) simulator.scopes = true;
+    // if ($('#formatSBML').attr('checked')) simulator.scopes = true;
 
-						var settings = {
-							simDelay: simDelay,
-			//				guessSeed: $('#seedGuess').attr('checked'),
-							oneClick: typeof($('#optionsOneClick').attr('checked')) !== "undefined"
-						};
-						initializeSimulator(jsbgn, settings, networkGraph);
-            
-            $('#tabs').tabs('select', '#tabNetwork');
-						highlightIONodes();
-						
-						if (typeof($('#optionsSimulateAfterImport').attr('checked')) !== "undefined")
-							startSimulator()
+    var settings = {
+      simDelay: simDelay,
+//				guessSeed: $('#seedGuess').attr('checked'),
+      oneClick: typeof($('#optionsOneClick').attr('checked')) !== "undefined"
+    };
+    initializeSimulator(jsbgn, settings, networkGraph);
+    
+    $('#tabs').tabs('select', '#tabNetwork');
+    highlightIONodes();
+    
+    if (typeof($('#optionsSimulateAfterImport').attr('checked')) !== "undefined")
+      startSimulator()
 	};
 
 
@@ -299,9 +322,9 @@ var Controls = function () {
 		// import file
 		var files = $('#fileNetwork')[0].files;
 		if (files.length === 0) {
-			alert('Please choose a file to be imported.');
-			return;
-			}
+      alert('Please choose a file to be imported.');
+      return;
+    }
 		var file = files[0];
 
 		// close import dialog
@@ -312,33 +335,22 @@ var Controls = function () {
 
 		// This event handler is called when the file reading task is complete
 		reader.onload = function (read) {
-								// Get the data contained in the file
-								plaintextImporter( read.target.result );
-								};
+      // Get the data contained in the file
+      plaintextImporter( read.target.result );
+    };
 		reader.readAsText(file);
 
-		// make the hourglass disappear
-		window.setTimeout( function() {
-								document.getElementById('Hourglass').style.visibility = 'hidden';
-								}, 1000
-						);
 	};
 
 	importDemo = function() {
 		// close import dialog
 		$('#dialogImport').dialog('close');
 
-		// 500ms gives us enough time to display the Hourglass (next step)
-		// because the browser freezes when the Importer is started
-		window.setTimeout( function() { plaintextImporter($('#demoNetwork').html()) }, 500 );
-
-		// make the Hourglass disappear, as soon as the browser unfreezes
-		window.setTimeout( function() {
-								document.getElementById('Hourglass').style.visibility = 'hidden';
-								}, 1000
-						);
+		setTimeout(function() {
+      plaintextImporter($('#demoNetwork').html())
+    }, 200);
 	}
-	
+  
 	/** 
 	 * Import a jSBGN object into the Network tab by creating a new bui.Graph
 	 * instance. First the layouting is done and then the graph is scaled
@@ -372,7 +384,7 @@ var Controls = function () {
 		if (typeof($('#optionsScale').attr('checked')) !== "undefined")
 			graph.fitToPage();
 		graph.unsuspendRedraw(handle);
-
+    
 		$('#sliderZoom').slider('option', 'value', graph.scale());
 		$('#tabs').tabs('select', tab);
 
@@ -409,7 +421,7 @@ var Controls = function () {
 		$('#dialogExport').dialog('open');
 	};
   
-  this.addNode = function(id) {
+  var addNode = function(id, coords) {
     //Add node to the jSBGN
     network.rules[id] = id;
     var doc = new sb.Document();
@@ -428,9 +440,10 @@ var Controls = function () {
     
     var drawables = networkGraph.drawables();
     updateGraphNode(drawables, id);
+    drawables[id].positionCenter(coords.x, coords.y);
   }
   
-  this.deleteNode = function(id) {
+  var deleteNode = function(id) {
     //delete node from jSBGN
     delete network.state[id];
     delete network.freeze[id];
@@ -486,7 +499,39 @@ var Controls = function () {
     var drawables = networkGraph.drawables();
     drawables[id].remove();
   }
-
+  
+  this.deleteNodeFromGraph = function(event) {
+    var id = event.data;
+    deleteNode(id);
+    $('#dialogDeleteNode').dialog('close');
+  }
+  
+  var addNodeDialog = function(event) {
+    if (event.ctrlKey) {
+      event.preventDefault();
+      $('#dialogAddNode').dialog('open');
+      $('#textNodeID').val('');
+      $('#buttonAddNode').unbind('click');
+      $('#buttonAddNode').bind('click', 
+        networkGraph.toGraphCoords(event.clientX, event.clientY - $('#tabs > ul').height()), 
+      addNodeToGraph);
+    }
+  }
+  
+  var addNodeToGraph = function(event) {
+    var id = $('#textNodeID').val();
+    if (network.state.hasOwnProperty(id)) {
+      alert('Please enter a new ID');
+    }
+    else if (id.match(/[A-Za-z0-9_]/g).length !== id.length) {
+      alert('Please use alphanumeric and underscore characters only');
+    }
+    else {
+      addNode(id, event.data);
+    }
+    $('#dialogAddNode').dialog('close');
+  }
+  
 	/** 
 	 * The event handler for clicking the export file button of the export
 	 * file dialog box. Multiple file export options are supported, if 

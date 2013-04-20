@@ -52,6 +52,7 @@ updateGraphNode = function(drawables, i) {
     });
     drawables[i].bind(bui.Node.ListenerType.click, onNodeClick);
     svgNode.hover(showRuleBox, removeInfoBox);
+    svgNode.bind('contextmenu', onRightClick);
     updateNodeColor(i);
   }
 }
@@ -157,6 +158,17 @@ onNodeClick = function (ob, ev) {
 	}, config.simDelay);
 };
 
+onRightClick = function(event) {
+  if (!event.ctrlKey) {
+    var id = $(this).attr('id');
+    event.preventDefault();
+    $('#deleteNodeID').html(id);
+    $('#dialogDeleteNode').dialog('open');
+    $('#buttonDeleteNodeYes').unbind('click');
+    $('#buttonDeleteNodeYes').bind('click', id, controls.deleteNodeFromGraph);
+  }
+}
+
 /*
  * Calculate the new state of the network using the update rules.
  * The node state is updated synchronously in the sense that the update
@@ -210,8 +222,8 @@ updateAndContinue = function () {
 		
 		// iterate again after delay
 		setTimeout(function () {
-							runSimulator();
-							}, config.simDelay);
+      runSimulator();
+    }, config.simDelay);
 	} else {
 		console.log('Boolean network reached steady state.');
 		stopSimulator();
