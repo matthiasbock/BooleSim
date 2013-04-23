@@ -2,9 +2,6 @@ var serverURL = "http://127.0.0.1:8000/biographer";
 var debug = true;
 var simDelay = 300;
 
-var autoload = false;
-var autoload_file = 'autoload.net';
-
 var blue = '#3390F7';
 var yellow = '#daf403';
 
