@@ -21,9 +21,9 @@
 	<ul>
 		<a target="blank" href="https://github.com/matthiasbock/BoNeSim"><img style="width: 137px; float: left; padding: 5px 5px 0 0; margin: none;" alt="BoNeSim" src="img/logo.png" /></a>
 		<!--li><a href="#graphStateTransition">Statespace</a></li-->
-		<li><a href="#tabSteadyStates">Steady states</a></li>
+		<!--li><a href="#tabSteadyStates">Steady states</a></li-->
 		<li><a href="#tabTimeseries">Time series</a></li>
-    <li><a href="#tabEditor">Rules</a></li>
+		<li><a href="#tabEditor">Rules</a></li>
 		<li><a href="#tabNetwork">Network</a></li>
     
     <li><button id=buttonCreate>Create</button></li>
@@ -41,26 +41,26 @@
 		</div-->
 	</div>
   
-  <div class=tabs id=tabEditor>
-    <textarea id=textRules></textarea>
-  </div>
-
-	<div class=tabs id=tabTimeseries>
-    <div id=legend>
-      <ul>
-      <li>Legend: </li>
-      <li><div id=legendOn class=legend></div></li>
-      <li>=<b>True</b>&nbsp;&nbsp;</li>
-      <li><div id=legendOff class=legend></div></li>
-      <li>=<b>False</b></li>
-      <li><button id=buttonResetTimeseries>Reset</button></li>
-      </ul>
-    </div>
-    <div id=divTimeseries>
-    </div>
+	<div class=tabs id=tabEditor>
+		<textarea id=textRules></textarea>
 	</div>
 
-	<div class=tabs id=tabSteadyStates>
+	<div class=tabs id=tabTimeseries>
+	    <div id=legend>
+	      <ul>
+	      <li>Legend: </li>
+	      <li><div id=legendOn class=legend></div></li>
+	      <li>=<b>True</b>&nbsp;&nbsp;</li>
+	      <li><div id=legendOff class=legend></div></li>
+	      <li>=<b>False</b></li>
+	      <li><button id=buttonResetTimeseries>Reset</button></li>
+	      </ul>
+	    </div>
+	    <div id=divTimeseries>
+	    </div>
+	</div>
+
+	<!--div class=tabs id=tabSteadyStates>
 		<center>
 		<br/>
 		<b>
@@ -70,28 +70,14 @@
 		<br/>
 		<table id=SteadyStates>
 		</table>
-		<!--br/>
-		<br/>
-		<div id="divNodeList">
-			<textarea class=nodeList id=inputNodeList>oxygen
-glucose
-glycerol
-nitrogen
-rapamycin</textarea>
-			<textarea class=nodeList id=outputNodeList>autophagy
-basal_mitophagy
-elevated_mitophagy</textarea>
-			<br/>
-			<button> Create new table </button>
-		</div-->
-	</div>
+	</div-->
 
 	<!--div class=tabs id=graphStateTransition>
 		<button id=buttonAnalyse>Analyse</button>
 	</div-->
 </div>
 
-<div id=dialogAddNode class=dialog title="Add Node">
+<div id=dialogAddNode class=dialog title="Add node">
 	<b>Node name/id:</b><br/>
 	<input type=text id=textNodeID /><br/>
   
@@ -99,7 +85,7 @@ elevated_mitophagy</textarea>
 	<button id=buttonAddNodeCancel class=dialogButton> Cancel </button>
 </div>
 
-<div id=dialogDeleteNode class=dialog title="Add Node">
+<div id=dialogDeleteNode class=dialog title="Delete node">
 	<b>Are you sure you want to delete <i id=deleteNodeID></i>?</b><br/>
   
 	<button id=buttonDeleteNodeYes class=dialogButton> Yes </button>
@@ -119,7 +105,7 @@ elevated_mitophagy</textarea>
 	</div>
 	<div id=radioFormat>
 		<b>Filetype:</b> <br/>
-		<input type=radio name="format" id=formatGuess checked />guess format<br/>
+		<input type=radio name="format" id=formatGuess checked />infer format<br/>
 		<input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet <small>(<a target="_blank" href="http://code.google.com/p/booleannet/">more</a>)</small><br/>
 		<input type=radio name="format" id=formatRBoolNet />R BoolNet <small>(<a target="_blank" href="http://www.informatik.uni-ulm.de/ni/mitarbeiter/HKestler/boolnet/">more</a>)</small><br/>
 		<input type=radio name="format" id=formatGINML />GINML <small>(<a target="_blank" href="http://gin.univ-mrs.fr/GINsim/ginml.html">more</a>)</small><br/>
