@@ -209,7 +209,7 @@ var Controls = function () {
 	 */
 	var changeTab = function (event, ui) {
     if (prevTab === 1) {
-      if (network != null) {
+      if ((network != null) && !running) {
         //Re-import network from the new rules
         reloadUpdateRules();
       }
@@ -520,6 +520,12 @@ var Controls = function () {
   }
   
   var addNodeDialog = function(event) {
+    if (running) {
+      alert('Node cannot be added while simulating');
+      event.preventDefault();
+      return;
+    }
+    
     if (event.ctrlKey) {
       event.preventDefault();
       $('#dialogAddNode').dialog('open');

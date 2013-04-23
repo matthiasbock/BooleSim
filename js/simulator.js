@@ -163,9 +163,14 @@ onNodeClick = function (ob, ev) {
 };
 
 onRightClick = function(event) {
-  if (!event.ctrlKey) {
-    var id = $(this).attr('id');
+  if (running) {
+    alert('Node cannot be deleted while simulating');
     event.preventDefault();
+    return;
+  }
+  if (!event.ctrlKey) {
+    event.preventDefault();
+    var id = $(this).attr('id');
     $('#deleteNodeID').html(id);
     $('#dialogDeleteNode').dialog('open');
     $('#buttonDeleteNodeYes').unbind('click');
@@ -266,6 +271,12 @@ startSimulator = function () {
 		.button("option", "icons", {
 		primary: 'ui-icon-pause'
 	});
+  
+  // reload update rules if in editor mode
+  var index = $('#tabs').tabs('option', 'selected');
+  if (index === 1)
+    reloadUpdateRules();
+  
 	$('#tabs')
 		.tabs('select', '#tabNetwork');
 
@@ -301,6 +312,9 @@ stopSimulator = function () {
 		.button("option", "icons", {
 		primary: 'ui-icon-play'
 	});
+  
+  // switch on editing rules
+  $('#textRules').prop('disabled',false);
 };
 
 

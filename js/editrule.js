@@ -5,6 +5,10 @@ var loadRulesText = function() {
     text += i + ' = ' + network.rules[i] + '\n';
   }
   $('#textRules').val(text);
+  if (running) 
+    $('#textRules').prop('disabled',true);
+  else
+    $('#textRules').prop('disabled',false);
 }
 
 var reloadUpdateRules = function() {

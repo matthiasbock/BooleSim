@@ -174,12 +174,6 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 				// Connect the source and target and create the edge
 				edgeID = sourceID + ' -> ' + targetID;
 				if (doc.arc(edgeID) === null) {
-					// find the source node inside the update rule
-					k = rule.indexOf(sourceID)-2;
-					// get it's prefix
-					r = rule.substr(k,2);
-					// is it a "not" ?
-          console.log(r);
           re = new RegExp('![ ]*' + sourceID, 'g');
           var matches = rule.match(re);
 					if (matches !== null)
