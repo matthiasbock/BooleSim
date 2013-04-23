@@ -66,6 +66,12 @@ var Controls = function () {
 				primary: "ui-icon-help"
 			}
 		});
+    $('#buttonReset').button({
+			icons: {
+				primary: "ui-icon-stop"
+			}
+		});
+    
 		/*$('#buttonAnalyse').button({
 			icons: {
 				primary: "ui-icon-gear"
@@ -127,6 +133,13 @@ var Controls = function () {
 		$('#buttonHelpClose').click(function () {
 									$('#dialogHelp').dialog('close');
 									});
+    $('#buttonReset').click(function () {
+										if ( network == null || network == undefined || network == {} ) {
+											alert('You need to import a network, before you can reset it.\n\nClick "Import", to do so.');
+											return;
+											}
+                      resetSimulator();
+										});
                   
     $('#buttonAddNodeCancel').click(function() {
       $('#dialogAddNode').dialog('close');

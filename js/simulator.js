@@ -63,6 +63,7 @@ network = null;
 ruleFunctions = {};
 running = false;
 iterationCounter = 0;
+initialIndex = 0;
 plot = null;
 states = [];
 
@@ -112,7 +113,15 @@ initializeSimulator = function (jsbgn, settings, graph) {
 destroySimulator = function() {
     $('#buttonSimulate').unbind('click', startSimulator);
   };
-		
+  
+var resetSimulator = function() {
+  if (running)
+    stopSimulator();
+  for (i in states[initialIndex])
+    network.state[i] = states[initialIndex][i];
+  updateAllGraphNodes(network.state, networkGraph);
+  resetTimeseries();
+}
 /*
  * Update the color of a node after every iteration.
  * @param {string} nodeid The node id.
@@ -293,8 +302,8 @@ startSimulator = function () {
     // draw the next first timeseries column
     createStateColumn(network.state, iterationCounter);
   }
-    
-	  
+  initialIndex = iterationCounter;  
+  
 	runSimulator();
 };
 

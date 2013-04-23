@@ -99,6 +99,7 @@ var timeseriesLabelCounter = 1;
   
   var resetTimeseries = function() {
     plot = null;
+    initialIndex = 0;
     iterationCounter = 0;
     timeseriesLabelCounter = 1;
     $('#textIteration').text(timeseriesLabelCounter); 
