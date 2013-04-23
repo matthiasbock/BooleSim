@@ -108,6 +108,10 @@ initializeSimulator = function (jsbgn, settings, graph) {
   }
   updateAllGraphNodes(network.state, graph);
 };
+
+destroySimulator = function() {
+    $('#buttonSimulate').unbind('click', startSimulator);
+  };
 		
 /*
  * Update the color of a node after every iteration.
@@ -243,7 +247,8 @@ runSimulator = function () {
 	updateAndContinue();
   
   // update iteration counter
-  $('#textIteration').text(++iterationCounter); 
+  iterationCounter++;
+  $('#textIteration').text(timeseriesLabelCounter); 
   if (plot !== null)
     createStateColumn(network.state, iterationCounter);
 };
@@ -267,19 +272,18 @@ startSimulator = function () {
 	// Start the simulation
 	running = true;
 
-	// if it's the first simulation, timeseries graph is empty: create first column
-	if (iterationCounter == 0)
-		createStateColumn(network.state, iterationCounter);
-	else {
-		// move 2 steps to the right, delete the column inbetween
-		iterationCounter += 1;
-		removeStateColumn(iterationCounter);
-		iterationCounter += 1;
-		// reset timeseries label counter
-		timeseriesLabelCounter = 1;
-		// draw the next first timeseries column
-		createStateColumn(network.state, iterationCounter);
-	}  
+	if (iterationCounter > 0) {
+    // move 2 steps to the right, delete the column inbetween
+    iterationCounter += 1;
+    removeStateColumn(iterationCounter);
+    iterationCounter += 1;
+    // reset timeseries label counter
+    timeseriesLabelCounter = 1;
+    // draw the next first timeseries column
+    createStateColumn(network.state, iterationCounter);
+  }
+    
+	  
 	runSimulator();
 };
 

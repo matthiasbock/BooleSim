@@ -290,11 +290,12 @@ var Controls = function () {
     // Import the jSBGN object into a bui.Graph instance
     obj.importNetwork(jsbgn, '#tabNetwork');
     $('#tabNetwork').bind('contextmenu', addNodeDialog);
-    $('#textIteration').text(0);
+    $('#textIteration').text(timeseriesLabelCounter);
     
     // Delete any previous instance of the Simulator and initialize a new one
     //if (simulator !== null) simulator.destroy();
     //simulator = new Simulator();
+    destroySimulator();
 
     // if ($('#formatSBML').attr('checked')) simulator.scopes = true;
 
@@ -433,6 +434,8 @@ var Controls = function () {
     network.state[id] = controls.getInitialSeed();
     network.freeze[id] = false;
     ruleFunctions[id] = rule2function(network.rules[id]);
+    for (j = 0; j <= iterationCounter; j++)
+      states[j][id] = network.state[id];
     
     //Add node physically to the graph
     var node = networkGraph.add(bui.Macromolecule, id);
@@ -441,6 +444,8 @@ var Controls = function () {
     var drawables = networkGraph.drawables();
     updateGraphNode(drawables, id);
     drawables[id].positionCenter(coords.x, coords.y);
+    
+    updateTimeseries();
   }
   
   var deleteNode = function(id) {
@@ -495,9 +500,17 @@ var Controls = function () {
       }
     }
     
+    for (j = 0; j <= iterationCounter; j++)
+      delete states[j][id];
+    
     //delete node from graph
     var drawables = networkGraph.drawables();
     drawables[id].remove();
+    
+    updateTimeseries();
+    identifyIONodes(network.left, network.right);
+    highlightIONodes();
+    createSteadyStates();
   }
   
   this.deleteNodeFromGraph = function(event) {

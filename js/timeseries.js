@@ -1,7 +1,7 @@
 var plotH = 20;
 var plotW = 100;
 var maxColumns = 40;
-var timeseriesLabelCounter = 0;
+var timeseriesLabelCounter = 1;
 
 /**
    * Construct the node label column
@@ -93,19 +93,27 @@ var timeseriesLabelCounter = 0;
     plot = d3.select('#divTimeseries').append('svg:svg').attr('xmlns','http://www.w3.org/2000/svg');
     createNodesColumn(network.state);
     
-    for (j = iterationCounter - iterationCounter % maxColumns; j <= iterationCounter; j++)
+    for (j = iterationCounter - iterationCounter % maxColumns; j <= iterationCounter; j++) 
       createStateColumn(states[j], j);
-    
   };
   
   var resetTimeseries = function() {
     plot = null;
     iterationCounter = 0;
-    timeseriesLabelCounter = 0;
+    timeseriesLabelCounter = 1;
+    $('#textIteration').text(timeseriesLabelCounter); 
     states = [];
     states.push({});
     $.extend(states[0], network.state);
     $('#tabs').tabs('select', '#tabTimeseries');
+    createPlotter();
+  }
+  
+  var updateTimeseries = function() {
+    // update Time series
+    plot = null;
+    timeseriesLabelCounter = parseInt($('#text0').text());
+    if (timeseriesLabelCounter === "NaN") timeseriesLabelCounter = 1;
     createPlotter();
   }
 
