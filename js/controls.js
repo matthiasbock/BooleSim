@@ -208,13 +208,13 @@ var Controls = function () {
 	 * @param {UI} ui Contains the index of the selected tab.
 	 */
 	var changeTab = function (event, ui) {
-    if (prevTab === 2) {
+    if (prevTab === 1) {
       if (network != null) {
         //Re-import network from the new rules
         reloadUpdateRules();
       }
     }
-    else if (prevTab === 3) {
+    else if (prevTab === 2) {
       if (network != null) {
         //Re-import rules from new network: Add/Delete + rules update functionality required
         loadRulesText();
@@ -508,9 +508,9 @@ var Controls = function () {
     drawables[id].remove();
     
     updateTimeseries();
-    identifyIONodes(network.left, network.right);
-    highlightIONodes();
-    createSteadyStates();
+    //~ identifyIONodes(network.left, network.right);
+    //~ highlightIONodes();
+    //~ createSteadyStates();
   }
   
   this.deleteNodeFromGraph = function(event) {

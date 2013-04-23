@@ -41,7 +41,7 @@ var reloadUpdateRules = function() {
   network.right = jsbgn.right;
     
   updateTimeseries();
-  identifyIONodes(network.left, network.right);
-  highlightIONodes();
-  createSteadyStates();
+  //~ identifyIONodes(network.left, network.right);
+  //~ highlightIONodes();
+  //~ createSteadyStates();
 }

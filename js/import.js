@@ -179,7 +179,10 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 					// get it's prefix
 					r = rule.substr(k,2);
 					// is it a "not" ?
-					if (r.indexOf('!') > -1)
+          console.log(r);
+          re = new RegExp('![ ]*' + sourceID, 'g');
+          var matches = rule.match(re);
+					if (matches !== null)
 						doc.createArc(edgeID).type(sb.ArcType.Inhibition).source(sourceID).target(targetID);
 					else
 						doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
