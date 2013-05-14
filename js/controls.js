@@ -101,7 +101,7 @@ var Controls = function () {
 		});
 		$('#dialogHelp').dialog({
 			autoOpen: false,
-			minWidth: 400,
+			minWidth: 630,
 			modal: true
 		});
 
