@@ -42,8 +42,15 @@
 		</div-->
 	</div>
   
-	<div class=tabs id=tabEditor>
+	<div class=tabs id=tabEditor style="text-align: center;">
+		<font size=6><b>Update rule editor:</b></font><br/>
 		<textarea id=textRules></textarea>
+		<br/>
+		Use JavaScript syntax for your rules:<br/>
+		AND is represented by &&, OR by ||, NOT by !.<br/>
+		Only write one update rule per line.<br/>
+		Empty lines and round brackets are allowed.<br/>
+		Example: A = (B || C) && (!D)
 	</div>
 
 	<div class=tabs id=tabTimeseries>
