@@ -8,21 +8,23 @@ It's coded in JavaScript, so it should work platform-independent.
 A recent version of a HTML5-capable internet browser is required for proper rendering,
 Chromium recommended (http://www.chromium.org/getting-involved/download-chromium).
 
+Software license: GNU Affero GPL v3
+
 Download using
 
 <pre>
-git clone https://github.com/matthiasbock/BoNeSim.git
+git clone https://github.com/matthiasbock/BooleSim.git
 </pre>
 
 After downloading, open or drag'n'drop index.html into your web browser.
 
-Software license: GNU Affero GPL v3
+Click here for help: https://github.com/matthiasbock/BooleSim/wiki
 
 Built upon previous work located at Google Code:
 http://biographer.googlecode.com/
 
-Please report problems:
+In case of bugs, questions, wishes please visit:
 
-https://github.com/matthiasbock/BoNeSim/issues
+https://github.com/matthiasbock/BooleSim/issues
 
 Have fun!
