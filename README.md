@@ -20,11 +20,8 @@ After downloading, open or drag'n'drop index.html into your web browser.
 
 Click here for help: https://github.com/matthiasbock/BooleSim/wiki
 
-Built upon previous work located at Google Code:
-http://biographer.googlecode.com/
+Built upon previous work located on Google Code at http://biographer.googlecode.com/
 
-In case of bugs, questions, wishes please visit:
-
-https://github.com/matthiasbock/BooleSim/issues
+For questions, wishes or bug reports please visit https://github.com/matthiasbock/BooleSim/issues
 
 Have fun!
