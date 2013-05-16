@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="770.54279"
-   height="134.83749"
+   width="840.46002"
+   height="134.84"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
@@ -59,14 +59,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="405.76796"
-     inkscape:cy="-149.83206"
+     inkscape:zoom="0.98984375"
+     inkscape:cx="455.50465"
+     inkscape:cy="52.220045"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="975"
+     inkscape:window-width="1024"
+     inkscape:window-height="551"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -90,17 +90,17 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(22.196536,-253.40691)">
+     transform="translate(71.933224,-253.40439)">
     <text
        xml:space="preserve"
        style="font-size:177.51118469px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#18468d;fill-opacity:1;stroke:none;filter:url(#filter3853);font-family:LMMonoCaps10;-inkscape-font-specification:LMMonoCaps10"
-       x="37.932606"
+       x="-29.754845"
        y="375.05533"
        id="text2985"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2987"
-         x="37.932606"
-         y="375.05533">BoNeSim</tspan></text>
+         x="-29.754845"
+         y="375.05533">BooleSim</tspan></text>
   </g>
 </svg>
