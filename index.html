@@ -177,26 +177,97 @@
 
 <!-- This is a demo network -->
 <script type="data/jSBGN" id="demoNetwork">
-targets, factors
+glucose = True
+glycerol = False
+nitrogen = True
 
-pluri_exo, !pluri_exo_meth | !pluri_exo_het_chrom
-pluri_exo_meth, pluri_exo_meth
-pluri_exo_het_chrom, pluri_exo_het_chrom
+glycolysis* = glucose
+pyruvate* = glycolysis
 
-pluri_net, (pluri_net | pluri_exo) & !(B_net | A_net) & !pluri_meth & !pluri_het_chrom
-pluri_meth, pluri_meth
-pluri_het_chrom, pluri_het_chrom
+FGM = pyruvate or glycerol or ethanol or amino_acids or nitrogen
+fermentation* = pyruvate and (not oxphos)
+ethanol* = fermentation
 
-B_net, B_net & !(pluri_net | A_net) & !B_meth & !B_het_chrom
-B_meth, B_meth
-B_het_chrom, B_het_chrom
+oxphos* = acid_cycle and oxygen and ETC and (not glycolysis)
+#petite* = pyruvate and (not oxphos)
+ROS* = oxphos
 
-A_net, A_net & !(pluri_net | B_net) & !A_meth & !A_het_chrom
-A_meth, A_meth
-A_het_chrom, A_het_chrom
+acid_cycle* = FGM
+#and oxphos
+CO2* = acid_cycle
 
-dnmt, pluri_net | pluri_exo | dnmt
-de_meth, pluri_net | pluri_exo | de_meth
+#NADH* = glycolysis or acid_cycle
+ATP* = glycolysis or oxphos
+cell_death* = not ATP
+
+Gpr1* = glucose
+Gpa2* = Gpr1
+Cyr1* = Ras2 or Gpa2
+
+Ras2* = CO2
+cAMP* = Cyr1 and ATP
+PKA* = cAMP
+#and (not Sch9)
+
+rapamycin = False
+TORC1* = (not FGM) or  (rapamycin and (not fortified_cell_wall))
+Sch9* = not TORC1
+
+#Psr1* = (not PKA) or TORC1
+#Whi2* = not unknown_kinase1
+#Msn2_4* = (Psr1 or Psr2) and Whi2 and (not (PKA or unknown_kinase2))
+#Msn2_4* = Psr1 and Whi2 and ((not PKA) or TORC1)
+Msn2_4* = Psr1_2 and Whi2 and ((not PKA) or (not Sch9))
+#unknown_kinase1 = False
+#unknown_kinase2 = False
+
+#Wsc1* = ROS
+#calcofluor_white = False
+#Pkc1* = Wsc1
+#or calcofluor_white
+#Bck1* = Pkc1
+#Mkk1* = Bck1
+#Mkk2* = Bck1
+#Slt2* = Mkk1 or Mkk2
+
+Sdp1* = ROS
+Slt2_cytosol* = Sdp1
+#and Slt2
+#Slt2_nucleus* = Slt2 and (not Sdp1)
+#Rlm1* = Slt2_nucleus
+
+fortified_cell_wall* = (not Uth1)
+# or Rlm1
+
+#Sln1 branch upstream
+#Pbs2 = False
+#Hog1* = Pbs2
+#Hog1_cytosol* = Hog1 and Sdp1
+#Hog1_nucleus* = Hog1 and (not Sdp1)
+
+
+#Atg1* = (not PKA) and (not Sch9)
+#Atg13* = Atg1
+#Atg1_13_17* = Atg1 and Atg13 and Atg17
+Atg1_13_17* = (not PKA) or (not Sch9)
+
+#Atg11
+
+Rim15* = (not PKA) or (not Sch9)
+STRE* = Msn2_4 and Rim15
+Atg8* = STRE
+#and Hog1_cytosol
+
+Atg32* = Slt2_cytosol or Atg33
+
+Ptc6* = (not ROS)
+#Atg33* = Msn2_4 and unknown_kinase3 and (not Ptc6)
+Atg33* = STRE and Sch9 and (not Ptc6)
+
+#autophagy* = Atg1_13_17 and (not PKA)
+autophagy* = Atg1_13_17
+basal_mitophagy* = Atg32
+elevated_mitophagy* = Atg32 and Atg1_13_17 and Atg8
 </script>
 </body>
 
