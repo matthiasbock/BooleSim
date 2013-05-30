@@ -21,12 +21,19 @@ randomColor = function () {
  * @param {string} rule The update rule.
  * @returns {Function} The function for the update rule.
  */
-rule2function = function (rule) {
-	// Match the node ids
-	var newRule = rule.replace(/[A-Za-z0-9_]+/g, function (text) {
-		if (text === 'true' || text === 'false') return text;
-		return "state['" + text + "']";
-	});
+rule2function = function (node, rule) {
+	var newRule;
+	if (rule === '' || rule === 'true' || rule === 'false') {
+		// during update the previous node value is set (equal to no update at all)
+		newRule = "state['" + node + "'];";
+	}
+	else {
+		// Match the node ids
+		newRule = rule.replace(/[A-Za-z0-9_]+/g, function (text) {
+			if (text === 'true' || text === 'false') return text;
+			return "state['" + text + "']";
+		});
+	}
 	// Create the function passing the current state as the first parameter
 	return Function("state", "return " + newRule + ";");
 };
@@ -95,8 +102,8 @@ initializeSimulator = function (jsbgn, settings, graph) {
 	for (i in network.rules) {
 		if (network.rules[i].length !== 0) {
       if (!network.state.hasOwnProperty(i))
-        network.state[i] = controls.getInitialSeed();
-			network.freeze[i] = false;
+		network.state[i] = controls.getInitialSeed();
+		network.freeze[i] = false;
 		}
 	}
   
@@ -105,7 +112,7 @@ initializeSimulator = function (jsbgn, settings, graph) {
 
   ruleFunctions = {};
 	for (i in network.state) {
-		ruleFunctions[i] = rule2function(network.rules[i]);
+		ruleFunctions[i] = rule2function(i, network.rules[i]);
   }
   updateAllGraphNodes(network.state, graph);
 };

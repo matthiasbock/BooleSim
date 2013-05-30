@@ -154,10 +154,12 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
 			// assign rules (right side equation) to array of nodes (left side of equation)
 			rules[targetID] = rule;
-			if (rule === 'True' || rule === 'False') {
-				rules[targetID] = targetID;
+			if (rule === '') {
+				rules[targetID] = 'true';
 				continue;
 			}
+			if (rule === 'True' || rule === 'False')
+				continue;
 
 			// Extract all the node id's in the update rule
 			ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
@@ -168,7 +170,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 				sourceID = ruleIDs[j];
 				// Create the node if it does not exist
 				if (!(sourceID in rules)) {
-					rules[sourceID] = sourceID;
+					rules[sourceID] = 'true';
 					sourceNode = doc.createNode(sourceID).type(sb.NodeType.Macromolecule).label(sourceID);
 				}
 				// Connect the source and target and create the edge

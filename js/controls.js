@@ -446,7 +446,7 @@ var Controls = function () {
     
     network.state[id] = controls.getInitialSeed();
     network.freeze[id] = false;
-    ruleFunctions[id] = rule2function(network.rules[id]);
+    ruleFunctions[id] = rule2function(id, network.rules[id]);
     for (j = 0; j <= iterationCounter; j++)
       states[j][id] = network.state[id];
     
@@ -481,7 +481,7 @@ var Controls = function () {
         rule = rule.replace(matches[j], matches[j].slice(1, matches[j].length - 1));
       }
       network.rules[i] = rule;
-      ruleFunctions[i] = rule2function(rule);
+      ruleFunctions[i] = rule2function(i, rule);
     }
     
     //delete node from nodes, edges, left, right
