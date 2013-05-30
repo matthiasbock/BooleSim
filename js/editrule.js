@@ -1,8 +1,12 @@
+//
+// Rules tab has been selected.
+// Write current network rule configuration to edit field !
+//
 var loadRulesText = function() {
   var text = '';
   $('#textRules').val('');
-  for (i in network.rules) {
-    text += i + ' = ' + network.rules[i] + '\n';
+  for (node in network.rules) {
+    text += node + ' = ' + network.rules[node] + '\n';
   }
   $('#textRules').val(text);
   if (running) 
@@ -11,6 +15,10 @@ var loadRulesText = function() {
     $('#textRules').prop('disabled',false);
 }
 
+//
+// Switching from "Rules" to "Network" tab.
+// Read and parse edit field, refresh network graph !
+//
 var reloadUpdateRules = function() {
   var jsbgn = new jSBGN();
   jsbgn.importBooleanNetwork($('#textRules').val(), '=', true);
@@ -24,7 +32,7 @@ var reloadUpdateRules = function() {
     for (j = 0; j <= iterationCounter; j++)
       states[j][id] = network.state[id];
     network.freeze[id] = false;
-    ruleFunctions[id] = rule2function(jsbgn.rules[id]);
+    ruleFunctions[id] = rule2function(id, jsbgn.rules[id]);
   }  
   
   for (i in removed) {
