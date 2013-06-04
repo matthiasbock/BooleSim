@@ -93,29 +93,31 @@ jSBGN.prototype.layoutGraph = function (graph) {
  */
 jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
-	var targetNode, sourceNode;
-	var targetID, sourceID, edgeID;
-	var rules = {}, ruleIDs, rule, right = [], left = [];
+  var targetNode, sourceNode;
+  var targetID, sourceID, edgeID;
+  var rules = {}, ruleIDs, rule, right = [], left = [];
 
-	var doc = new sb.Document();
-	doc.lang(sb.Language.AF);
-  
-	// The file consists of multiple lines with each line representing 
-	// the update rule for a node
-	var lines, cols, i, j, trimmed;
-	lines = data.split('\n');
-	for (i = 0; i < lines.length; i++) {
-		trimmed = lines[i].trim();
-		// Skip empty lines
-		if (trimmed.length === 0) continue;
-		if (trimmed[0] != '#') {
-			// Extract the columns using the split key which is different
-			// for R and Python Boolean Net
-			cols = trimmed.split(splitKey);
-			
-      //~ if (cols.length != 2)
-				//~ console.error('Error in input file, line ' + i + ': Broken update rule');
-			
+  var doc = new sb.Document();
+  doc.lang(sb.Language.AF);
+
+  // The file consists of multiple lines with each line representing 
+  // the update rule for a node
+  var lines, cols, i, j, trimmed;
+  lines = data.split('\n');
+  for (i = 0; i < lines.length; i++) {
+    trimmed = lines[i].trim();
+    // Skip empty lines
+    if (trimmed.length === 0) continue;
+    if (trimmed[0] != '#') {
+      // Extract the columns using the split key which is different
+      // for R and Python Boolean Net
+      cols = trimmed.split(splitKey);
+
+      if (cols.length != 2) {
+        console.error('Error in input file, line ' + i + ': Broken update rule');
+        return false;
+      }
+
       targetID = cols[0].trim();
       if (!reImport) {
         if (splitKey === ',') {
@@ -140,58 +142,64 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
         }
         // Replace R/Python's logical operators with JS logical operators.
         rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
-					.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
-					.trim();
+        .replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
+        .trim();
       }
-			else {
+      else {
         rule = cols[1].trim();
       }
 
-			// Create the node if it does not exist
-			if (!(targetID in rules)) {
-				targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
+      var check = targetID.match(/[A-Za-z0-9_]+/g);
+      if (check[0] !== targetID) {
+        console.error('Error in input file, line ' + i + ': Broken update rule');
+        return false;
+      }
+      // Create the node if it does not exist
+      if (!(targetID in rules)) {
+        targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
       }
 
-			// assign rules (right side equation) to array of nodes (left side of equation)
-			rules[targetID] = rule;
-			if (rule === '') {
-				rules[targetID] = 'true';
-				continue;
-			}
-			if (rule === 'True' || rule === 'False')
-				continue;
+      // assign rules (right side equation) to array of nodes (left side of equation)
+      rules[targetID] = rule;
+      if (rule === '') {
+        rules[targetID] = 'true';
+        continue;
+      }
+      if (rule === 'True' || rule === 'False') continue;
 
-			// Extract all the node id's in the update rule
-			ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
+      // Extract all the node id's in the update rule
+      ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
       right = $.unique($.merge(right, ruleIDs));
       left.push(targetID);
-      
-			for (j in ruleIDs) {
-				sourceID = ruleIDs[j];
-				// Create the node if it does not exist
-				if (!(sourceID in rules)) {
-					rules[sourceID] = 'true';
-					sourceNode = doc.createNode(sourceID).type(sb.NodeType.Macromolecule).label(sourceID);
-				}
-				// Connect the source and target and create the edge
-				edgeID = sourceID + ' -> ' + targetID;
-				if (doc.arc(edgeID) === null) {
-          re = new RegExp('![ ]*' + sourceID, 'g');
-          var matches = rule.match(re);
-					if (matches !== null)
-						doc.createArc(edgeID).type(sb.ArcType.Inhibition).source(sourceID).target(targetID);
-					else
-						doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
-					}
-			}
-		}
-	}
-	var jsbgn = JSON.parse(sb.io.write(doc, 'jsbgn'));
-	this.nodes = jsbgn.nodes;
-	this.edges = jsbgn.edges;
-	this.rules = rules;
+
+      for (j in ruleIDs) {
+        sourceID = ruleIDs[j];
+        // Create the node if it does not exist
+        if (!(sourceID in rules)) {
+          rules[sourceID] = 'true';
+          sourceNode = doc.createNode(sourceID).type(sb.NodeType.Macromolecule).label(sourceID);
+        }
+        // Connect the source and target and create the edge
+        edgeID = sourceID + ' -> ' + targetID;
+        if (doc.arc(edgeID) === null) {
+        re = new RegExp('![ ]*' + sourceID, 'g');
+        var matches = rule.match(re);
+        if (matches !== null)
+          doc.createArc(edgeID).type(sb.ArcType.Inhibition).source(sourceID).target(targetID);
+        else
+          doc.createArc(edgeID).type(sb.ArcType.Production).source(sourceID).target(targetID);
+        }
+      }
+    }
+  }
+  var jsbgn = JSON.parse(sb.io.write(doc, 'jsbgn'));
+  this.nodes = jsbgn.nodes;
+  this.edges = jsbgn.edges;
+  this.rules = rules;
   this.right = right;
   this.left = left;
+
+  return true;
 };
 
 

@@ -21,10 +21,24 @@ var loadRulesText = function() {
 //
 var reloadUpdateRules = function() {
   var jsbgn = new jSBGN();
-  jsbgn.importBooleanNetwork($('#textRules').val(), '=', true);
+  
+  if (!jsbgn.importBooleanNetwork($('#textRules').val(), '=', true)) {
+    alert('Please check the syntax of the update rules');
+    return false;
+  }
   
   var added = jsbgn.nodes.filter(function(i) {return !network.rules.hasOwnProperty(i.id);});
   var removed = network.nodes.filter(function(i) {return !jsbgn.rules.hasOwnProperty(i.id);});
+  var same = jsbgn.nodes.filter(function(i) {return network.rules.hasOwnProperty(i.id);});
+  
+  for (i in same) {
+    var id = same[i].id;
+    ruleFunctions[id] = rule2function(id, jsbgn.rules[id]);
+    if (ruleFunctions[id] == null) {
+      alert('Please check the syntax of the update rules');
+      return false;
+    }
+  }
   
   for (i in added) {
     var id = added[i].id;
@@ -33,6 +47,11 @@ var reloadUpdateRules = function() {
       states[j][id] = network.state[id];
     network.freeze[id] = false;
     ruleFunctions[id] = rule2function(id, jsbgn.rules[id]);
+
+    if (ruleFunctions[id] == null) {
+      alert('Please check the syntax of the update rules');
+      return false;
+    }
   }  
   
   for (i in removed) {
@@ -56,4 +75,6 @@ var reloadUpdateRules = function() {
   //~ identifyIONodes(network.left, network.right);
   //~ highlightIONodes();
   //~ createSteadyStates();
+  
+  return true;
 }

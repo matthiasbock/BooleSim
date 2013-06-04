@@ -1,6 +1,7 @@
 var controls, simulator = null;
 var networkGraph = null;
 var transitionGraph = null;
+var prevTab = 0;
 
 $(document).ready(function () {
 	// Load up the UI
@@ -16,7 +17,6 @@ $(document).ready(function () {
  */
 var Controls = function () {
 	// Private variables to hold the bui.Graph instances
-  var prevTab = 0;
 	var obj = this;
 
 	/**
@@ -224,7 +224,11 @@ var Controls = function () {
     if (prevTab === 1) {
       if ((network != null) && !running) {
         //Re-import network from the new rules
-        reloadUpdateRules();
+        if (!reloadUpdateRules()) {
+          prevTab = 0;
+          $('#tabs').tabs('select', 1);
+          return;
+        }
       }
     }
     else if (prevTab === 2) {

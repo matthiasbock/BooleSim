@@ -35,7 +35,12 @@ rule2function = function (node, rule) {
 		});
 	}
 	// Create the function passing the current state as the first parameter
-	return Function("state", "return " + newRule + ";");
+  try {
+    return Function("state", "return " + newRule + ";");
+  }
+  catch(e) {
+    return null;
+  }
 };
 
 updateAllGraphNodes = function(state, graph) {
@@ -279,6 +284,16 @@ runSimulator = function () {
  * bind event handlers
  */
 startSimulator = function () {
+  // reload update rules if in editor mode
+  var index = $('#tabs').tabs('option', 'selected');
+  if (index === 1) {
+    if (!reloadUpdateRules()) {
+      prevTab = 0;
+      $('#tabs').tabs('select', 1);
+      return;
+    }
+  }
+  
 	$('#buttonSimulate')
 		.unbind('click', startSimulator);
 	$('#buttonSimulate')
@@ -287,11 +302,6 @@ startSimulator = function () {
 		.button("option", "icons", {
 		primary: 'ui-icon-pause'
 	});
-  
-  // reload update rules if in editor mode
-  var index = $('#tabs').tabs('option', 'selected');
-  if (index === 1)
-    reloadUpdateRules();
   
 	$('#tabs')
 		.tabs('select', '#tabNetwork');
