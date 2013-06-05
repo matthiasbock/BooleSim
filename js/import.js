@@ -165,7 +165,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
         rules[targetID] = 'true';
         continue;
       }
-      if (rule === 'True' || rule === 'False') continue;
+      if (rule === 'true' || rule === 'false') continue;
 
       // Extract all the node id's in the update rule
       ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
