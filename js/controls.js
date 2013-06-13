@@ -288,16 +288,22 @@ var Controls = function () {
       }
       console.log('Format not specified. Guessing: '+guessed);
     }
+    var result;
+    
     if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
-      jsbgn.importBooleanNetwork(data, '=', false);
+      result = jsbgn.importBooleanNetwork(data, '=', false);
     else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
-      jsbgn.importBooleanNetwork(data, ',', false);
+      result = jsbgn.importBooleanNetwork(data, ',', false);
     else if ($('#formatGINML').attr('checked') || guessed == 'GINML' )
-      jsbgn.importGINML(data);
+      result = jsbgn.importGINML(data);
     else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN' )
-      jsbgn.importjSBGN(data);
+      result = jsbgn.importjSBGN(data);
     //else jsbgn.importSBML(file, data);
     
+    if (!result) {
+      alert('There are errors in the syntax of the input file, please recheck!');
+      return;
+    }
     // Identify input/output states
     identifyIONodes(jsbgn.left, jsbgn.right);
     

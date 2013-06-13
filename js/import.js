@@ -212,7 +212,13 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 jSBGN.prototype.importGINML = function (data) {
 
 	// Use jQuery's XML parser
-	var xml = $.parseXML(data);
+  var xml;
+  try {
+    xml = $.parseXML(data);
+  }
+  catch (e) {
+    return false;
+  }
 	var nodes = $(xml).find('node');
 	var edges = $(xml).find('edge');
 
@@ -285,6 +291,8 @@ jSBGN.prototype.importGINML = function (data) {
 	this.rules = rules;
   this.right = Object.keys(rules);
   this.left = Object.keys(rules);
+  
+  return true;
 };
 
 
@@ -334,7 +342,14 @@ jSBGN.prototype.importSBML = function (file, data) {
 };
 
 jSBGN.prototype.importjSBGN = function (data) {
-	var jsbgn = JSON.parse(data);
+  
+  var jsbgn;
+  try {
+    jsbgn = JSON.parse(data);
+  }
+  catch (e) {
+    return false;
+  }
 
 	this.nodes = jsbgn.nodes;
 	this.edges = jsbgn.edges;
@@ -350,4 +365,6 @@ jSBGN.prototype.importjSBGN = function (data) {
 	}
   this.right = right;
   this.left = left;
+  
+  return true;
 };
