@@ -112,9 +112,9 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
       // Extract the columns using the split key which is different
       // for R and Python Boolean Net
       cols = trimmed.split(splitKey);
-
+      console.log(cols);
       if (cols.length != 2) {
-        console.error('Error in input file, line ' + i + ': Broken update rule');
+        alert('Error in input file, line ' + i + ': Broken update rule');
         return false;
       }
 
@@ -141,8 +141,9 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
           }
         }
         // Replace R/Python's logical operators with JS logical operators.
-        rule = cols[1].replace(/[&]/g, '&&').replace(/[|]/g, '||')
+        rule = cols[1].replace(/[&]/g, ' && ').replace(/[|]/g, ' || ')
         .replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
+        .replace(/ \+/g, ' ')
         .trim();
       }
       else {
@@ -150,6 +151,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
       }
 
       var check = targetID.match(/[A-Za-z0-9_]+/g);
+      
       if (check[0] !== targetID) {
         console.error('Error in input file, line ' + i + ': Broken update rule');
         return false;
@@ -169,6 +171,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
       // Extract all the node id's in the update rule
       ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
+      console.log(ruleIDs);
       right = $.unique($.merge(right, ruleIDs));
       left.push(targetID);
 
