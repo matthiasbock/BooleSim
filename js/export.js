@@ -32,11 +32,12 @@ exportPythonBooleanNet = function (network) {
 	// Replace the JS logical operators with those of Python for each update
 	// rule
 	for (i in network.rules) {
-		r = network.rules[i].replace(/&&/g, 'and')
-			.replace(/\|\|/g, 'or')
+		r = network.rules[i].replace(/&&/g, ' and ')
+			.replace(/\|\|/g, ' or ')
 			.replace(/true/g, 'True')
 			.replace(/false/g, 'False')
-			.replace(/[!]/g, 'not');
+			.replace(/[!]/g, ' not ')
+      .replace(/ \+/g, ' ');
 		pbn += i + '* = ' + r + '\n';
 	}
 	return pbn;
