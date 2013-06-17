@@ -1,7 +1,7 @@
 var controls, simulator = null;
 var networkGraph = null;
 var transitionGraph = null;
-var prevTab = 0;
+var prevTab = 2;
 
 $(document).ready(function () {
 	// Load up the UI
@@ -225,7 +225,7 @@ var Controls = function () {
       if ((network != null) && !running) {
         //Re-import network from the new rules
         if (!reloadUpdateRules()) {
-          prevTab = 0;
+          prevTab = 2;
           $('#tabs').tabs('select', 1);
           return;
         }

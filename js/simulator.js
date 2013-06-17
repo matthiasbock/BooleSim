@@ -288,7 +288,7 @@ startSimulator = function () {
   var index = $('#tabs').tabs('option', 'selected');
   if (index === 1) {
     if (!reloadUpdateRules()) {
-      prevTab = 0;
+      prevTab = 2;
       $('#tabs').tabs('select', 1);
       return;
     }

@@ -113,7 +113,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
       // for R and Python Boolean Net
       cols = trimmed.split(splitKey);
       if (cols.length != 2) {
-        alert('Error in input file, line ' + i + ': Broken update rule');
+        console.error('Error in input file, line ' + i + ': Broken update rule');
         return false;
       }
 
@@ -152,7 +152,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
       var check = targetID.match(/[A-Za-z0-9_]+/g);
       
       if (check[0] !== targetID) {
-        alert('Error in input file, line ' + i + ': Broken update rule');
+        console.error('Error in input file, line ' + i + ': Broken update rule');
         return false;
       }
       
