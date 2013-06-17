@@ -142,7 +142,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
         // Replace R/Python's logical operators with JS logical operators.
         rule = cols[1].replace(/[&]/g, ' && ').replace(/[|]/g, ' || ')
         .replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
-        .replace(/ \+/g, ' ')
+        .replace(/ +/g, ' ')
         .trim();
       }
       else {

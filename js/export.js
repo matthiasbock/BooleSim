@@ -37,7 +37,7 @@ exportPythonBooleanNet = function (network) {
 			.replace(/true/g, 'True')
 			.replace(/false/g, 'False')
 			.replace(/[!]/g, ' not ')
-      .replace(/ \+/g, ' ');
+      .replace(/ +/g, ' ');
 		pbn += i + '* = ' + r + '\n';
 	}
 	return pbn;
