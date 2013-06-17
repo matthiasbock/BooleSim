@@ -112,7 +112,6 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
       // Extract the columns using the split key which is different
       // for R and Python Boolean Net
       cols = trimmed.split(splitKey);
-      console.log(cols);
       if (cols.length != 2) {
         alert('Error in input file, line ' + i + ': Broken update rule');
         return false;
@@ -153,9 +152,10 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
       var check = targetID.match(/[A-Za-z0-9_]+/g);
       
       if (check[0] !== targetID) {
-        console.error('Error in input file, line ' + i + ': Broken update rule');
+        alert('Error in input file, line ' + i + ': Broken update rule');
         return false;
       }
+      
       // Create the node if it does not exist
       if (!(targetID in rules)) {
         targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
@@ -171,12 +171,13 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
       // Extract all the node id's in the update rule
       ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
-      console.log(ruleIDs);
       right = $.unique($.merge(right, ruleIDs));
       left.push(targetID);
 
       for (j in ruleIDs) {
         sourceID = ruleIDs[j];
+        if ((sourceID == 'true') || (sourceID == 'false')) continue;
+        
         // Create the node if it does not exist
         if (!(sourceID in rules)) {
           rules[sourceID] = 'true';
@@ -262,12 +263,12 @@ jSBGN.prototype.importGINML = function (data) {
 		rule = 'false';
 		for (i in arcs) {
 			if (arcs[i].target().id() === id) {
-				rule += '||' + arcs[i].source().id();
+				rule += ' || ' + arcs[i].source().id();
 				incoming.push(arcs[i].id());
 			}
 		}
 		rules[id] = '(' + Boolean(parseInt($(this).attr('basevalue'), 10)) +
-			'&&!(' + rule + '))||((' + rule + ')&&(false';
+			' && !(' + rule + ')) || ((' + rule + ') && (false';
 
 		// Add rules derived from the Active Interations for a node.
 		$(this).find('parameter').each(function () {
@@ -277,14 +278,16 @@ jSBGN.prototype.importGINML = function (data) {
 
 			rule = 'true';
 			for (i in links)
-			rule += '&&' + doc.arc(links[i]).source().id();
+			rule += ' && ' + doc.arc(links[i]).source().id();
 			for (i in incoming)
-			rule += '&&!' + doc.arc(incoming[i]).source().id();
+			rule += ' && !' + doc.arc(incoming[i]).source().id();
 
-			rules[id] += '||(' + rule + ')';
+			rules[id] += ' || (' + rule + ')';
 		});
 
 		rules[id] += '))';
+    rules[id] = rules[id].replace(/true && /g, '');
+    rules[id] = rules[id].replace(/false \|\| /g, '');
 	});
 
 	// Export the SBGN to jSBGN
