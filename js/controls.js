@@ -229,6 +229,7 @@ var Controls = function () {
           $('#tabs').tabs('select', 1);
           return;
         }
+        $('#tabs').tabs('select', ui.index);
       }
     }
     else if (prevTab === 2) {
