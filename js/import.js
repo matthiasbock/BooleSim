@@ -176,7 +176,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
       for (j in ruleIDs) {
         sourceID = ruleIDs[j];
-        if ((sourceID == 'true') || (sourceID == 'false')) continue;
+        if ((sourceID.toLowerCase() == 'true') || (sourceID.toLowerCase() == 'false')) continue;
         
         // Create the node if it does not exist
         if (!(sourceID in rules)) {
