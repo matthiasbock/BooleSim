@@ -2,6 +2,7 @@ var plotH = 20;
 var plotW = 100;
 var maxColumns = 40;
 var timeseriesLabelCounter = 1;
+var skipped = 0;
 
 /**
    * Construct the node label column
@@ -95,6 +96,7 @@ var timeseriesLabelCounter = 1;
     
     for (j = iterationCounter - iterationCounter % maxColumns; j <= iterationCounter; j++) 
       createStateColumn(states[j], j);
+    skipped = 0;
   };
   
   var resetTimeseries = function() {
@@ -102,6 +104,7 @@ var timeseriesLabelCounter = 1;
     initialIndex = 0;
     iterationCounter = 0;
     timeseriesLabelCounter = 1;
+    skipped = 0;
     $('#textIteration').text(timeseriesLabelCounter); 
     states = [];
     states.push({});
@@ -114,6 +117,7 @@ var timeseriesLabelCounter = 1;
     // update Time series
     plot = null;
     timeseriesLabelCounter = parseInt($('#text0').text());
+    console.log(timeseriesLabelCounter);
     if (timeseriesLabelCounter === "NaN") timeseriesLabelCounter = 1;
     createPlotter();
   }

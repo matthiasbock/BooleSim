@@ -276,7 +276,7 @@ runSimulator = function () {
   iterationCounter++;
   $('#textIteration').text(timeseriesLabelCounter); 
   if (plot !== null)
-    createStateColumn(network.state, iterationCounter);
+    createStateColumn(network.state, iterationCounter + skipped);
 };
 
 
@@ -311,13 +311,12 @@ startSimulator = function () {
 
 	if (iterationCounter > 0) {
     // move 2 steps to the right, delete the column inbetween
-    iterationCounter += 1;
-    removeStateColumn(iterationCounter);
-    iterationCounter += 1;
+    removeStateColumn(iterationCounter + skipped + 1);
     // reset timeseries label counter
     timeseriesLabelCounter = 1;
     // draw the next first timeseries column
-    createStateColumn(network.state, iterationCounter);
+    createStateColumn(network.state, iterationCounter + skipped + 2);
+    skipped += 2;
   }
   initialIndex = iterationCounter;  
   
