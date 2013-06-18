@@ -23,7 +23,7 @@ randomColor = function () {
  */
 rule2function = function (node, rule) {
 	var newRule;
-	if (rule === '' || rule === 'true' || rule === 'false') {
+	if (typeof(rule) === "undefined") {
 		// during update the previous node value is set (equal to no update at all)
 		newRule = "state['" + node + "'];";
 	}
@@ -104,12 +104,11 @@ initializeSimulator = function (jsbgn, settings, graph) {
 
 	// initialize the state of the network
 	var i;
-	for (i in network.rules) {
-		if (network.rules[i].length !== 0) {
-      if (!network.state.hasOwnProperty(i))
-		network.state[i] = controls.getInitialSeed();
-		network.freeze[i] = false;
-		}
+	for (i in network.nodes) {
+    var id = network.nodes[i].id;
+    if (!network.state.hasOwnProperty(id))
+      network.state[id] = controls.getInitialSeed();
+		network.freeze[id] = false;
 	}
   
   resetTimeseries();

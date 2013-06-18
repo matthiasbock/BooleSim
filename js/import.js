@@ -159,7 +159,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
       }
       
       // Create the node if it does not exist
-      if (!(targetID in rules)) {
+      if (doc.node(targetID) === null) {
         targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
       }
 
@@ -181,8 +181,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
         if ((sourceID.toLowerCase() == 'true') || (sourceID.toLowerCase() == 'false')) continue;
         
         // Create the node if it does not exist
-        if (!(sourceID in rules)) {
-          rules[sourceID] = 'true';
+        if (doc.node(sourceID) === null) {
           sourceNode = doc.createNode(sourceID).type(sb.NodeType.Macromolecule).label(sourceID);
         }
         // Connect the source and target and create the edge

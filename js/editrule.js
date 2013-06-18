@@ -27,9 +27,15 @@ var reloadUpdateRules = function() {
     return false;
   }
   
-  var added = jsbgn.nodes.filter(function(i) {return !network.rules.hasOwnProperty(i.id);});
-  var removed = network.nodes.filter(function(i) {return !jsbgn.rules.hasOwnProperty(i.id);});
-  var same = jsbgn.nodes.filter(function(i) {return network.rules.hasOwnProperty(i.id);});
+  var jsbgnNodes = {};
+  for (i in jsbgn.nodes) {
+    var id = jsbgn.nodes[i].id;
+    jsbgnNodes[id] = true;
+	}
+  
+  var added = jsbgn.nodes.filter(function(i) {return !network.state.hasOwnProperty(i.id);});
+  var removed = network.nodes.filter(function(i) {return !jsbgnNodes.hasOwnProperty(i.id);});
+  var same = jsbgn.nodes.filter(function(i) {return network.state.hasOwnProperty(i.id);});
   
   for (i in same) {
     var id = same[i].id;

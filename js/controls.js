@@ -451,7 +451,6 @@ var Controls = function () {
   
   var addNode = function(id, coords) {
     //Add node to the jSBGN
-    network.rules[id] = id;
     var doc = new sb.Document();
     doc.lang(sb.Language.AF);
     doc.createNode(id).type(sb.NodeType.Macromolecule).label(id);
