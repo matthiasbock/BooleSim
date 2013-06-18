@@ -299,7 +299,10 @@ var Controls = function () {
       result = jsbgn.importGINML(data);
     else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN' )
       result = jsbgn.importjSBGN(data);
-    //else jsbgn.importSBML(file, data);
+    else {
+      alert('Format not supported!');
+      return;
+    }
     
     if (!result) {
       alert('There are errors in the syntax of the input file, please recheck!');
