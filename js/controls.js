@@ -104,6 +104,11 @@ var Controls = function () {
 			minWidth: 630,
 			modal: true
 		});
+    $('#dialogConfirm').dialog({
+			autoOpen: false,
+			minWidth: 300,
+			modal: true
+		});
 
 		// bind button event listeners
     $('#buttonResetTimeseries').click(function() {
@@ -116,6 +121,10 @@ var Controls = function () {
 		$('#buttonImportCancel').click(function () {
       $('#dialogImport').dialog('close');
     });
+    $('#buttonConfirmNo').click(function () {
+      $('#dialogConfirm').dialog('close');
+    });
+    
 		$('#buttonExportDialog').click(openExportDialog);
 		$('#buttonExportFile').click(exportFile);
 		$('#buttonExportCancel').click(function () {
@@ -224,6 +233,7 @@ var Controls = function () {
     if (prevTab === 1) {
       if ((network != null) && !running) {
         //Re-import network from the new rules
+        alert('The network will now be re-imported');
         if (!reloadUpdateRules()) {
           prevTab = 2;
           $('#tabs').tabs('select', 1);
@@ -250,7 +260,7 @@ var Controls = function () {
 	};
   
   var createDefaultNetwork = function() {
-    plaintextImporter('defaultNode* = defaultNode\n');
+    plaintextImporter('defaultNode* = defaultNode\n', false);
   }
   
 	/** 
@@ -268,9 +278,19 @@ var Controls = function () {
 		$('#dialogImport').dialog('open');
 	};
 
-	plaintextImporter = function (data) {
+	plaintextImporter = function (data, confirmed) {
     // Depending on the file type option checked in the import dialog box
     // call the appropriate importer
+    if ((!confirmed) && (networkGraph !== null)) {
+      $('#buttonConfirmYes').unbind('click');
+      $('#buttonConfirmYes').click(function() {
+        plaintextImporter(data, true);
+        $('#dialogConfirm').dialog('close');
+      });
+      $('#dialogConfirm').dialog('open');
+      return;
+    }
+    
     var guessed;
     var data, jsbgn = new jSBGN();
     
@@ -364,7 +384,7 @@ var Controls = function () {
 		// This event handler is called when the file reading task is complete
 		reader.onload = function (read) {
       // Get the data contained in the file
-      plaintextImporter( read.target.result );
+      plaintextImporter( read.target.result , false);
     };
 		reader.readAsText(file);
 
@@ -375,7 +395,7 @@ var Controls = function () {
 		$('#dialogImport').dialog('close');
 
 		setTimeout(function() {
-      plaintextImporter($('#demoNetwork').html())
+      plaintextImporter($('#demoNetwork').html(), false)
     }, 200);
 	}
   
