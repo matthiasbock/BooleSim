@@ -25,9 +25,11 @@ ellipse, circle, g.rect > path, g.complex > path, g.compartment > rect, g.proces
     stroke-width: 2px;
     stroke: black
 }
+
 g.hideBorder > path {
     stroke: white;
 }
+
 ellipse.selected, circle.selected {
     fill: #eee;
 }
@@ -67,6 +69,7 @@ line {
 .splineEdgeHandle.autoAlign circle {
     opacity: 0.2;
 }
+
 .Outcome {
   fill: #000000;
 }

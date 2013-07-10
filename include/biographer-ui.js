@@ -2472,7 +2472,9 @@ var getSBOForMarkerId = function(id) {
         rawSVG : function() {
             var inner = this._privates(identifier).root.parentNode.innerHTML;
 
-            var css = '';
+            // minimal fallback style
+            //var css = '.line { fill: none; stroke: black; }; .hidden { visibility: none; }; ';
+            var css = '.hidden { visibility: hidden; } /* * Please copy all changes to the .defaultText css class in the * visualization-html.css file. */ text { font-family: "Times-Roman"; font-size: 19px; fill: black; } /* * Please copy all changes to the .smallText css class in the * visualization-html.css file. */ text.small { font-size: 13px; } ellipse, circle, g.rect > path, g.complex > path, g.compartment > rect, g.process > rect{ fill: white; stroke-width: 2px; stroke: black } g.hideBorder > path { stroke: white; } ellipse.selected, circle.selected { fill: #eee; } line { stroke: #000; } .stimulation, .catalysis, .modulation, .necessaryStimulation, .substrate { fill: white; stroke: black; } .line { fill: none; stroke: black; } .lineHover { stroke-width: 4; } .dotted { stroke-dasharray: 1, 3; } .dashed { stroke-dasharray: 4, 5; } .splineEdgeHandle circle { fill: #9ea5ff; stroke: blue; opacity: 0.5; } .splineEdgeHandle.autoAlign circle { opacity: 0.2; } .Outcome { fill: #000000; }';
 
             jQuery.ajax({
                         url : bui.settings.css.stylesheetUrl,

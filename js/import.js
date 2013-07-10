@@ -353,7 +353,6 @@ jSBGN.prototype.importjSBGN = function (data) {
         jsbgn = JSON.parse(data);
     } catch (e) {
         console.error("JSON parser raised an exception: "+e);
-        alert("The JSON syntax of your jSBGN file appears to be erroneous !");
         return false;
     }
 
