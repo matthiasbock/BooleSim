@@ -304,7 +304,8 @@ var Controls = function () {
             else if (data.indexOf('<gxl') > -1)
                 guessed = 'GINML';
             else {
-                alert('Sorry,\nthe format of your network file could not be detected.\nPlease try to specify it manually.\nThank you!');
+		console.log('Import aborted: Inferring file format did not succeed.');
+                alert('Sorry,\nthe format of your network file could not be inferred.\nPlease try specifying it manually.');
                 return;
             }
             console.log('Format not specified. Guessing: ' + guessed);
@@ -320,12 +321,14 @@ var Controls = function () {
         else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN')
             result = jsbgn.importjSBGN(data);
         else {
-            alert('Format not supported!');
+	    console.log('Import failed: Unrecognized file format');
+            alert('Sorry, file format not supported!');
             return;
         }
 
         if (!result) {
-            alert('There are errors in the syntax of the input file, please recheck!');
+	    console.log('Import failed.');
+            alert('Aborting: There are syntax errors in your input file.');
             return;
         }
         // Identify input/output states

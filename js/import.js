@@ -94,8 +94,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
     var targetNode, sourceNode;
     var targetID, sourceID, edgeID;
-    var rules = {}, ruleIDs, rule, right = [],
-        left = [];
+    var rules = {}, ruleIDs, rule, right = [], left = [];
 
     var doc = new sb.Document();
     doc.lang(sb.Language.AF);
@@ -104,6 +103,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
     // the update rule for a node
     var lines, cols, i, j, trimmed;
     lines = data.split('\n');
+    console.log('Importing Boolean network from ' + lines.length + ' lines of text ...');
     for (i = 0; i < lines.length; i++) {
         trimmed = lines[i].trim();
         // Skip empty lines
@@ -113,7 +113,8 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
             // for R and Python Boolean Net
             cols = trimmed.split(splitKey);
             if (cols.length != 2) {
-                console.error('Error in input file, line ' + i + ': Broken update rule');
+                console.error('Syntax error: An update rule must have exactly two sides; line ' + i + ': "' + trimmed + '"');
+		console.log('Boolean network import aborted.');
                 return false;
             }
 
@@ -151,7 +152,8 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
             var check = targetID.match(/[A-Za-z0-9_]+/g);
 
             if (check[0] !== targetID) {
-                console.error('Error in input file, line ' + i + ': Broken update rule');
+                console.error('Syntax error: Bogus target ID; line ' + i + ': "' + trimmed + '"');
+		
                 return false;
             }
 
