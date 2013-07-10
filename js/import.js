@@ -114,7 +114,6 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
             cols = trimmed.split(splitKey);
             if (cols.length != 2) {
                 console.error('Syntax error: An update rule must have exactly two sides; line ' + i + ': "' + trimmed + '"');
-		console.log('Boolean network import aborted.');
                 return false;
             }
 
@@ -153,7 +152,6 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
             if (check[0] !== targetID) {
                 console.error('Syntax error: Bogus target ID; line ' + i + ': "' + trimmed + '"');
-		
                 return false;
             }
 
@@ -354,7 +352,8 @@ jSBGN.prototype.importjSBGN = function (data) {
     try {
         jsbgn = JSON.parse(data);
     } catch (e) {
-        alert("Sorry, jSBGN import failed. Your JSON syntax appears to be erroneous.");
+        console.error("JSON parser raised an exception: "+e);
+        alert("The JSON syntax of your jSBGN file appears to be erroneous !");
         return false;
     }
 
