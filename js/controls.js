@@ -299,7 +299,7 @@ var Controls = function () {
                 guessed = 'Python';
             else if (data.indexOf(' & ') + data.indexOf(' | ') > -1)
                 guessed = 'R';
-            else if (data.indexOf(' && ') + data.indexOf(' || ') > -1)
+            else if ((data.indexOf(' && ') + data.indexOf(' || ') > -1) || (data.indexOf('"sbgnlang"') > -1))
                 guessed = 'jSBGN';
             else if (data.indexOf('<gxl') > -1)
                 guessed = 'GINML';
