@@ -354,7 +354,7 @@ jSBGN.prototype.importjSBGN = function (data) {
     try {
         jsbgn = JSON.parse(data);
     } catch (e) {
-	alert("Sorry, jSBGN import failed. Your JSON syntax appears to be erroneous.");
+        alert("Sorry, jSBGN import failed. Your JSON syntax appears to be erroneous.");
         return false;
     }
 
