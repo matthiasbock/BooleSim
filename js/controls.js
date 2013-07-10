@@ -2,6 +2,7 @@ var controls, simulator = null;
 var networkGraph = null;
 var transitionGraph = null;
 var prevTab = 2;
+rulesChanged = false;
 
 $(document).ready(function () {
     // Load up the UI
@@ -232,7 +233,7 @@ var Controls = function () {
      */
     var changeTab = function (event, ui) {
         if (prevTab === 1) {
-            if ((network != null) && !running) {
+            if ((network != null) && !running && rulesChanged) {
                 //Re-import network from the new rules
                 alert('The network will now be re-imported');
                 if (!reloadUpdateRules()) {
@@ -246,6 +247,7 @@ var Controls = function () {
             if (network != null) {
                 //Re-import rules from new network: Add/Delete + rules update functionality required
                 loadRulesText();
+                rulesChanged = false;
             }
         }
 
