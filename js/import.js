@@ -257,10 +257,12 @@ jSBGN.prototype.importGINML = function (data) {
         var id = $(this).attr('id');
         incoming = [];
         // Create the rule given by the edges
-        rule = 'false';
+        rule = '';
         for (i in arcs) {
             if (arcs[i].target().id() === id) {
-                rule += ' || ' + arcs[i].source().id();
+            	if ( rule.length > 0 )
+            		rule += ' || ';
+                rule += arcs[i].source().id();
                 incoming.push(arcs[i].id());
             }
         }
@@ -275,11 +277,17 @@ jSBGN.prototype.importGINML = function (data) {
                 return links.indexOf(i) < 0;
             });
 
-            rule = 'true';
-            for (i in links)
-                rule += ' && ' + doc.arc(links[i]).source().id();
-            for (i in incoming)
-                rule += ' && !' + doc.arc(incoming[i]).source().id();
+            rule = '';
+            for (i in links){
+            	if ( rule.length > 0 )
+            		rule += ' && ';
+                rule += doc.arc(links[i]).source().id();            	
+            }
+            for (i in incoming) {
+            	if ( rule.length > 0 )
+            		rule += ' && ';
+                rule += '(!' + doc.arc(incoming[i]).source().id() + ')';
+            }
 
             rules[id] += ' || (' + rule + ')';
         });
