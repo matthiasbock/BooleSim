@@ -126,5 +126,6 @@ var updateTimeseries = function () {
     timeseriesLabelCounter = parseInt($('#text0').text());
     console.log(timeseriesLabelCounter);
     if (timeseriesLabelCounter === "NaN") timeseriesLabelCounter = 1;
+    $('#tabs').tabs('select', '#tabTimeseries');
     createPlotter();
 }

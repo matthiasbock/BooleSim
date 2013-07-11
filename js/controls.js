@@ -235,6 +235,7 @@ var Controls = function () {
         if (prevTab === 1) {
             if ((network != null) && !running && rulesChanged) {
                 //Re-import network from the new rules
+                rulesChanged = false;
                 alert('The network will now be re-imported');
                 if (!reloadUpdateRules()) {
                     prevTab = 2;
