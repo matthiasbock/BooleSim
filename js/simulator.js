@@ -1,6 +1,5 @@
 var serverURL, controls;
 
-
 /*
  * Generate a random color. The format is a 6 digit hex prefixed by a hash symbol.
  * @returns {string} The random color.

@@ -134,7 +134,7 @@ var Controls = function () {
         });
         $('#buttonSimulate').click(function () {
             if (network == null || network == undefined || network == {}) {
-                alert('You need to import a network, before you can simulate it.\n\nClick "Import", to do so.');
+                alert('You need to create or import a network before you can start simulation.');
                 return;
             }
         });
@@ -146,7 +146,7 @@ var Controls = function () {
         });
         $('#buttonReset').click(function () {
             if (network == null || network == undefined || network == {}) {
-                alert('You need to import a network, before you can reset it.\n\nClick "Import", to do so.');
+                alert('You need to create or import a network before you can reset it.');
                 return;
             }
             resetSimulator();
@@ -478,7 +478,7 @@ var Controls = function () {
      */
     var openExportDialog = function () {
         if (network == null || network == undefined || network == {}) {
-            alert('You need to import a network, before you can export it.\n\nClick "Import", to do so.');
+            alert('You need to create or import a network, before you can export it.');
             return;
         }
 
