@@ -255,8 +255,12 @@ jSBGN.prototype.importGINML = function (data) {
         var arcs = doc.arcs(),
             incoming;
         var id = $(this).attr('id');
+        
+        // a list of nodes, which act on the current node
         incoming = [];
-        // Create the rule given by the edges
+
+        // find all edges which point to the current node and
+        // create a Boolean rule string by concatenating them with OR inbetween
         rule = '';
         for (i in arcs) {
             if (arcs[i].target().id() === id) {
@@ -266,10 +270,10 @@ jSBGN.prototype.importGINML = function (data) {
                 incoming.push(arcs[i].id());
             }
         }
-        rules[id] = '(' + Boolean(parseInt($(this).attr('basevalue'), 10)) +
-            ' && !(' + rule + ')) || ((' + rule + ') && (false';
+        rules[id] = rule;
 
-        // Add rules derived from the Active Interations for a node.
+        // Add these rules to corresponding nodes following the definitions
+        // of active rules in the "idActiveInterations" parameter of all nodes
         $(this).find('parameter').each(function () {
             var i, links;
             links = $(this).attr('idActiveInteractions').split(' ');
