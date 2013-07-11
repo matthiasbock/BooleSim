@@ -1,0 +1,6 @@
+*.pyc
+lib/biographer
+lib/bui
+autoload.net
+.project
+.settings/

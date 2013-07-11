@@ -73,7 +73,7 @@ jSBGN.prototype.layoutGraph = function (graph) {
     layouter.stop();
 
     // Copy the layout data from d3 to jSBGN format
-    var node;
+    var node, i;
     for (i = 0; i < this.nodes.length; i++) {
         node = this.nodes[i];
         node.data.x = node.x;

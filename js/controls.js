@@ -113,7 +113,7 @@ var Controls = function () {
 
         // bind button event listeners
         $('#buttonResetTimeseries').click(function () {
-            resetTimeseries()
+            resetTimeseries();
         });
 
         $('#buttonCreate').click(createDefaultNetwork);
@@ -279,7 +279,7 @@ var Controls = function () {
         });
         $('#dialogImport').dialog('open');
     };
-
+   
     plaintextImporter = function (data, confirmed) {
         // Depending on the file type option checked in the import dialog box
         // call the appropriate importer
@@ -293,8 +293,8 @@ var Controls = function () {
             return;
         }
 
-        var guessed;
-        var data, jsbgn = new jSBGN();
+        var guessed = 'unrecognized';
+        var jsbgn = new jSBGN();
 
         if ($('#formatGuess').attr('checked')) {
             if (data.indexOf(' and ') + data.indexOf(' or ') + data.indexOf('*') > -1)
@@ -310,9 +310,10 @@ var Controls = function () {
                 alert('Sorry,\nthe format of your file could not be inferred.\nPlease try specifying it manually in the import dialog.');
                 return;
             }
-            console.log('Format not specified. Guessing: ' + guessed);
+            console.log('Inferred file format: ' + guessed);
         }
         var result;
+        var doLayout = true;
 
         if ($('#formatPyBooleanNet').attr('checked') || guessed == 'Python')
             result = jsbgn.importBooleanNetwork(data, '=', false);
@@ -320,9 +321,10 @@ var Controls = function () {
             result = jsbgn.importBooleanNetwork(data, ',', false);
         else if ($('#formatGINML').attr('checked') || guessed == 'GINML')
             result = jsbgn.importGINML(data);
-        else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN')
-            result = jsbgn.importjSBGN(data);
-        else {
+        else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN') {
+        	result = jsbgn.importjSBGN(data);
+        	doLayout = false;
+    	} else {
             console.log('Import failed: Unrecognized file format');
             alert('Import failed: Unrecognized file format');
             return;
@@ -340,7 +342,7 @@ var Controls = function () {
 
         //$('#graphStateTransition').html('');
         // Import the jSBGN object into a bui.Graph instance
-        obj.importNetwork(jsbgn, '#tabNetwork');
+        obj.importNetwork(jsbgn, '#tabNetwork', doLayout);
         $('#tabNetwork').bind('contextmenu', addNodeDialog);
         $('#textIteration').text(timeseriesLabelCounter);
 
@@ -362,7 +364,7 @@ var Controls = function () {
         highlightIONodes();
 
         if (typeof ($('#optionsSimulateAfterImport').attr('checked')) !== "undefined")
-            startSimulator()
+            startSimulator();
     };
 
 
@@ -400,9 +402,9 @@ var Controls = function () {
         $('#dialogImport').dialog('close');
 
         setTimeout(function () {
-            plaintextImporter($('#demoNetwork').html(), false)
+            plaintextImporter($('#demoNetwork').html(), false);
         }, 200);
-    }
+    };
 
     /** 
      * Import a jSBGN object into the Network tab by creating a new bui.Graph
@@ -412,11 +414,15 @@ var Controls = function () {
      * @param {string} tab The tab in which to display the graph.
      * @returns {bui.Graph} The graph for the network.
      */
-    this.importNetwork = function (jsbgn, tab) {
-        // Do the layouting
-        jsbgn.connectNodes(true);
-        jsbgn.layoutGraph();
-        jsbgn.connectNodes(false);
+    this.importNetwork = function (jsbgn, tab, doLayout) {
+
+    	// only invoke d3 layouting, if doLayout was not specified or if it's true
+    	if (typeof doLayout == 'undefined' || doLayout) {
+	        // Do the layouting
+	        jsbgn.connectNodes(true);
+	        jsbgn.layoutGraph();
+	        jsbgn.connectNodes(false);
+	    }
 
         // Fix Self-loop edges
         for (i in jsbgn.edges) {
