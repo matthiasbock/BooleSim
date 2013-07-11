@@ -141,14 +141,14 @@
   
 <!-- This dialog appears after clicking "Save" -->
 <div id=dialogExport class=dialog title="Export">
-	<b>model:</b><br/>
-	<input type=radio name="export" id=exportNetworkRBoolNet checked />R BoolNet<br/>
+	<b>Model and graph combined:</b><br/>
+	<input type=radio name="export" id=exportjSBGN checked />jSBGN<br/>
+	<b>Model only:</b><br/>
+	<input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br/>
 	<input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br/>
-	<b>graph:</b><br/>
+	<b>Graph only:</b><br/>
 	<input type=radio name="export" id=exportSVG />SVG<br/>
-	<b>model and graph combined:</b><br/>
-	<input type=radio name="export" id=exportjSBGN />jSBGN<br/>
-  <b>Time series:</b><br/>
+	<b>Time series:</b><br/>
 	<input type=radio name="export" id=exportTimeseries />SVG<br/>
   
 	<button id=buttonExportFile class=dialogButton> Export </button>
