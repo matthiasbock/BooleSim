@@ -94,7 +94,8 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
     var targetNode, sourceNode;
     var targetID, sourceID, edgeID;
-    var rules = {}, ruleIDs, rule, right = [], left = [];
+    var rules = {}, ruleIDs, rule, right = [],
+        left = [];
 
     var doc = new sb.Document();
     doc.lang(sb.Language.AF);
@@ -257,38 +258,40 @@ jSBGN.prototype.importGINML = function (data) {
         // by evaluating the current node's idActiveInteractions parameters
         $(this).find('parameter').each(function () {
 
-        	idActiveInteractions = $(this).attr('idActiveInteractions').split(' ');
-        	console.log('idActiveInteractions: '+idActiveInteractions);
+            idActiveInteractions = $(this).attr('idActiveInteractions').split(' ');
+            console.log('idActiveInteractions: ' + idActiveInteractions);
 
             // for all of the edges listed in idActiveInteractions:
             // get edge source and interaction sign
-        	var positive = [];
-        	var negative = [];
+            var positive = [];
+            var negative = [];
             for (i in idActiveInteractions) {
-            	var id = idActiveInteractions[i];
-//            	console.log('now searching for edge '+id);
-            	var edge = $.grep(edges, function(item){ return $(item).attr('id') == id; })[0];
-//            	console.log('found: '+edge);
-            	if ($(edge).attr('sign') == 'positive')
-                	positive.push($(edge).attr('from'));
+                var id = idActiveInteractions[i];
+                //            	console.log('now searching for edge '+id);
+                var edge = $.grep(edges, function (item) {
+                    return $(item).attr('id') == id;
+                })[0];
+                //            	console.log('found: '+edge);
+                if ($(edge).attr('sign') == 'positive')
+                    positive.push($(edge).attr('from'));
                 else if ($(edge).attr('sign') == 'negative')
-                	negative.push($(edge).attr('from'));
+                    negative.push($(edge).attr('from'));
             }
 
             // concatenate all edge sources of an active interaction using AND
             var rule = positive.join(' && ');
             for (i in negative) {
-            	if (rule.length > 0)
-            		rule += ' && ';
-                rule += '(!'+negative[i]+')';
+                if (rule.length > 0)
+                    rule += ' && ';
+                rule += '(!' + negative[i] + ')';
             }
-            activeInteractions.push('('+rule+')');
+            activeInteractions.push('(' + rule + ')');
         });
 
         // concatenate all active interactions using OR
         rules[id] = activeInteractions.join(' || ');
         if (rules[id].length == 0)
-        	delete rules[id];
+            delete rules[id];
     });
 
     // Export the SBGN to jSBGN
@@ -354,7 +357,7 @@ jSBGN.prototype.importjSBGN = function (data) {
     try {
         jsbgn = JSON.parse(data);
     } catch (e) {
-        console.error("JSON parser raised an exception: "+e);
+        console.error("JSON parser raised an exception: " + e);
         return false;
     }
 

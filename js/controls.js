@@ -280,7 +280,7 @@ var Controls = function () {
         });
         $('#dialogImport').dialog('open');
     };
-   
+
     plaintextImporter = function (data, confirmed) {
         // Depending on the file type option checked in the import dialog box
         // call the appropriate importer
@@ -323,9 +323,9 @@ var Controls = function () {
         else if ($('#formatGINML').attr('checked') || guessed == 'GINML')
             result = jsbgn.importGINML(data);
         else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN') {
-        	result = jsbgn.importjSBGN(data);
-        	doLayout = false;
-    	} else {
+            result = jsbgn.importjSBGN(data);
+            doLayout = false;
+        } else {
             console.log('Import failed: Unrecognized file format');
             alert('Import failed: Unrecognized file format');
             return;
@@ -417,13 +417,13 @@ var Controls = function () {
      */
     this.importNetwork = function (jsbgn, tab, doLayout) {
 
-    	// only invoke d3 layouting, if doLayout was not specified or if it's true
-    	if (typeof doLayout == 'undefined' || doLayout) {
-	        // Do the layouting
-	        jsbgn.connectNodes(true);
-	        jsbgn.layoutGraph();
-	        jsbgn.connectNodes(false);
-	    }
+        // only invoke d3 layouting, if doLayout was not specified or if it's true
+        if (typeof doLayout == 'undefined' || doLayout) {
+            // Do the layouting
+            jsbgn.connectNodes(true);
+            jsbgn.layoutGraph();
+            jsbgn.connectNodes(false);
+        }
 
         // Fix Self-loop edges
         for (i in jsbgn.edges) {
