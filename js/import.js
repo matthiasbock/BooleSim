@@ -246,59 +246,49 @@ jSBGN.prototype.importGINML = function (data) {
         doc.createArc(id).type(type).source($(this).attr('from')).target($(this).attr('to'));
     });
 
-    // Generate rules from the GINML file
-    // There are two types of rules, the rule defined by the connecting
-    // arcs and the other rule defined by the parameter tag for each node.
+    // Generate Boolean rules from the GINML file
+    var arcs = doc.arcs();
     var rules = {};
     $(nodes).each(function () {
-        var i, rule;
-        var arcs = doc.arcs(),
-            incoming;
+        var activeInteractions = [];
         var id = $(this).attr('id');
-        
-        // a list of nodes, which act on the current node
-        incoming = [];
 
-        // find all edges which point to the current node and
-        // create a Boolean rule string by concatenating them with OR inbetween
-        rule = '';
-        for (i in arcs) {
-            if (arcs[i].target().id() === id) {
-            	if ( rule.length > 0 )
-            		rule += ' || ';
-                rule += arcs[i].source().id();
-                incoming.push(arcs[i].id());
-            }
-        }
-        rules[id] = rule;
-
-        // Add these rules to corresponding nodes following the definitions
-        // of active rules in the "idActiveInterations" parameter of all nodes
+        // get the list of active interactions for the current node
+        // by evaluating the current node's idActiveInteractions parameters
         $(this).find('parameter').each(function () {
-            var i, links;
-            links = $(this).attr('idActiveInteractions').split(' ');
-            incoming = incoming.filter(function (i) {
-                return links.indexOf(i) < 0;
-            });
 
-            rule = '';
-            for (i in links){
-            	if ( rule.length > 0 )
-            		rule += ' && ';
-                rule += doc.arc(links[i]).source().id();            	
-            }
-            for (i in incoming) {
-            	if ( rule.length > 0 )
-            		rule += ' && ';
-                rule += '(!' + doc.arc(incoming[i]).source().id() + ')';
+        	idActiveInteractions = $(this).attr('idActiveInteractions').split(' ');
+        	console.log('idActiveInteractions: '+idActiveInteractions);
+
+            // for all of the edges listed in idActiveInteractions:
+            // get edge source and interaction sign
+        	var positive = [];
+        	var negative = [];
+            for (i in idActiveInteractions) {
+            	var id = idActiveInteractions[i];
+//            	console.log('now searching for edge '+id);
+            	var edge = $.grep(edges, function(item){ return $(item).attr('id') == id; })[0];
+//            	console.log('found: '+edge);
+            	if ($(edge).attr('sign') == 'positive')
+                	positive.push($(edge).attr('from'));
+                else if ($(edge).attr('sign') == 'negative')
+                	negative.push($(edge).attr('from'));
             }
 
-            rules[id] += ' || (' + rule + ')';
+            // concatenate all edge sources of an active interaction using AND
+            var rule = positive.join(' && ');
+            for (i in negative) {
+            	if (rule.length > 0)
+            		rule += ' && ';
+                rule += '(!'+negative[i]+')';
+            }
+            activeInteractions.push('('+rule+')');
         });
 
-        rules[id] += '))';
-        rules[id] = rules[id].replace(/true && /g, '');
-        rules[id] = rules[id].replace(/false \|\| /g, '');
+        // concatenate all active interactions using OR
+        rules[id] = activeInteractions.join(' || ');
+        if (rules[id].length == 0)
+        	delete rules[id];
     });
 
     // Export the SBGN to jSBGN
