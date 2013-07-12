@@ -219,6 +219,7 @@ jSBGN.prototype.importGINML = function (data) {
     try {
         xml = $.parseXML(data);
     } catch (e) {
+        console.error('Error parsing XML: '+e);
         return false;
     }
     var nodes = $(xml).find('node');
@@ -236,15 +237,18 @@ jSBGN.prototype.importGINML = function (data) {
 
     // Extract all edges taking care of the sign
     $(edges).each(function () {
-        var sign = $(this).attr('sign'),
-            type;
+        var type = sb.ArcType.UnknownInfluence;
+        var sign = $(this).attr('sign');
         var id = $(this).attr('id');
 
         if (typeof (sign) !== 'undefined') {
-            if (sign === 'positive') type = sb.ArcType.PositiveInfluence;
-            else if (sign === 'negative') type = sb.ArcType.NegativeInfluence;
-        } else type = sb.ArcType.UnknownInfluence;
-        doc.createArc(id).type(type).source($(this).attr('from')).target($(this).attr('to'));
+            if (sign === 'positive')
+                type = sb.ArcType.PositiveInfluence;
+            else if (sign === 'negative')
+                type = sb.ArcType.NegativeInfluence;
+        }
+
+        doc.createArc(id).type(type).source( $(this).attr('from') ).target( $(this).attr('to') );
     });
 
     // Generate Boolean rules from the GINML file
@@ -252,46 +256,49 @@ jSBGN.prototype.importGINML = function (data) {
     var rules = {};
     $(nodes).each(function () {
         var activeInteractions = [];
-        var id = $(this).attr('id');
+        var idNode = $(this).attr('id');
 
         // get the list of active interactions for the current node
         // by evaluating the current node's idActiveInteractions parameters
         $(this).find('parameter').each(function () {
 
             idActiveInteractions = $(this).attr('idActiveInteractions').split(' ');
-            console.log('idActiveInteractions: ' + idActiveInteractions);
+            // console.log('Node '+idNode+', active interactions: ' + idActiveInteractions);
 
-            // for all of the edges listed in idActiveInteractions:
-            // get edge source and interaction sign
+            // for all of the edges listed in current active interaction:
+            // get edge source and sign of influence
             var positive = [];
             var negative = [];
             for (i in idActiveInteractions) {
-                var id = idActiveInteractions[i];
-                //            	console.log('now searching for edge '+id);
-                var edge = $.grep(edges, function (item) {
-                    return $(item).attr('id') == id;
-                })[0];
-                //            	console.log('found: '+edge);
+                var idEdge = idActiveInteractions[i];
+                try {
+                    var edge = $.grep(edges, function (item) { return $(item).attr('id') == idEdge; })[0];
+                } catch(e) {
+                    console.error('Edge referenced in active interaction '+idActiveInteractions+' of node '+id+' not found: '+idEdge);
+                    return false;
+                }
                 if ($(edge).attr('sign') == 'positive')
                     positive.push($(edge).attr('from'));
                 else if ($(edge).attr('sign') == 'negative')
                     negative.push($(edge).attr('from'));
             }
 
-            // concatenate all edge sources of an active interaction using AND
+            // concatenate the source nodes of all edges in this active interaction using AND
             var rule = positive.join(' && ');
             for (i in negative) {
                 if (rule.length > 0)
                     rule += ' && ';
                 rule += '(!' + negative[i] + ')';
             }
+            // put brackets around this rule and append to the list of active interactions for this node 
             activeInteractions.push('(' + rule + ')');
         });
 
-        // concatenate all active interactions using OR
-        rules[id] = activeInteractions.join(' || ');
-        if (rules[id].length == 0)
-            delete rules[id];
+        // concatenate all active interactions for this node using OR
+        // and define that as the Boolean update rule for this node
+        rules[idNode] = activeInteractions.join(' || ');
+        if (rules[idNode].length == 0)
+            delete rules[idNode];
     });
 
     // Export the SBGN to jSBGN
