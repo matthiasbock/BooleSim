@@ -257,19 +257,17 @@ jSBGN.prototype.importGINML = function (data) {
         var id = $(this).attr('id');
         incoming = [];
         // Create the rule given by the edges
-        rule = '';
+        rule1 = '';
         for (i in arcs) {
             if (arcs[i].target().id() === id) {
-            	if ( rule.length > 0 )
-            		rule += ' || ';
-                rule += arcs[i].source().id();
+            	if ( rule1.length > 0 )
+            		rule1 += ' || ';
+                rule1 += arcs[i].source().id();
                 incoming.push(arcs[i].id());
             }
         }
-        rules[id] = '(' + Boolean(parseInt($(this).attr('basevalue'), 10)) +
-            ' && !(' + rule + ')) || ((' + rule + ') && (false';
-
-        // Add rules derived from the Active Interations for a node.
+        // Add rules derived from the Active Interations for a node.'
+        rule2 = 'false';
         $(this).find('parameter').each(function () {
             var i, links;
             links = $(this).attr('idActiveInteractions').split(' ');
@@ -289,12 +287,29 @@ jSBGN.prototype.importGINML = function (data) {
                 rule += '(!' + doc.arc(incoming[i]).source().id() + ')';
             }
 
-            rules[id] += ' || (' + rule + ')';
+            rule2 += ' || (' + rule + ')';
         });
-
-        rules[id] += '))';
-        rules[id] = rules[id].replace(/true && /g, '');
+        
+        var base = Boolean(parseInt($(this).attr('basevalue'), 10));
+        if (rule1.length > 0) {
+            if (base) {
+                rules[id] = '!(' + rule1 + ') || ';
+            }
+            else {
+                rules[id] = '';
+            }
+            if (rule2 == 'false') {
+                rules[id] += rule2;
+            }
+            else {
+                rules[id] += '((' + rule1 + ') && (' + rule2 + '))';   
+            }
+        }
+        else {
+            rules[id] = rule2;
+        }
         rules[id] = rules[id].replace(/false \|\| /g, '');
+        rules[id] = rules[id].replace(/ \|\| false/g, '');
     });
 
     // Export the SBGN to jSBGN
