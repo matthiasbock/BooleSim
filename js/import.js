@@ -274,7 +274,7 @@ jSBGN.prototype.importGINML = function (data) {
                 try {
                     var edge = $.grep(edges, function (item) { return $(item).attr('id') == idEdge; })[0];
                 } catch(e) {
-                    console.error('Edge referenced in active interaction '+idActiveInteractions+' of node '+id+' not found: '+idEdge);
+                    console.error('Edge referenced in active interaction '+idActiveInteractions+' of node '+idNode+' not found: '+idEdge);
                     return false;
                 }
                 if ($(edge).attr('sign') == 'positive')
