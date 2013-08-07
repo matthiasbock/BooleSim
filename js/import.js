@@ -94,8 +94,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
 
     var targetNode, sourceNode;
     var targetID, sourceID, edgeID;
-    var rules = {}, ruleIDs, rule, right = [],
-        left = [];
+    var rules = {}, ruleIDs, rule, right = [], left = [];
 
     var doc = new sb.Document();
     doc.lang(sb.Language.AF);
@@ -219,7 +218,6 @@ jSBGN.prototype.importGINML = function (data) {
     try {
         xml = $.parseXML(data);
     } catch (e) {
-        console.error('Error parsing XML: '+e);
         return false;
     }
     var nodes = $(xml).find('node');
@@ -237,68 +235,81 @@ jSBGN.prototype.importGINML = function (data) {
 
     // Extract all edges taking care of the sign
     $(edges).each(function () {
-        var type = sb.ArcType.UnknownInfluence;
-        var sign = $(this).attr('sign');
+        var sign = $(this).attr('sign'),
+            type;
         var id = $(this).attr('id');
 
         if (typeof (sign) !== 'undefined') {
-            if (sign === 'positive')
-                type = sb.ArcType.PositiveInfluence;
-            else if (sign === 'negative')
-                type = sb.ArcType.NegativeInfluence;
-        }
-
-        doc.createArc(id).type(type).source( $(this).attr('from') ).target( $(this).attr('to') );
+            if (sign === 'positive') type = sb.ArcType.PositiveInfluence;
+            else if (sign === 'negative') type = sb.ArcType.NegativeInfluence;
+        } else type = sb.ArcType.UnknownInfluence;
+        doc.createArc(id).type(type).source($(this).attr('from')).target($(this).attr('to'));
     });
 
-    // Generate Boolean rules from the GINML file
-    var arcs = doc.arcs();
+    // Generate rules from the GINML file
+    // There are two types of rules, the rule defined by the connecting
+    // arcs and the other rule defined by the parameter tag for each node.
     var rules = {};
     $(nodes).each(function () {
-        var activeInteractions = [];
-        var idNode = $(this).attr('id');
-
-        // get the list of active interactions for the current node
-        // by evaluating the current node's idActiveInteractions parameters
+        var i, rule;
+        var arcs = doc.arcs(),
+            incoming;
+        var id = $(this).attr('id');
+        incoming = [];
+        // Create the rule given by the edges
+        rule1 = '';
+        for (i in arcs) {
+            if (arcs[i].target().id() === id) {
+            	if ( rule1.length > 0 )
+            		rule1 += ' || ';
+                rule1 += arcs[i].source().id();
+                incoming.push(arcs[i].id());
+            }
+        }
+        // Add rules derived from the Active Interations for a node.'
+        rule2 = 'false';
         $(this).find('parameter').each(function () {
+            var i, links;
+            links = $(this).attr('idActiveInteractions').split(' ');
+            incoming = incoming.filter(function (i) {
+                return links.indexOf(i) < 0;
+            });
 
-            idActiveInteractions = $(this).attr('idActiveInteractions').split(' ');
-            // console.log('Node '+idNode+', active interactions: ' + idActiveInteractions);
-
-            // for all of the edges listed in current active interaction:
-            // get edge source and sign of influence
-            var positive = [];
-            var negative = [];
-            for (i in idActiveInteractions) {
-                var idEdge = idActiveInteractions[i];
-                try {
-                    var edge = $.grep(edges, function (item) { return $(item).attr('id') == idEdge; })[0];
-                } catch(e) {
-                    console.error('Edge referenced in active interaction '+idActiveInteractions+' of node '+idNode+' not found: '+idEdge);
-                    return false;
-                }
-                if ($(edge).attr('sign') == 'positive')
-                    positive.push($(edge).attr('from'));
-                else if ($(edge).attr('sign') == 'negative')
-                    negative.push($(edge).attr('from'));
+            rule = '';
+            for (i in links){
+            	if ( rule.length > 0 )
+            		rule += ' && ';
+                rule += doc.arc(links[i]).source().id();            	
+            }
+            for (i in incoming) {
+            	if ( rule.length > 0 )
+            		rule += ' && ';
+                rule += '(!' + doc.arc(incoming[i]).source().id() + ')';
             }
 
-            // concatenate the source nodes of all edges in this active interaction using AND
-            var rule = positive.join(' && ');
-            for (i in negative) {
-                if (rule.length > 0)
-                    rule += ' && ';
-                rule += '(!' + negative[i] + ')';
-            }
-            // put brackets around this rule and append to the list of active interactions for this node 
-            activeInteractions.push('(' + rule + ')');
+            rule2 += ' || (' + rule + ')';
         });
-
-        // concatenate all active interactions for this node using OR
-        // and define that as the Boolean update rule for this node
-        rules[idNode] = activeInteractions.join(' || ');
-        if (rules[idNode].length == 0)
-            delete rules[idNode];
+        
+        var base = Boolean(parseInt($(this).attr('basevalue'), 10));
+        if (rule1.length > 0) {
+            if (base) {
+                rules[id] = '!(' + rule1 + ') || ';
+            }
+            else {
+                rules[id] = '';
+            }
+            if (rule2 == 'false') {
+                rules[id] += rule2;
+            }
+            else {
+                rules[id] += '((' + rule1 + ') && (' + rule2 + '))';   
+            }
+        }
+        else {
+            rules[id] = rule2;
+        }
+        rules[id] = rules[id].replace(/false \|\| /g, '');
+        rules[id] = rules[id].replace(/ \|\| false/g, '');
     });
 
     // Export the SBGN to jSBGN
@@ -364,7 +375,7 @@ jSBGN.prototype.importjSBGN = function (data) {
     try {
         jsbgn = JSON.parse(data);
     } catch (e) {
-        console.error("JSON parser raised an exception: " + e);
+        console.error("JSON parser raised an exception: "+e);
         return false;
     }
 
