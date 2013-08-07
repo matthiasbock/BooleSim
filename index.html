@@ -1,187 +1,187 @@
 <html>
 
 <head>
-	<title>BooleSim</title>
+    <title>BooleSim</title>
   
-	<!-- The order of import plays a role, due to dependencies on jQuery ... -->
-	<link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.22.custom.css"/>
-	<link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
-	<link rel="stylesheet" type="text/css" href="css/simulator.css"/>
-	<link rel="stylesheet" type="text/css" href="css/rickshaw.css"/>
+    <!-- The order of import plays a role, due to dependencies on jQuery ... -->
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.22.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
+    <link rel="stylesheet" type="text/css" href="css/simulator.css"/>
+    <link rel="stylesheet" type="text/css" href="css/rickshaw.css"/>
 
-	<script type="text/javascript" src="include/jquery-1.7.2.min.js"></script>
-	<script type="text/javascript" src="include/jquery-ui-1.8.22.custom.min.js"></script>
-	<script type="text/javascript" src="settings.js"></script>
-	<script type="text/javascript" src="js/controls.js"></script>
+    <script type="text/javascript" src="include/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="include/jquery-ui-1.8.22.custom.min.js"></script>
+    <script type="text/javascript" src="settings.js"></script>
+    <script type="text/javascript" src="js/controls.js"></script>
 </head>
 
 <body style="overflow-y: scroll;">
 
 <div id=tabs>
-	<ul>
-		<a target="blank" href="https://github.com/matthiasbock/BooleSim"><img style="width: 137px; float: left; padding: 5px 5px 0 0; margin: none;" alt="BooleSim" src="img/logo.png" /></a>
-		<!--li><a href="#graphStateTransition">Statespace</a></li-->
-		<!--li><a href="#tabSteadyStates">Steady states</a></li-->
-		<li><a href="#tabTimeseries">Time series</a></li>
-		<li><a href="#tabEditor">Rules</a></li>
-		<li><a href="#tabNetwork">Network</a></li>
+    <ul>
+        <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img style="width: 137px; float: left; padding: 5px 5px 0 0; margin: none;" alt="BooleSim" src="img/logo.png" /></a>
+        <!--li><a href="#graphStateTransition">Statespace</a></li-->
+        <!--li><a href="#tabSteadyStates">Steady states</a></li-->
+        <li><a href="#tabTimeseries">Time series</a></li>
+        <li><a href="#tabEditor">Rules</a></li>
+        <li><a href="#tabNetwork">Network</a></li>
     
     <li><button id=buttonCreate>Create</button></li>
-		<li><button id=buttonImportDialog>Import</button></li>
-		<li><button id=buttonExportDialog>Export</button></li>
-		<li><button id=buttonSimulate>Simulate / Pause</button></li>
+        <li><button id=buttonImportDialog>Import</button></li>
+        <li><button id=buttonExportDialog>Export</button></li>
+        <li><button id=buttonSimulate>Simulate / Pause</button></li>
     <li><button id=buttonReset>Reset</button></li>
-		<li><button id=buttonHelp>Help</button></li>
+        <li><button id=buttonHelp>Help</button></li>
 
-		<li><label id=textIteration>0</label></li>
-	</ul>
+        <li><label id=textIteration>0</label></li>
+    </ul>
 
-	<div class=tabs id=tabNetwork>
-		<!--div style="float: right; padding: none; margin: none;">
-		Zoom:<div id=sliderZoom style="float: right;"></div>
-		</div-->
-	</div>
+    <div class=tabs id=tabNetwork>
+        <!--div style="float: right; padding: none; margin: none;">
+        Zoom:<div id=sliderZoom style="float: right;"></div>
+        </div-->
+    </div>
   
-	<div class=tabs id=tabEditor style="text-align: center;">
-		<font size=6><b>Update rule editor:</b></font><br/>
-		<textarea id=textRules onchange="rulesChanged=true;"></textarea>
-		<br/>
-		Use JavaScript syntax for your rules:<br/>
-		true and false need to be written with lower case letters.<br/>
-		AND is represented by &&, OR by ||, NOT by !.<br/>
-		Only write one update rule per line.<br/>
-		Empty lines and round brackets are allowed.<br/>
-		Example: A = (B || C) && (!D)
-	</div>
+    <div class=tabs id=tabEditor style="text-align: center;">
+        <font size=6><b>Update rule editor:</b></font><br/>
+        <textarea id=textRules onchange="rulesChanged=true;"></textarea>
+        <br/>
+        Use JavaScript syntax for your rules:<br/>
+        true and false need to be written with lower case letters.<br/>
+        AND is represented by &&, OR by ||, NOT by !.<br/>
+        Only write one update rule per line.<br/>
+        Empty lines and round brackets are allowed.<br/>
+        Example: A = (B || C) && (!D)
+    </div>
 
-	<div class=tabs id=tabTimeseries>
-	    <div id=legend>
-	      <ul>
-	      <li>Legend: </li>
-	      <li><div id=legendOn class=legend></div></li>
-	      <li>=<b>True</b>&nbsp;&nbsp;</li>
-	      <li><div id=legendOff class=legend></div></li>
-	      <li>=<b>False</b></li>
-	      <li><button id=buttonResetTimeseries>Reset</button></li>
-	      </ul>
-	    </div>
-	    <div id=divTimeseries>
-	    </div>
-	</div>
+    <div class=tabs id=tabTimeseries>
+        <div id=legend>
+          <ul>
+          <li>Legend: </li>
+          <li><div id=legendOn class=legend></div></li>
+          <li>=<b>True</b>&nbsp;&nbsp;</li>
+          <li><div id=legendOff class=legend></div></li>
+          <li>=<b>False</b></li>
+          <li><button id=buttonResetTimeseries>Reset</button></li>
+          </ul>
+        </div>
+        <div id=divTimeseries>
+        </div>
+    </div>
 
-	<!--div class=tabs id=tabSteadyStates>
-		<center>
-		<br/>
-		<b>
-		<font size=6>Passed steady states</font>
-		</b>
-		<br/>
-		<br/>
-		<table id=SteadyStates>
-		</table>
-	</div-->
+    <!--div class=tabs id=tabSteadyStates>
+        <center>
+        <br/>
+        <b>
+        <font size=6>Passed steady states</font>
+        </b>
+        <br/>
+        <br/>
+        <table id=SteadyStates>
+        </table>
+    </div-->
 
-	<!--div class=tabs id=graphStateTransition>
-		<button id=buttonAnalyse>Analyse</button>
-	</div-->
+    <!--div class=tabs id=graphStateTransition>
+        <button id=buttonAnalyse>Analyse</button>
+    </div-->
 </div>
 
 <div id=dialogAddNode class=dialog title="Add node">
-	<b>Node name/id:</b><br/>
-	<input type=text id=textNodeID /><br/>
+    <b>Node name/id:</b><br/>
+    <input type=text id=textNodeID /><br/>
   
-	<button id=buttonAddNode class=dialogButton> Add </button>
-	<button id=buttonAddNodeCancel class=dialogButton> Cancel </button>
+    <button id=buttonAddNode class=dialogButton> Add </button>
+    <button id=buttonAddNodeCancel class=dialogButton> Cancel </button>
 </div>
 
 <div id=dialogDeleteNode class=dialog title="Delete node">
-	<b>Are you sure you want to delete <i id=deleteNodeID></i>?</b><br/>
+    <b>Are you sure you want to delete <i id=deleteNodeID></i>?</b><br/>
   
-	<button id=buttonDeleteNodeYes class=dialogButton> Yes </button>
-	<button id=buttonDeleteNodeNo class=dialogButton> No </button>
+    <button id=buttonDeleteNodeYes class=dialogButton> Yes </button>
+    <button id=buttonDeleteNodeNo class=dialogButton> No </button>
 </div>
 
 <div id=dialogConfirm class=dialog title="Confirm">
-	<b>Are you sure you want to destroy the current network and replace it with
+    <b>Are you sure you want to destroy the current network and replace it with
   a new one? </b><br/>
   
-	<button id=buttonConfirmYes class=dialogButton> Yes </button>
-	<button id=buttonConfirmNo class=dialogButton> No </button>
+    <button id=buttonConfirmYes class=dialogButton> Yes </button>
+    <button id=buttonConfirmNo class=dialogButton> No </button>
 </div>
 
 <!-- This dialog appears after clicking "Open" -->
 <div id=dialogImport class=dialog title="Import">
-	<b>Choose file:</b>
-	<input type=file id=fileNetwork /> 
-	<div id=radioSeed>
-		<b>Initial node state:</b> <br/>
-		<input type=radio name="seed" id=seedFile />as initialized in the model<br/>
-		<input type=radio name="seed" id=seedTrue checked />all true<br/>
-		<input type=radio name="seed" id=seedFalse />all false<br/>
-		<input type=radio name="seed" id=seedRandom />all randomly true or false<br/>
-	</div>
-	<div id=radioFormat>
-		<b>Filetype:</b> <br/>
-		<input type=radio name="format" id=formatGuess checked />infer format<br/>
-		<input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet <small>(<a target="_blank" href="http://code.google.com/p/booleannet/">more</a>)</small><br/>
-		<input type=radio name="format" id=formatRBoolNet />R BoolNet <small>(<a target="_blank" href="http://www.informatik.uni-ulm.de/ni/mitarbeiter/HKestler/boolnet/">more</a>)</small><br/>
-		<input type=radio name="format" id=formatGINML />GINML <small>(<a target="_blank" href="http://gin.univ-mrs.fr/GINsim/ginml.html">more</a>)</small><br/>
-		<input type=radio name="format" id=formatjSBGN />jSBGN <small>(<a target="_blank" href="https://code.google.com/p/biographer/wiki/graph_exchange">more</a>)</small><br/>
-		<!--input type=radio name="format" id=formatSBML />SBML <small>(<a target="_blank" href="http://sbml.org/Basic_Introduction_to_SBML">more</a>)</small><br-->
-	</div>
+    <b>Choose file:</b>
+    <input type=file id=fileNetwork /> 
+    <div id=radioSeed>
+        <b>Initial node state:</b> <br/>
+        <input type=radio name="seed" id=seedFile />as initialized in the model<br/>
+        <input type=radio name="seed" id=seedTrue checked />all true<br/>
+        <input type=radio name="seed" id=seedFalse />all false<br/>
+        <input type=radio name="seed" id=seedRandom />all randomly true or false<br/>
+    </div>
+    <div id=radioFormat>
+        <b>Filetype:</b> <br/>
+        <input type=radio name="format" id=formatGuess checked />infer format<br/>
+        <input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet <small>(<a target="_blank" href="http://code.google.com/p/booleannet/">more</a>)</small><br/>
+        <input type=radio name="format" id=formatRBoolNet />R BoolNet <small>(<a target="_blank" href="http://www.informatik.uni-ulm.de/ni/mitarbeiter/HKestler/boolnet/">more</a>)</small><br/>
+        <input type=radio name="format" id=formatGINML />GINML <small>(<a target="_blank" href="http://gin.univ-mrs.fr/GINsim/ginml.html">more</a>)</small><br/>
+        <input type=radio name="format" id=formatjSBGN />jSBGN <small>(<a target="_blank" href="https://code.google.com/p/biographer/wiki/graph_exchange">more</a>)</small><br/>
+        <!--input type=radio name="format" id=formatSBML />SBML <small>(<a target="_blank" href="http://sbml.org/Basic_Introduction_to_SBML">more</a>)</small><br-->
+    </div>
   <div id=checkOptions>
     <b>Other Options:</b> <br>
     <input type=checkbox id=optionsOneClick />Simulate on node click
     <input type=checkbox id=optionsScale />Scale Graph to fit page<br>
     <input type=checkbox id=optionsSimulateAfterImport />Simulate after importing network
   </div>
-	<button id=buttonImportFile class=dialogButton> Import </button>
-	<button id=buttonImportDemo class=dialogButton> Demo </button>
-	<button id=buttonImportCancel class=dialogButton> Cancel </button>
+    <button id=buttonImportFile class=dialogButton> Import </button>
+    <button id=buttonImportDemo class=dialogButton> Demo </button>
+    <button id=buttonImportCancel class=dialogButton> Cancel </button>
 </div>
   
 <!-- This dialog appears after clicking "Save" -->
 <div id=dialogExport class=dialog title="Export">
-	<b>Model and graph combined:</b><br/>
-	<input type=radio name="export" id=exportjSBGN checked />jSBGN<br/>
-	<b>Model only:</b><br/>
-	<input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br/>
-	<input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br/>
-	<b>Graph only:</b><br/>
-	<input type=radio name="export" id=exportSVG />SVG<br/>
-	<b>Time series:</b><br/>
-	<input type=radio name="export" id=exportTimeseries />SVG<br/>
+    <b>Model and graph combined:</b><br/>
+    <input type=radio name="export" id=exportjSBGN checked />jSBGN<br/>
+    <b>Model only:</b><br/>
+    <input type=radio name="export" id=exportNetworkRBoolNet />R BoolNet<br/>
+    <input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br/>
+    <b>Graph only:</b><br/>
+    <input type=radio name="export" id=exportSVG />SVG<br/>
+    <b>Time series:</b><br/>
+    <input type=radio name="export" id=exportTimeseries />SVG<br/>
   
-	<button id=buttonExportFile class=dialogButton> Export </button>
-	<button id=buttonExportCancel class=dialogButton> Cancel </button>
+    <button id=buttonExportFile class=dialogButton> Export </button>
+    <button id=buttonExportCancel class=dialogButton> Cancel </button>
 </div>
 
 <!-- This dialog appears when "Help" is clicked -->
 <div id=dialogHelp class=dialog title="Help">
-	<br/>
-	<ul>
-	<li>Click the <b>Import</b> button to import an existing network.</li>
-	<li>Click the <b>Create</b> button to start creating a new network.</li>
-	<li>Ctrl+right click in the canvas to create a new node.</li>
-	<li>Right click a node to delete it.</li>
-	<li>Click on a node, to change it's state from True to False and vice-versa.</li>
-	<li>Ctrl+left click a node, to freeze/unfreeze it (disable/re-enable node state update).</li>
-	<li>Zoom in and out using Alt+mouse wheel.</li>
-	<li>Click and hold the left mouse button, to move the network around.</li>
-	<li>Click the border of a node, to change it's size.</li>
-	<li>Hover over a node, to show a hint with the corresponding Boolean update rule.</li>
-	<li>Edit the network logic in the Rules tab.</li>
-	<li>Reload the browser window to delete your current network.</li>
-	<li><a target="_blank" href="https://github.com/matthiasbock/BooleSim/wiki">More help online ...</a></li>
-	</ul>
-	<button id=buttonHelpClose class=dialogButton> Close </button>
+    <br/>
+    <ul>
+    <li>Click the <b>Import</b> button to import an existing network.</li>
+    <li>Click the <b>Create</b> button to start creating a new network.</li>
+    <li>Ctrl+right click in the canvas to create a new node.</li>
+    <li>Right click a node to delete it.</li>
+    <li>Click on a node, to change it's state from True to False and vice-versa.</li>
+    <li>Ctrl+left click a node, to freeze/unfreeze it (disable/re-enable node state update).</li>
+    <li>Zoom in and out using Alt+mouse wheel.</li>
+    <li>Click and hold the left mouse button, to move the network around.</li>
+    <li>Click the border of a node, to change it's size.</li>
+    <li>Hover over a node, to show a hint with the corresponding Boolean update rule.</li>
+    <li>Edit the network logic in the Rules tab.</li>
+    <li>Reload the browser window to delete your current network.</li>
+    <li><a target="_blank" href="https://github.com/matthiasbock/BooleSim/wiki">More help online ...</a></li>
+    </ul>
+    <button id=buttonHelpClose class=dialogButton> Close </button>
 </div>
 
 <!-- This warning appears, when an incompatible browser is detected -->
 <script>
-	var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-	if (! is_chrome)
-		alert('Dear user,\nplease note, that this web application is developed for\nand thus works best with the Chromium web browser.\nThank you!');
+    var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+    if (! is_chrome)
+        alert('Dear user,\nplease note, that this web application is developed for\nand thus works best with the Chromium web browser.\nThank you!');
 </script>
 
 <!-- This is a demo network -->
