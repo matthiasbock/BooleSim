@@ -185,16 +185,15 @@ var Controls = function () {
         });
         $.getScript("include/interact.js");
         $.getScript("include/d3.v2.js");
-        $.getScript("include/rickshaw.js");
-
-        $.getScript("js/libSBGN.js");
+        //$.getScript("include/rickshaw.js");
+        $.getScript("include/libSBGN.js");
 
         $.getScript("js/import.js");
         $.getScript("js/export.js");
         $.getScript("js/infobox.js");
         $.getScript("js/editrule.js");
         $.getScript("js/timeseries.js");
-        //		$.getScript("js/attractors.js");
+        //$.getScript("js/attractors.js");
         $.getScript("js/steadystates.js");
         $.getScript("js/simulator.js");
 

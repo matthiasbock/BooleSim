@@ -20,16 +20,14 @@
 <div id=tabs>
     <ul>
         <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img style="width: 137px; float: left; padding: 5px 5px 0 0; margin: none;" alt="BooleSim" src="img/logo.png" /></a>
-        <!--li><a href="#graphStateTransition">Statespace</a></li-->
-        <!--li><a href="#tabSteadyStates">Steady states</a></li-->
         <li><a href="#tabTimeseries">Time series</a></li>
         <li><a href="#tabEditor">Rules</a></li>
         <li><a href="#tabNetwork">Network</a></li>
-    
-    <li><button id=buttonCreate>Create</button></li>
+        <li><button id=buttonCreate>Create</button></li>
         <li><button id=buttonImportDialog>Import</button></li>
         <li><button id=buttonExportDialog>Export</button></li>
-        <li><button id=buttonSimulate>Simulate / Pause</button></li>
+        <!--li><button id=buttonPreferencesDialog>Preferences</button></li-->
+        <li><button id=buttonSimulate>Simulate</button></li>
         <li><button id=buttonHelp>Help</button></li>
         <li>Iteration:<label id=textIteration>0</label></li>
     </ul>
@@ -42,14 +40,16 @@
   
     <div class=tabs id=tabEditor style="text-align: center;">
         <font size=6><b>Update rule editor:</b></font><br/>
-        <textarea id=textRules onchange="rulesChanged=true;"></textarea>
+        <textarea id=textRules onchange="rulesChanged=true;" style="display:inline;"></textarea>
         <br/>
+        <div>
         Use JavaScript syntax for your rules:<br/>
         true and false need to be written with lower case letters.<br/>
         AND is represented by &&, OR by ||, NOT by !.<br/>
         Only write one update rule per line.<br/>
         Empty lines and round brackets are allowed.<br/>
         Example: A = (B || C) && (!D)
+        </div>
     </div>
 
     <div class=tabs id=tabTimeseries>
@@ -67,21 +67,6 @@
         </div>
     </div>
 
-    <!--div class=tabs id=tabSteadyStates>
-        <center>
-        <br/>
-        <b>
-        <font size=6>Passed steady states</font>
-        </b>
-        <br/>
-        <br/>
-        <table id=SteadyStates>
-        </table>
-    </div-->
-
-    <!--div class=tabs id=graphStateTransition>
-        <button id=buttonAnalyse>Analyse</button>
-    </div-->
 </div>
 
 <div id=dialogAddNode class=dialog title="Add node">
@@ -100,8 +85,7 @@
 </div>
 
 <div id=dialogConfirm class=dialog title="Confirm">
-    <b>Are you sure you want to destroy the current network and replace it with
-  a new one? </b><br/>
+    <b>Are you sure you want to destroy the current network and replace it with a new one? </b><br/>
   
     <button id=buttonConfirmYes class=dialogButton> Yes </button>
     <button id=buttonConfirmNo class=dialogButton> No </button>
@@ -109,17 +93,17 @@
 
 <!-- This dialog appears after clicking "Open" -->
 <div id=dialogImport class=dialog title="Import">
-    <b>Choose file:</b>
+    <b>Import file:</b>
     <input type=file id=fileNetwork /> 
     <div id=radioSeed>
-        <b>Initial node state:</b> <br/>
+        <b>Set initial node state:</b> <br/>
         <input type=radio name="seed" id=seedFile />as initialized in the model<br/>
         <input type=radio name="seed" id=seedTrue checked />all true<br/>
         <input type=radio name="seed" id=seedFalse />all false<br/>
         <input type=radio name="seed" id=seedRandom />all randomly true or false<br/>
     </div>
     <div id=radioFormat>
-        <b>Filetype:</b> <br/>
+        <b>Specify filetype:</b> <br/>
         <input type=radio name="format" id=formatGuess checked />infer format<br/>
         <input type=radio name="format" id=formatPyBooleanNet />Python BooleanNet <small>(<a target="_blank" href="http://code.google.com/p/booleannet/">more</a>)</small><br/>
         <input type=radio name="format" id=formatRBoolNet />R BoolNet <small>(<a target="_blank" href="http://www.informatik.uni-ulm.de/ni/mitarbeiter/HKestler/boolnet/">more</a>)</small><br/>
@@ -127,18 +111,12 @@
         <input type=radio name="format" id=formatjSBGN />jSBGN <small>(<a target="_blank" href="https://code.google.com/p/biographer/wiki/graph_exchange">more</a>)</small><br/>
         <!--input type=radio name="format" id=formatSBML />SBML <small>(<a target="_blank" href="http://sbml.org/Basic_Introduction_to_SBML">more</a>)</small><br-->
     </div>
-  <div id=checkOptions>
-    <b>Other Options:</b> <br>
-    <input type=checkbox id=optionsOneClick />Simulate on node click
-    <input type=checkbox id=optionsScale />Scale Graph to fit page<br>
-    <input type=checkbox id=optionsSimulateAfterImport />Simulate after importing network
-  </div>
     <button id=buttonImportFile class=dialogButton> Import </button>
     <button id=buttonImportDemo class=dialogButton> Demo </button>
     <button id=buttonImportCancel class=dialogButton> Cancel </button>
 </div>
   
-<!-- This dialog appears after clicking "Save" -->
+<!-- This dialog appears after clicking "Export" -->
 <div id=dialogExport class=dialog title="Export">
     <b>Model and graph combined:</b><br/>
     <input type=radio name="export" id=exportjSBGN checked />jSBGN<br/>
@@ -153,6 +131,13 @@
     <button id=buttonExportFile class=dialogButton> Export </button>
     <button id=buttonExportCancel class=dialogButton> Cancel </button>
 </div>
+
+<!--div id=checkOptions>
+    <b>Options:</b> <br>
+    <input type=checkbox id=optionsOneClick />Simulate on node click<br>
+    <input type=checkbox id=optionsScale />Scale graph to fit page<br>
+    <input type=checkbox id=optionsSimulateAfterImport />Simulate after importing network
+</div-->
 
 <!-- This dialog appears when "Help" is clicked -->
 <div id=dialogHelp class=dialog title="Help">
