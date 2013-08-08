@@ -1,5 +1,5 @@
 (function () {
-    var COMPILED = false;
+    var COMPILED = true;
     var goog = goog || {};
     goog.global = this;
     goog.DEBUG = true;
