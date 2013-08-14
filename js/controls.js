@@ -231,7 +231,7 @@ var Controls = function () {
      * @param {UI} ui Contains the index of the selected tab.
      */
     var changeTab = function (event, ui) {
-        if (prevTab === 1) {
+        if (prevTab === 1) { // select 1: Network
             if ((network != null) && !running && rulesChanged) {
                 //Re-import network from the new rules
                 rulesChanged = false;
@@ -243,12 +243,13 @@ var Controls = function () {
                 }
                 $('#tabs').tabs('select', ui.index);
             }
-        } else if (prevTab === 2) {
+        } else if (prevTab === 2) { // select 2: Rules
             if (network != null) {
                 //Re-import rules from new network: Add/Delete + rules update functionality required
                 loadRulesText();
                 rulesChanged = false;
             }
+            $('#textRules').focus();
         }
 
         prevTab = ui.index;
