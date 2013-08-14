@@ -17,15 +17,37 @@
   min-height: 800px;
 }
 
+#textRules {
+    display: inline;
+    vertical-align: top;
+    -webkit-appearance: none;
+    font-family: monospace;
+    box-shadow: 10px 10px 5px #888;
+   -webkit-box-shadow: 10px 10px 5px #888;
+   -moz-box-shadow: 10px 10px 5px #888;
+}
+
+#divRuleHelp {
+    padding-top: 15px;
+    padding-left: 5px;
+    border: none;
+    display: inline-block;
+    text-align: left;
+}
+
+#divRuleHelp td {
+    text-align: center;
+}
+
 #SteadyStates
 {
-	border:		1px solid black;
+    border: 1px solid black;
 }
 
 #SteadyStates td
 {
-	text-align:	center;
-	border:		1px solid black;
+    text-align: center;
+    border: 1px solid black;
 }
 
 #divTimeseries > svg {

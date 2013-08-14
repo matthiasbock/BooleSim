@@ -19,7 +19,7 @@
 
 <div id=tabs>
     <ul>
-        <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img style="width: 137px; float: left; padding: 5px 5px 0 0; margin: none;" alt="BooleSim" src="img/logo.png" /></a>
+        <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img style="width: 137px; float: left; padding: 5px 5px 0 0; border: none; margin: none;" alt="BooleSim" src="img/logo.png" /></a>
         <li><a href="#tabTimeseries">Time series</a></li>
         <li><a href="#tabEditor">Rules</a></li>
         <li><a href="#tabNetwork">Network</a></li>
@@ -39,16 +39,33 @@
     </div>
   
     <div class=tabs id=tabEditor style="text-align: center;">
-        <font size=6><b>Update rule editor:</b></font><br/>
-        <textarea id=textRules onchange="rulesChanged=true;" style="display:inline;"></textarea>
         <br/>
-        <div>
-        Use JavaScript syntax for your rules:<br/>
-        true and false need to be written with lower case letters.<br/>
-        AND is represented by &&, OR by ||, NOT by !.<br/>
-        Only write one update rule per line.<br/>
-        Empty lines and round brackets are allowed.<br/>
-        Example: A = (B || C) && (!D)
+        <font size=6><b>Rule editor</b></font><br/>
+        <textarea id=textRules onchange="rulesChanged=true;" style="display:inline;"></textarea>
+        <div id=divRuleHelp>
+            <b><font size=4>Help</font></b><br/>
+            <br/>
+                Please enter the Boolean rules<br/>
+                that define your network<br/>
+                in JavaScript syntax:<br/>
+            <br/>
+            <table border=1>
+                <tr><th>Boolean logic</th><th>JavaScript</th></tr>
+                <tr><td>AND</td><td>&amp;&amp;</td></tr>
+                <tr><td>OR</td><td>||</td></tr>
+                <tr><td>NOT</td><td>!</td></tr>
+                <tr><td>TRUE</td><td>true</td></tr>
+                <tr><td>FALSE</td><td>false</td></tr>
+            </table>
+            <br/>
+            <ul>
+                <li>One rule per target node<br/>(left side of equation)</li>
+                <li>One rule per line</li>
+                <li>Empty lines allowed</li>
+                <li>Round brackets allowed</li>
+            </ul>
+            <br/>
+                Example: <i>A = (B || C) &amp;&amp; (!D)</i>
         </div>
     </div>
 
