@@ -209,7 +209,7 @@ var Controls = function () {
      * type of event.
      * @param {UI} ui Contains the value of the slider.
      */
-    var zoomGraph = function (event, ui) {
+    zoomGraph = function (event, ui) {
         // Get the index of the selected tab.
         var index = $('#tabs').tabs('option', 'selected');
         var graph = null;
@@ -230,7 +230,7 @@ var Controls = function () {
      * type of event.
      * @param {UI} ui Contains the index of the selected tab.
      */
-    var changeTab = function (event, ui) {
+    changeTab = function (event, ui) {
         if (prevTab === 1) { // select 1: Network
             if ((network != null) && !running && rulesChanged) {
                 //Re-import network from the new rules
@@ -262,15 +262,15 @@ var Controls = function () {
         $('#sliderZoom').slider('option', 'value', graph.scale());
     };
 
-    var createDefaultNetwork = function () {
+    createDefaultNetwork = function () {
         plaintextImporter('defaultNode* = defaultNode\n', false);
-    }
+    };
 
     /** 
      * The event handler for opening the import dialog box. All the elements
      * are given a default value
      */
-    var openImportDialog = function () {
+    openImportDialog = function () {
         // If the simulator is running stop it.
         if (simulator !== null) simulator.stop();
 
@@ -460,7 +460,7 @@ var Controls = function () {
 
     this.getRandomSeed = function () {
         return Boolean(Math.round(Math.random()));
-    }
+    };
 
     /** 
      * Get the seed to be given initially to the network.
@@ -477,7 +477,7 @@ var Controls = function () {
      * The event handler for opening the export dialog. The simulator is
      * stopped if it's running.
      */
-    var openExportDialog = function () {
+    openExportDialog = function () {
         if (network == null || network == undefined || network == {}) {
             alert('You need to create or import a network, before you can export it.');
             return;
@@ -498,7 +498,7 @@ var Controls = function () {
         network.state[id] = controls.getInitialSeed();
         network.freeze[id] = false;
         ruleFunctions[id] = rule2function(id, network.rules[id]);
-        for (j = 0; j <= iterationCounter; j++)
+        for (var j = 0; j <= iterationCounter; j++)
             states[j][id] = network.state[id];
 
         //Add node physically to the graph
@@ -510,7 +510,7 @@ var Controls = function () {
         drawables[id].positionCenter(coords.x, coords.y);
 
         updateTimeseries();
-    }
+    };
 
     var deleteNode = function (id) {
         //delete node from jSBGN
@@ -564,7 +564,7 @@ var Controls = function () {
             }
         }
 
-        for (j = 0; j <= iterationCounter; j++)
+        for (var j = 0; j <= iterationCounter; j++)
             delete states[j][id];
 
         //delete node from graph
@@ -575,15 +575,15 @@ var Controls = function () {
         //~ identifyIONodes(network.left, network.right);
         //~ highlightIONodes();
         //~ createSteadyStates();
-    }
+    };
 
     this.deleteNodeFromGraph = function (event) {
         var id = event.data;
         deleteNode(id);
         $('#dialogDeleteNode').dialog('close');
-    }
+    };
 
-    var addNodeDialog = function (event) {
+    addNodeDialog = function (event) {
         if (running) {
             alert('Node cannot be added while simulating');
             event.preventDefault();
@@ -599,9 +599,9 @@ var Controls = function () {
                 networkGraph.toGraphCoords(event.clientX, event.clientY - $('#tabs > ul').height()),
                 addNodeToGraph);
         }
-    }
+    };
 
-    var addNodeToGraph = function (event) {
+    addNodeToGraph = function (event) {
         var id = $('#textNodeID').val();
         if (network.state.hasOwnProperty(id)) {
             alert('Please enter a new ID');
@@ -611,7 +611,7 @@ var Controls = function () {
             addNode(id, event.data);
         }
         $('#dialogAddNode').dialog('close');
-    }
+    };
 
     /** 
      * The event handler for clicking the export file button of the export
@@ -620,7 +620,7 @@ var Controls = function () {
      * type. If the update rules are exported then the respective boolean
      * network file is generated. The link is passed as a data URI.
      */
-    var exportFile = function () {
+    exportFile = function () {
         // close the dialog and start to do the export
         $('#dialogExport').dialog('close');
 
