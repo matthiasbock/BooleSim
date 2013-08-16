@@ -87,7 +87,7 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 targets.push( line.split('=')[0].trim() );
             }
             if (targets.indexOf(currentLine.split('=')[0].trim()) > -1) 
-                return 'Rule conflict: Target node is already defined elsewhere';
+                return 'Rule conflict: Target node already defined elsewhere';
             
             return null;
         };
