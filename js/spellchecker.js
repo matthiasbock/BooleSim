@@ -44,7 +44,10 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 return 'Equality sign missing';
             if (currentLine.split('=').length != 2)
                 return 'Incorrect usage of equality sign';
-            
+
+            if (currentLine.split('=')[1].trim().length == 0)
+                return 'Empty rules are not allowed';
+		
             // check for illegal characters
             if (currentLine.match(/[A-Za-z0-9_&\|!= ]+/g)[0].length != currentLine.length)
                 return 'Illegal character';
