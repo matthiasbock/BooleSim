@@ -585,7 +585,7 @@ var Controls = function () {
 
     addNodeDialog = function (event) {
         if (running) {
-            alert('Node cannot be added while simulating');
+            alert('You need to stop simulation before you can add nodes.');
             event.preventDefault();
             return;
         }
@@ -604,9 +604,9 @@ var Controls = function () {
     addNodeToGraph = function (event) {
         var id = $('#textNodeID').val();
         if (network.state.hasOwnProperty(id)) {
-            alert('Please enter a new ID');
+            alert('A node with that name already exists.\nPlease choose a new name.');
         } else if (id.match(/[A-Za-z0-9_]/g).length !== id.length) {
-            alert('Please use alphanumeric and underscore characters only');
+            alert('Illegal character in name!\nOnly alphanumeric characters and underscore are allowed.');
         } else {
             addNode(id, event.data);
         }
