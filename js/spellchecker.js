@@ -40,6 +40,8 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 return null;
             
             // check if exactly one "=" is present
+            if (currentLine.split('=').length < 2)
+                return 'Equality sign missing';
             if (currentLine.split('=').length != 2)
                 return 'Incorrect usage of equality sign';
             
@@ -48,13 +50,22 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 return 'Illegal character';
             
             // check for accidental use of "and", "or", "not"
-            if ((/\b(and)\b/gi).test(currentLine) || (/\b(or)\b/gi).test(currentLine) || (/\b(not)\b/gi).test(currentLine))
-                return 'Please use JavaScript syntax for AND / OR / NOT';
+            if ((/\b(and|or|not|true|false)\b/gi).test(currentLine))
+                return 'Please use JavaScript syntax for logical operators';
+            
+            // check for unclosed brackets
+            if (currentLine.split('(').length != currentLine.split(')').length)
+                return 'Number of opened and closed brackets is not identical';
+            
+            // check for missing logical operator
+            if (currentLine.replace(' ','').indexOf(')(') > -1)
+                return 'Logical operator missing between brackets';
             
             // check if all node names are properly interrupted by and/or
             // extract right side of equation
             var l = currentLine.split('=')[1];
             // remove brackets and "not"s
+            // UNRESOLVED: rules ending with "!" are not detected as error
             l = l.replace(/()!/g,' ');
             // separate node names from logical operators, treat AND and OR equally
             l = l.replace(/(&|\|){2}/g,' % '); // http://www.w3schools.com/jsref/jsref_obj_regexp.asp
@@ -71,14 +82,6 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 };
             }
             
-            // check for unclosed brackets
-            if (currentLine.split('(').length != currentLine.split(')').length)
-                return 'Number of opened and closed brackets is not identical';
-            
-            // check for missing logical operator
-            if (currentLine.replace(' ','').indexOf(')(') > -1)
-                return 'Logical operator missing between brackets';
-            
             // check for conflicting target rules
             var remainingLines = this.textarea.value.replace(currentLine,'').split('\n');
             var targets = [];
@@ -86,7 +89,8 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 var line = remainingLines[i];
                 targets.push( line.split('=')[0].trim() );
             }
-            if (targets.indexOf(currentLine.split('=')[0].trim()) > -1) 
+            var currentTargetNode = currentLine.split('=')[0].trim();
+            if (targets.indexOf(currentTargetNode) > -1) 
                 return 'Rule conflict: Target node already defined elsewhere';
             
             return null;
