@@ -19,7 +19,7 @@
 
 <div id=tabs>
     <ul>
-        <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img style="width: 137px; float: left; padding: 5px 5px 0 0; border: none; margin: none;" alt="BooleSim" src="img/logo.png" /></a>
+        <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img id=Logo alt="BooleSim" src="img/logo.png" /></a>
         <li><a href="#tabTimeseries">Time series</a></li>
         <li><a href="#tabEditor">Rules</a></li>
         <li><a href="#tabNetwork">Network</a></li>
@@ -38,10 +38,9 @@
         </div-->
     </div>
   
-    <div class=tabs id=tabEditor style="text-align: center;">
+    <div class=tabs id=tabEditor>
         <br/>
         <font size=6><b>Rule editor</b></font><br/>
-        <textarea id=textRules onchange="rulesChanged=true;" style="display:inline;"></textarea>
         <div id=divRuleHelp>
             <b><font size=4>Help</font></b><br/>
             <br/>
@@ -67,9 +66,12 @@
             <br/>
                 Example: <i>A = (B || C) &amp;&amp; (!D)</i>
         </div>
+        <textarea id=textRules onchange="rulesChanged=true;"></textarea>
     </div>
 
     <div class=tabs id=tabTimeseries>
+        <br/>
+        <font size=6><b>Time series</b></font><br/>
         <div id=legend>
           <ul>
           <li>Legend: </li>
@@ -77,7 +79,7 @@
           <li>=<b>True</b>&nbsp;&nbsp;</li>
           <li><div id=legendOff class=legend></div></li>
           <li>=<b>False</b></li>
-          <li><button id=buttonResetTimeseries>Reset</button></li>
+          <li><button id=buttonResetTimeseries>Reset graph</button></li>
           </ul>
         </div>
         <div id=divTimeseries>
@@ -172,7 +174,7 @@
     <li>Hover a node, to see a hint with the node's Boolean update rule.</li>
     <li>Edit the underlying network logic in the Rules tab.</li>
     <li>Monitor the network state changes over time in the Timeseries tab.</li>
-    <li><a target="_blank" href="https://github.com/matthiasbock/BooleSim/wiki">Read nore online</a></li>
+    <li>Learn more: <a target="_blank" href="https://github.com/matthiasbock/BooleSim/wiki">Online help</a></li>
     </ul>
     <button id=buttonHelpClose class=dialogButton> Close </button>
 </div>
