@@ -47,6 +47,16 @@ var Controls = function () {
                 primary: "ui-icon-folder-open"
             }
         });
+        $('#buttonInitialCreate').button({
+            icons: {
+                primary: "ui-icon-folder-open"
+            }
+        });
+        $('#buttonPreferencesDialog').button({
+            icons: {
+                primary: "ui-icon-folder-open"
+            }
+        });
         $('#buttonImportDialog').button({
             icons: {
                 primary: "ui-icon-folder-open"
@@ -117,6 +127,7 @@ var Controls = function () {
         });
 
         $('#buttonCreate').click(createDefaultNetwork);
+        $('#buttonInitialCreate').click(createDefaultNetwork);
         $('#buttonImportDialog').click(openImportDialog);
         $('#buttonImportFile').click(importFile);
         $('#buttonImportDemo').click(importDemo);
@@ -264,7 +275,7 @@ var Controls = function () {
     };
 
     createDefaultNetwork = function () {
-        plaintextImporter('defaultNode* = defaultNode\n', false);
+        plaintextImporter('demoNode* = demoNode\n', false);
     };
 
     /** 

@@ -20,19 +20,22 @@
 <div id=tabs>
     <ul>
         <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img id=Logo alt="BooleSim" src="img/logo.png" /></a>
-        <li><a href="#tabTimeseries">Time series</a></li>
-        <li><a href="#tabEditor">Rules</a></li>
         <li><a href="#tabNetwork">Network</a></li>
-        <li><button id=buttonCreate>Create</button></li>
-        <li><button id=buttonImportDialog>Import</button></li>
-        <li><button id=buttonExportDialog>Export</button></li>
-        <!--li><button id=buttonPreferencesDialog>Preferences</button></li-->
-        <li><button id=buttonSimulate>Simulate</button></li>
+        <li><a href="#tabEditor">Rules</a></li>
+        <li><a href="#tabTimeseries">Time series</a></li>
+
         <li><button id=buttonHelp>Help</button></li>
+        <li><button id=buttonSimulate>Simulate</button></li>
+        <li><button id=buttonExportDialog>Export</button></li>
+        <li><button id=buttonImportDialog>Import</button></li>
+        <li><button id=buttonPreferencesDialog>Preferences</button></li>
+        <li><button id=buttonCreate>New</button></li>
         <li>Iteration:<label id=textIteration>0</label></li>
     </ul>
 
     <div class=tabs id=tabNetwork>
+        <img id=grid src="img/grid.svg"/>
+        <button id=buttonInitialCreate>New</button>
         <!--div style="float: right; padding: none; margin: none;">
         Zoom:<div id=sliderZoom style="float: right;"></div>
         </div-->

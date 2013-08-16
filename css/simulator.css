@@ -23,6 +23,17 @@
   min-height: 800px;
 }
 
+#grid {
+    height: 92%;
+    width: 100%;
+}
+
+#buttonInitialCreate {
+    position: absolute;
+    left: 48%;
+    top: 50%;
+}
+
 #textRules {
     display: inline;
     vertical-align: top;
@@ -101,10 +112,6 @@
 .legend {
   height: 20px;
   width: 20px;
-}
-
-#buttonImportDialog {
-    margin-left:20px;
 }
 
 #sliderZoom {
