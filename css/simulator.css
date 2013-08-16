@@ -29,9 +29,16 @@
     -webkit-appearance: none;
     font-family: monospace;
     font-size: 14;
+    line-height: 18px;
     box-shadow: -10px 10px 5px #888;
    -webkit-box-shadow: -10px 10px 5px #888;
    -moz-box-shadow: -10px 10px 5px #888;
+}
+
+.spellcheckWarning {
+    position: absolute;
+    width: 15px;
+    height: 15px;
 }
 
 #divRuleHelp {
@@ -79,7 +86,7 @@
 }
 
 #legend {
-	display inline;
+    display: inline-block;
     border: 1px dotted black;
     border-radius: 5px;
     margin: 10px;
@@ -89,38 +96,34 @@
   display: inline-block;
   list-style-type: none;
 }
+
 .legend {
   height: 20px;
   width: 20px;
 }
 
-#buttonImportDialog
-{
-  margin-left:20px;
+#buttonImportDialog {
+    margin-left:20px;
 }
 
-#sliderZoom
-{
-  float:right;
-  width:150px;
-  margin:10px;
+#sliderZoom {
+    float:right;
+    width:150px;
+    margin:10px;
 }
 
-#textIteration
-{
+#textIteration {
   position:absolute;
   top:10px;
   left:5px;
 }
 
-#circleProgress
-{
+#circleProgress {
   position:absolute;
   top:4px;
 }
 
-#boxInfo
-{
+#boxInfo {
   position:fixed;
   top:60px;
   right:20px;

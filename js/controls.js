@@ -196,6 +196,7 @@ var Controls = function () {
         //$.getScript("js/attractors.js");
         $.getScript("js/steadystates.js");
         $.getScript("js/simulator.js");
+        //$.getScript("js/spellchecker.js");
 
         $.ajaxSetup({
             beforeSend: null
@@ -336,7 +337,11 @@ var Controls = function () {
             alert('Import failed: There appear to be syntax errors in your input file.');
             return;
         }
-        // Identify input/output states
+
+        /*
+         * Steady states:
+         * Identify input/output states
+         */ 
         identifyIONodes(jsbgn.left, jsbgn.right);
 
         jsbgn.model = data;

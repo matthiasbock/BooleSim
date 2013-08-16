@@ -66,7 +66,8 @@
             <br/>
                 Example: <i>A = (B || C) &amp;&amp; (!D)</i>
         </div>
-        <textarea id=textRules onchange="rulesChanged=true;"></textarea>
+        <textarea id=textRules spellcheck="false" onkeyup="SpellCheck(event);"></textarea>
+        <script src="js/spellchecker.js"></script>
     </div>
 
     <div class=tabs id=tabTimeseries>
