@@ -77,6 +77,7 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 if (ls[ls.length-1] == '%')
                     return 'Equation must not end with a logical operator';
                 for (var i=0; i<=ls.length-3; i+=2) {
+                    // all nodes must be interrupted by a logical operator
                     if (ls[i] == '%' || ls[i+1] != '%' || ls[i+2] == '%')
                         return 'Logical problem between nodes '+ls[i]+' and '+ls[i+2];
                 };
