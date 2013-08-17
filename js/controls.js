@@ -17,31 +17,25 @@ $(document).ready(function () {
  * @constructor
  */
 var Controls = function () {
+    
     // Private variables to hold the bui.Graph instances
     var obj = this;
-
+    
     /**
      * initialize all the UI components and fetch the extra js files. The
      * UI consists of buttons, dialog boxes, a slider and a tab interface.
      */
     this.initialize = function () {
+        
         // Load the jQuery UI tabs
         $('#tabs').tabs();
         $('#tabs').tabs('select', '#tabNetwork');
         $('#tabs').bind('tabsshow', changeTab);
-
+        
         // initialize all the jQuery UI components
-        /*$('#sliderZoom').slider({
-			step: 0.1,
-			max: 2,
-			stop: zoomGraph
-		});*/
-        //$('#circleProgress').hide();
-
         $('#legendOn').css('background-color', yellow);
         $('#legendOff').css('background-color', blue);
-
-        // initialize jQuery UI buttons
+        
         $('#buttonCreate').button({
             icons: {
                 primary: "ui-icon-folder-open"
@@ -52,124 +46,133 @@ var Controls = function () {
                 primary: "ui-icon-folder-open"
             }
         });
-        $('#buttonPreferencesDialog').button({
-            icons: {
-                primary: "ui-icon-folder-open"
-            }
-        });
-        $('#buttonImportDialog').button({
-            icons: {
-                primary: "ui-icon-folder-open"
-            }
-        });
-        $('#buttonExportDialog').button({
-            icons: {
-                primary: "ui-icon-disk"
-            }
-        });
         $('#buttonSimulate').button({
             icons: {
                 primary: "ui-icon-play"
             }
         });
-        $('#buttonHelp').button({
-            icons: {
-                primary: "ui-icon-help"
-            }
-        });
+        
         $('#buttonReset').button({
             icons: {
                 primary: "ui-icon-stop"
             }
         });
 
-        /*$('#buttonAnalyse').button({
-			icons: {
-				primary: "ui-icon-gear"
-			}
-		});*/
-
-        // initialize jQuery UI dialogs
         $('#dialogAddNode').dialog({
             autoOpen: false,
             minWidth: 200,
             modal: true
         });
+        $('#buttonAddNodeCancel').click(function () {
+            $('#dialogAddNode').dialog('close');
+        });
+        
         $('#dialogDeleteNode').dialog({
             autoOpen: false,
             minWidth: 200,
             modal: true
         });
+        $('#buttonDeleteNodeNo').click(function () {
+            $('#dialogDeleteNode').dialog('close');
+        });
+
         $('#dialogImport').dialog({
             autoOpen: false,
             minWidth: 450,
+            resizable: false,
             modal: true
         });
-        $('#dialogExport').dialog({
-            autoOpen: false,
-            minWidth: 400,
-            modal: true
-        });
-        $('#dialogHelp').dialog({
-            autoOpen: false,
-            minWidth: 630,
-            modal: true
-        });
-        $('#dialogConfirm').dialog({
-            autoOpen: false,
-            minWidth: 300,
-            modal: true
-        });
-
-        // bind button event listeners
-        $('#buttonResetTimeseries').click(function () {
-            resetTimeseries();
-        });
-
-        $('#buttonCreate').click(createDefaultNetwork);
-        $('#buttonInitialCreate').click(createDefaultNetwork);
-        $('#buttonImportDialog').click(openImportDialog);
+        $('#buttonImportDialog').button({
+            icons: {
+                primary: "ui-icon-folder-open"
+            }
+        }).click(openImportDialog);
         $('#buttonImportFile').click(importFile);
         $('#buttonImportDemo').click(importDemo);
         $('#buttonImportCancel').click(function () {
             $('#dialogImport').dialog('close');
         });
-        $('#buttonConfirmNo').click(function () {
-            $('#dialogConfirm').dialog('close');
-        });
 
-        $('#buttonExportDialog').click(openExportDialog);
+        $('#dialogExport').dialog({
+            autoOpen: false,
+            minWidth: 400,
+            modal: true
+        });
+        $('#buttonExportDialog').button({
+            icons: {
+                primary: "ui-icon-disk"
+            }
+        }).click(openExportDialog);
         $('#buttonExportFile').click(exportFile);
         $('#buttonExportCancel').click(function () {
             $('#dialogExport').dialog('close');
         });
+
+        $('#dialogPreferences').dialog({
+            autoOpen: false,
+            minWidth: 400,
+            resizable: false,
+            modal: true,
+            buttons: {
+                Ok: function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+        $('#buttonPreferences').button({
+            icons: {
+                primary: "ui-icon-folder-open"
+            }
+        }).click(function () {
+            $('#dialogPreferences').dialog('open');
+        });
+
+        $('#dialogHelp').dialog({
+            autoOpen: false,
+            minWidth: 630,
+            resizable: false,
+            modal: true
+        });
+        $('#buttonHelp').button({
+            icons: {
+                primary: "ui-icon-help"
+            }
+        }).click(function () {
+            $('#dialogHelp').dialog('open');
+        });
+        $('#buttonHelpClose').click(function () {
+            $('#dialogHelp').dialog('close');
+        });
+
+        $('#dialogConfirm').dialog({
+            autoOpen: false,
+            minWidth: 400,
+            resizable: false,
+            modal: true
+        });
+        $('#buttonConfirmExport').click(function () {
+            $('#dialogConfirm').dialog('close');
+            $('#dialogExport').dialog('open');
+        });
+        $('#buttonConfirmNo').click(function () {
+            $('#dialogConfirm').dialog('close');
+        });
+
+        $('#buttonResetTimeseries').click(function () {
+            resetTimeseries();
+        });
+        
+        $('#buttonCreate').click(createDefaultNetwork);
+        $('#buttonInitialCreate').click(createDefaultNetwork);
+        
         $('#buttonSimulate').click(function () {
             if (network == null || network == undefined || network == {}) {
                 alert('You need to create or import a network before you can start simulation.');
                 return;
             }
         });
-        $('#buttonHelp').click(function () {
-            $('#dialogHelp').dialog('open');
-        });
-        $('#buttonHelpClose').click(function () {
-            $('#dialogHelp').dialog('close');
-        });
-        $('#buttonReset').click(function () {
-            if (network == null || network == undefined || network == {}) {
-                alert('You need to create or import a network before you can reset it.');
-                return;
-            }
-            resetSimulator();
-        });
 
-        $('#buttonAddNodeCancel').click(function () {
-            $('#dialogAddNode').dialog('close');
-        });
-        $('#buttonDeleteNodeNo').click(function () {
-            $('#dialogDeleteNode').dialog('close');
-        });
-
+        // proceed by loading additional JavaScripts
         loadAdditionalResources();
     };
 
@@ -411,7 +414,6 @@ var Controls = function () {
             plaintextImporter(read.target.result, false);
         };
         reader.readAsText(file);
-
     };
 
     importDemo = function () {

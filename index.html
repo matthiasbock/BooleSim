@@ -4,7 +4,7 @@
     <title>BooleSim</title>
   
     <!-- The order of import plays a role, due to dependencies on jQuery ... -->
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.22.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
     <link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
     <link rel="stylesheet" type="text/css" href="css/simulator.css"/>
     <link rel="stylesheet" type="text/css" href="css/rickshaw.css"/>
@@ -20,15 +20,16 @@
 <div id=tabs>
     <ul>
         <a target="blank" href="https://github.com/matthiasbock/BooleSim"><img id=Logo alt="BooleSim" src="img/logo.png" /></a>
+
         <li><a href="#tabNetwork">Network</a></li>
         <li><a href="#tabEditor">Rules</a></li>
         <li><a href="#tabTimeseries">Time series</a></li>
 
         <li><button id=buttonHelp>Help</button></li>
+        <li><button id=buttonPreferences>Preferences</button></li>
         <li><button id=buttonSimulate>Simulate</button></li>
         <li><button id=buttonExportDialog>Export</button></li>
         <li><button id=buttonImportDialog>Import</button></li>
-        <li><button id=buttonPreferencesDialog>Preferences</button></li>
         <li><button id=buttonCreate>New</button></li>
         <li>Iteration:<label id=textIteration>0</label></li>
     </ul>
@@ -107,7 +108,7 @@
     <button id=buttonDeleteNodeNo class=dialogButton> No </button>
 </div>
 
-<div id=dialogConfirm class=dialog title="Create network">
+<div id=dialogConfirm class=dialog title="Create new network">
     <b>Are you sure you want to discard all changes to the current network and create a new one ? </b><br/>
 
     <button id=buttonConfirmYes class=dialogButton> Yes </button>
@@ -116,7 +117,7 @@
 </div>
 
 <!-- This dialog appears after clicking "Open" -->
-<div id=dialogImport class=dialog title="Import">
+<div id=dialogImport class=dialog title="Import network">
     <b>Import file:</b>
     <input type=file id=fileNetwork /> 
     <div id=radioSeed>
@@ -141,7 +142,7 @@
 </div>
   
 <!-- This dialog appears after clicking "Export" -->
-<div id=dialogExport class=dialog title="Export">
+<div id=dialogExport class=dialog title="Export network">
     <b>Model and graph combined:</b><br/>
     <input type=radio name="export" id=exportjSBGN checked />jSBGN<br/>
     <b>Model only:</b><br/>
@@ -149,26 +150,26 @@
     <input type=radio name="export" id=exportNetworkPyBooleanNet />Python BooleanNet<br/>
     <b>Graph only:</b><br/>
     <input type=radio name="export" id=exportSVG />SVG<br/>
-    <b>Time series:</b><br/>
+    <b>Time series graph only:</b><br/>
     <input type=radio name="export" id=exportTimeseries />SVG<br/>
   
     <button id=buttonExportFile class=dialogButton> Export </button>
     <button id=buttonExportCancel class=dialogButton> Cancel </button>
 </div>
 
-<!--div id=checkOptions>
-    <b>Options:</b> <br>
-    <input type=checkbox id=optionsOneClick />Simulate on node click<br>
-    <input type=checkbox id=optionsScale />Scale graph to fit page<br>
-    <input type=checkbox id=optionsSimulateAfterImport />Simulate after importing network
-</div-->
+<div id=dialogPreferences class=dialog title="Preferences">
+    <input type=checkbox id=optionsOneClick />Simulate on node click<br/>
+    <input type=checkbox id=optionsScale />Scale graph to fit page<br/>
+    <input type=checkbox id=optionsSimulateAfterImport />Simulate after importing a network<br/>
+    <input type=checkbox id=optionsSyntaxChecking checked />Check rule syntax in editor<br/>
+</div>
 
 <!-- This dialog appears when "Help" is clicked -->
 <div id=dialogHelp class=dialog title="Help">
     <br/>
     <ul>
-    <li>Click the <b>Create</b> button to start creating a new network.</li>
-    <li>Click the <b>Import</b> button to import an existing network.</li>
+    <li>Click the <i>New</i> button to start creating a new network.</li>
+    <li>Click the <i>Import</i> button to import an existing network.</li>
     <li>Ctrl+right click in the canvas to create a new node.</li>
     <li>Right-click on a node to delete it.</li>
     <li>Left-click on a node, to change it's state (from true to false and vice-versa).</li>

@@ -1383,7 +1383,9 @@ button.ui-button-icons-only
 
 .ui-button-text-only .ui-button-text
 {
-  padding:.4em 1em;
+  padding: 8px 15px;
+  font-size: 14px;
+  line-height: 0.8;
 }
 
 .ui-button-icon-only .ui-button-text,.ui-button-icons-only .ui-button-text

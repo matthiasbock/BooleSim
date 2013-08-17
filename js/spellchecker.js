@@ -36,7 +36,8 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
         obj.checkSyntax = function(currentLine) {
             
             // empty lines can not have errors 
-            if (currentLine.trim().length == 0)
+            var t = currentLine.trim(); // variable reused later
+            if (t.length == 0)
                 return null;
             
             // check if exactly one "=" is present
@@ -44,10 +45,10 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 return 'Equality sign missing';
             if (currentLine.split('=').length != 2)
                 return 'Incorrect usage of equality sign';
-
+            
             if (currentLine.split('=')[1].trim().length == 0)
                 return 'Empty rules are not allowed';
-		
+            
             // check for illegal characters
             if (currentLine.match(/[A-Za-z0-9_&\|!= ]+/g)[0].length != currentLine.length)
                 return 'Illegal character';
@@ -64,11 +65,14 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
             if (currentLine.replace(' ','').indexOf(')(') > -1)
                 return 'Logical operator missing between brackets';
             
+            // rules must not end with "!"
+            if (t[t.length-1] == '!')
+                return 'Rule must not end with NOT operator';
+            
             // check if all node names are properly interrupted by and/or
             // extract right side of equation
             var l = currentLine.split('=')[1];
             // remove brackets and "not"s
-            // UNRESOLVED: rules ending with "!" are not detected as error
             l = l.replace(/()!/g,' ');
             // separate node names from logical operators, treat AND and OR equally
             l = l.replace(/(&|\|){2}/g,' % '); // http://www.w3schools.com/jsref/jsref_obj_regexp.asp
@@ -79,6 +83,8 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                     return 'Equation must not start with a logical operator';
                 if (ls[ls.length-1] == '%')
                     return 'Equation must not end with a logical operator';
+                if (ls.length % 2 == 0)
+                    return 'Rule incomplete';
                 for (var i=0; i<=ls.length-3; i+=2) {
                     // all nodes must be interrupted by a logical operator
                     if (ls[i] == '%' || ls[i+1] != '%' || ls[i+2] == '%')
@@ -97,6 +103,7 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
             if (targets.indexOf(currentTargetNode) > -1) 
                 return 'Rule conflict: Target node already defined elsewhere';
             
+            // everything seems to be in order with this rule
             return null;
         };
 

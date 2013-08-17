@@ -41,13 +41,11 @@ rule2function = function (node, rule) {
 };
 
 updateAllGraphNodes = function (state, graph) {
-    var svgNode;
     var drawables = graph.drawables();
-
     for (i in state) {
         updateGraphNode(drawables, i);
     }
-}
+};
 
 updateGraphNode = function (drawables, i) {
     // Get the node in the SVG and bind the event handlers
@@ -64,7 +62,7 @@ updateGraphNode = function (drawables, i) {
         svgNode.bind('contextmenu', onRightClick);
         updateNodeColor(i);
     }
-}
+};
 
 obj = null;
 config = null;
@@ -94,8 +92,7 @@ initializeSimulator = function (jsbgn, settings, graph) {
 
     console.log('Initializing simulator ...');
 
-    $('#buttonSimulate')
-        .click(startSimulator);
+    $('#buttonSimulate').click(startSimulator);
     //$('#buttonAnalyse')
     //	.click(findAttractors);
 
@@ -129,7 +126,8 @@ var resetSimulator = function () {
         network.state[i] = states[initialIndex][i];
     updateAllGraphNodes(network.state, networkGraph);
     resetTimeseries();
-}
+};
+
 /*
  * Update the color of a node after every iteration.
  * @param {string} nodeid The node id.
@@ -194,7 +192,7 @@ onRightClick = function (event) {
         $('#buttonDeleteNodeYes').unbind('click');
         $('#buttonDeleteNodeYes').bind('click', id, controls.deleteNodeFromGraph);
     }
-}
+};
 
 /*
  * Calculate the new state of the network using the update rules.
@@ -291,16 +289,12 @@ startSimulator = function () {
     }
 
     $('#buttonSimulate')
-        .unbind('click', startSimulator);
-    $('#buttonSimulate')
-        .click(stopSimulator);
-    $('#buttonSimulate')
+        .unbind('click', startSimulator)
+        .click(stopSimulator)
+        .text('Pause')
         .button("option", "icons", {
             primary: 'ui-icon-pause'
         });
-
-    $('#tabs')
-        .tabs('select', '#tabNetwork');
 
     // Start the simulation
     running = true;
@@ -326,10 +320,9 @@ stopSimulator = function () {
     running = false;
 
     $('#buttonSimulate')
-        .unbind('click', stopSimulator);
-    $('#buttonSimulate')
-        .click(startSimulator);
-    $('#buttonSimulate')
+        .unbind('click', stopSimulator)
+        .click(startSimulator)
+        .text('Simulate')
         .button("option", "icons", {
             primary: 'ui-icon-play'
         });

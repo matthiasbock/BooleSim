@@ -13,9 +13,8 @@ var createNodesColumn = function (state) {
     plotW = 100;
 
     for (i in state) {
-        plot.append('svg:text').attr('y', function (d) {
-            return yPos;
-        })
+        plot.append('svg:text')
+            .attr('y', function (d) { return yPos; })
             .attr('dx', 10).attr('dy', 15)
             .text(i)
             .attr('style', 'font-size:14px')
@@ -28,7 +27,7 @@ var createNodesColumn = function (state) {
     }
     plotW += 50;
     plot.attr('height', yPos + 50);
-}
+};
 
 /**
  * Construct a column with all the states.
@@ -64,19 +63,19 @@ var createStateColumn = function (state, count) {
 
     // Iteration count text on the bottom
     plot.append('svg:text')
+        .attr('class', 'timeseriesLabelCounter')
         .attr('id', 'text' + relativeX)
-        .attr('x', xPos).attr('y', function (d) {
-            return yPos;
-        })
-        .attr('dx', 5).attr('dy', 15)
+        .attr('x', xPos).attr('y', function (d) { return yPos; })
+        //.attr('dx', 5).attr('dy', 15)
         .text(timeseriesLabelCounter);
+        //.attr('transform', 'rotate(90 0,15)');
     timeseriesLabelCounter += 1;
 
     // Add the marker (cursor) for current iteration
     plot.append('svg:rect').attr('height', yPos).attr('width', 7)
         .attr('id', 'currMarker')
         .attr('x', xPos + plotH);
-}
+};
 
 /**
  * Delete a column before replacing it.
@@ -87,7 +86,8 @@ var removeStateColumn = function (index) {
     $('.rect' + index).remove();
     $('#text' + index).remove();
     $('#currMarker').remove();
-}
+};
+
 /**
  * Create the Heatmap Plotter.
  */
@@ -101,7 +101,7 @@ var createPlotter = function () {
     plot = d3.select('#divTimeseries').append('svg:svg').attr('xmlns', 'http://www.w3.org/2000/svg');
     createNodesColumn(network.state);
 
-    for (j = iterationCounter - iterationCounter % maxColumns; j <= iterationCounter; j++)
+    for (var j = iterationCounter - iterationCounter % maxColumns; j <= iterationCounter; j++)
         createStateColumn(states[j], j);
     skipped = 0;
 };
@@ -118,7 +118,7 @@ var resetTimeseries = function () {
     $.extend(states[0], network.state);
     $('#tabs').tabs('select', '#tabTimeseries');
     createPlotter();
-}
+};
 
 var updateTimeseries = function () {
     // update Time series
@@ -128,4 +128,4 @@ var updateTimeseries = function () {
     if (timeseriesLabelCounter === "NaN") timeseriesLabelCounter = 1;
     $('#tabs').tabs('select', '#tabTimeseries');
     createPlotter();
-}
+};

@@ -83,6 +83,11 @@
     text-align: center;
 }
 
+#divTimeseries {
+    border: 1px dotted black;
+    border-radius: 5px;
+}
+
 #divTimeseries > svg {
   margin: 20px;
   min-width: 800px;
@@ -90,7 +95,11 @@
 }
 
 #divTimeseries text{
-  fill: black;
+    fill: black;
+}
+
+.timeseriesLabelCounter {
+    font-size: 12px;
 }
 
 #currMarker {
@@ -118,12 +127,6 @@
     float:right;
     width:150px;
     margin:10px;
-}
-
-#textIteration {
-  position:absolute;
-  top:10px;
-  left:5px;
 }
 
 #circleProgress {
@@ -157,11 +160,6 @@
 {
   float:right;
   width:50%;
-}
-
-#optionsScale
-{
-  margin-left:30px;
 }
 
 .dialogButton
