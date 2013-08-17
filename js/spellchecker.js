@@ -46,6 +46,11 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
             if (currentLine.split('=').length != 2)
                 return 'Incorrect usage of equality sign';
             
+            // check if left side is only one node
+            var leftSide = currentLine.split('=')[0].trim();
+            if (leftSide.match(/[A-Za-z0-9_]+/g)[0].length != leftSide.length)
+                return 'Bogus target node';
+            
             if (currentLine.split('=')[1].trim().length == 0)
                 return 'Empty rules are not allowed';
             

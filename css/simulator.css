@@ -5,10 +5,9 @@
     font-size: 16px;
 }
 
-.tabs
-{
-  background-color:#FFF!important;
-  padding:0!important;
+.tabs {
+    background-color:#FFF!important;
+    padding:0!important;
 }
 
 #Logo {
@@ -18,13 +17,19 @@
     width: 137px;
 }
 
+#labelIteration {
+    display: inline-block;
+    padding-top: 10px;
+    padding-right: 10px;
+}
+
 #tabNetwork {
   min-width: 800px;
   min-height: 800px;
 }
 
 #grid {
-    height: 92%;
+    height: 94%;
     width: 100%;
 }
 
@@ -86,6 +91,7 @@
 #divTimeseries {
     border: 1px dotted black;
     border-radius: 5px;
+    margin: 15px;
 }
 
 #divTimeseries > svg {
@@ -95,6 +101,7 @@
 }
 
 #divTimeseries text{
+    font-size: 14px;
     fill: black;
 }
 
@@ -103,7 +110,9 @@
 }
 
 #currMarker {
-  fill: black;
+    fill: lime;
+    stroke: purple;
+    stroke-width: 1;
 }
 
 #legend {
@@ -111,16 +120,14 @@
     border: 1px dotted black;
     border-radius: 5px;
     margin: 10px;
-}
-
-#legend > ul > li {
-  display: inline-block;
-  list-style-type: none;
+    padding: 8px;
+    text-align: left;
 }
 
 .legend {
-  height: 20px;
-  width: 20px;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
 }
 
 #sliderZoom {

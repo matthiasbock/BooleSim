@@ -46,6 +46,9 @@ var Controls = function () {
                 primary: "ui-icon-folder-open"
             }
         });
+        $('#buttonCreate').click(createDefaultNetwork);
+        $('#buttonInitialCreate').click(createDefaultNetwork);
+
         $('#buttonSimulate').button({
             icons: {
                 primary: "ui-icon-play"
@@ -158,13 +161,10 @@ var Controls = function () {
             $('#dialogConfirm').dialog('close');
         });
 
-        $('#buttonResetTimeseries').click(function () {
+        $('#buttonReset').click(function () {
             resetTimeseries();
         });
-        
-        $('#buttonCreate').click(createDefaultNetwork);
-        $('#buttonInitialCreate').click(createDefaultNetwork);
-        
+
         $('#buttonSimulate').click(function () {
             if (network == null || network == undefined || network == {}) {
                 alert('You need to create or import a network before you can start simulation.');
@@ -278,7 +278,7 @@ var Controls = function () {
     };
 
     createDefaultNetwork = function () {
-        plaintextImporter('demoNode* = demoNode\n', false);
+        plaintextImporter('demoNode* = not demoNode\n', false);
     };
 
     /** 
@@ -380,7 +380,6 @@ var Controls = function () {
         };
         initializeSimulator(jsbgn, settings, networkGraph);
 
-        $('#tabs').tabs('select', '#tabNetwork');
         highlightIONodes();
 
         if (typeof ($('#optionsSimulateAfterImport').attr('checked')) !== "undefined")

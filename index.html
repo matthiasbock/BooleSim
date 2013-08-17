@@ -31,15 +31,12 @@
         <li><button id=buttonExportDialog>Export</button></li>
         <li><button id=buttonImportDialog>Import</button></li>
         <li><button id=buttonCreate>New</button></li>
-        <li>Iteration:<label id=textIteration>0</label></li>
+        <li><label id=labelIteration>Iteration:<label id=textIteration>0</label></label></li>
     </ul>
 
     <div class=tabs id=tabNetwork>
         <img id=grid src="img/grid.svg"/>
         <button id=buttonInitialCreate>New</button>
-        <!--div style="float: right; padding: none; margin: none;">
-        Zoom:<div id=sliderZoom style="float: right;"></div>
-        </div-->
     </div>
   
     <div class=tabs id=tabEditor>
@@ -78,17 +75,13 @@
         <br/>
         <font size=6><b>Time series</b></font><br/>
         <div id=legend>
-          <ul>
-          <li>Legend: </li>
-          <li><div id=legendOn class=legend></div></li>
-          <li>=<b>True</b>&nbsp;&nbsp;</li>
-          <li><div id=legendOff class=legend></div></li>
-          <li>=<b>False</b></li>
-          <li><button id=buttonResetTimeseries>Reset graph</button></li>
-          </ul>
+          <div class=legend id=legendOn></div>&nbsp;=&nbsp;<b>True</b>&nbsp;&nbsp;
+          <div class=legend id=legendOff></div>&nbsp;=&nbsp;<b>False</b>&nbsp;&nbsp;
+          <img src="img/cursor.svg"/>&nbsp;=&nbsp;<b>Iterator position</b>
         </div>
         <div id=divTimeseries>
         </div>
+        <button id=buttonReset>Reset</button>
     </div>
 
 </div>

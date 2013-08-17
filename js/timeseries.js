@@ -14,18 +14,20 @@ var createNodesColumn = function (state) {
 
     for (i in state) {
         plot.append('svg:text')
-            .attr('y', function (d) { return yPos; })
-            .attr('dx', 10).attr('dy', 15)
-            .text(i)
-            .attr('style', 'font-size:14px')
-            .attr('id', 'label' + i);
+            .attr('x', 0)
+            .attr('y', function (d) { return yPos+2; })
+            .attr('dx', 10)
+            .attr('dy', 15)
+            .attr('id', 'label' + i)
+            .text(i);
 
         var width = d3.select('#label' + i).node().getBBox()['width'];
         if (width > plotW)
             plotW = width;
         yPos += plotH;
     }
-    plotW += 50;
+    plotW += 20;
+    console.log(plotW);
     plot.attr('height', yPos + 50);
 };
 
@@ -53,10 +55,12 @@ var createStateColumn = function (state, count) {
         // Add a rectangle of required color
         plot.append('svg:rect')
             .attr('class', 'rect' + relativeX)
-            .attr('x', xPos).attr('y', function (d) {
+            .attr('x', xPos)
+            .attr('y', function (d) {
                 return yPos;
             })
-            .attr('width', plotH).attr('height', plotH)
+            .attr('width', plotH)
+            .attr('height', plotH)
             .attr('fill', color);
         yPos += plotH;
     }
@@ -66,15 +70,21 @@ var createStateColumn = function (state, count) {
         .attr('class', 'timeseriesLabelCounter')
         .attr('id', 'text' + relativeX)
         .attr('x', xPos).attr('y', function (d) { return yPos; })
-        //.attr('dx', 5).attr('dy', 15)
+        .attr('dx', 5).attr('dy', 15)
         .text(timeseriesLabelCounter);
         //.attr('transform', 'rotate(90 0,15)');
     timeseriesLabelCounter += 1;
 
     // Add the marker (cursor) for current iteration
-    plot.append('svg:rect').attr('height', yPos).attr('width', 7)
+/*    plot.append('svg:rect')
+        .attr('height', yPos)
+        .attr('width', 15)
         .attr('id', 'currMarker')
         .attr('x', xPos + plotH);
+        */
+    plot.append('svg:polygon')
+        .attr('id', 'currMarker')
+        .attr('points', (xPos+plotH)+',0 '+(xPos+(plotH*2))+','+parseInt(yPos/2)+' '+(xPos+plotH)+','+yPos);
 };
 
 /**
@@ -88,7 +98,7 @@ var removeStateColumn = function (index) {
     $('#currMarker').remove();
 };
 
-/**
+/*
  * Create the Heatmap Plotter.
  */
 var createPlotter = function () {
@@ -116,7 +126,6 @@ var resetTimeseries = function () {
     states = [];
     states.push({});
     $.extend(states[0], network.state);
-    $('#tabs').tabs('select', '#tabTimeseries');
     createPlotter();
 };
 
@@ -126,6 +135,5 @@ var updateTimeseries = function () {
     timeseriesLabelCounter = parseInt($('#text0').text());
     console.log(timeseriesLabelCounter);
     if (timeseriesLabelCounter === "NaN") timeseriesLabelCounter = 1;
-    $('#tabs').tabs('select', '#tabTimeseries');
     createPlotter();
 };
