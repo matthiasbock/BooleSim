@@ -38,12 +38,12 @@ var Controls = function () {
         
         $('#buttonCreate').button({
             icons: {
-                primary: "ui-icon-folder-open"
+                primary: "ui-icon-star"
             }
         });
         $('#buttonInitialCreate').button({
             icons: {
-                primary: "ui-icon-folder-open"
+                primary: "ui-icon-star"
             }
         });
         $('#buttonCreate').click(createDefaultNetwork);
@@ -124,7 +124,7 @@ var Controls = function () {
         });
         $('#buttonPreferences').button({
             icons: {
-                primary: "ui-icon-folder-open"
+                primary: "ui-icon-wrench"
             }
         }).click(function () {
             $('#dialogPreferences').dialog('open');
@@ -364,6 +364,7 @@ var Controls = function () {
         // Import the jSBGN object into a bui.Graph instance
         obj.importNetwork(jsbgn, '#tabNetwork', doLayout);
         $('#tabNetwork').bind('contextmenu', addNodeDialog);
+        $('#textRules').prop('disabled', false);
         $('#textIteration').text(timeseriesLabelCounter);
 
         // Delete any previous instance of the Simulator and initialize a new one
@@ -375,7 +376,6 @@ var Controls = function () {
 
         var settings = {
             simDelay: simDelay,
-            //				guessSeed: $('#seedGuess').attr('checked'),
             oneClick: typeof ($('#optionsOneClick').attr('checked')) !== "undefined"
         };
         initializeSimulator(jsbgn, settings, networkGraph);
@@ -642,7 +642,7 @@ var Controls = function () {
         $('#dialogExport').dialog('close');
 
         // Get the bui.Graph instance of the select graph to export
-        var graph, bn, content, jsbgn, svg;
+        var graph, bn, content, jsbgn;
         graph = networkGraph;
 
         // export R

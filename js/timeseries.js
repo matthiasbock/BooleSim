@@ -12,22 +12,23 @@ var createNodesColumn = function (state) {
     var yPos = 0;
     plotW = 100;
 
-    for (i in state) {
+    for (node in state) {
         plot.append('svg:text')
             .attr('x', 0)
             .attr('y', function (d) { return yPos+2; })
             .attr('dx', 10)
             .attr('dy', 15)
-            .attr('id', 'label' + i)
-            .text(i);
+            .attr('id', 'label'+node)
+            .text(node);
 
-        var width = d3.select('#label' + i).node().getBBox()['width'];
+        var width = d3.select('#label'+node).node().getBBox()['width'];
         if (width > plotW)
             plotW = width;
         yPos += plotH;
     }
-    plotW += 20;
-    console.log(plotW);
+    
+    plotW += 20; // padding-right
+    
     plot.attr('height', yPos + 50);
 };
 
@@ -47,8 +48,8 @@ var createStateColumn = function (state, count) {
     // Replace previous column
     removeStateColumn(relativeX);
 
-    for (i in state) {
-        if (state[i])
+    for (node in state) {
+        if (state[node])
             color = yellow;
         else
             color = blue;
@@ -71,6 +72,7 @@ var createStateColumn = function (state, count) {
         .attr('id', 'text' + relativeX)
         .attr('x', xPos).attr('y', function (d) { return yPos; })
         .attr('dx', 5).attr('dy', 15)
+        //.attr('transform', 'rotate(90 2,2)')
         .text(timeseriesLabelCounter);
         //.attr('transform', 'rotate(90 0,15)');
     timeseriesLabelCounter += 1;

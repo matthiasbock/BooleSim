@@ -67,8 +67,10 @@
             <br/>
                 Example: <i>A = (B || C) &amp;&amp; (!D)</i>
         </div>
-        <textarea id=textRules spellcheck="false" onkeyup="SpellCheck(event);"></textarea>
+        <textarea id=textRules spellcheck="false" disabled="true" onkeyup="SpellCheck(event);"></textarea>
         <script src="js/spellchecker.js"></script>
+        <br/>
+        <button>Save changes to network</button>
     </div>
 
     <div class=tabs id=tabTimeseries>
@@ -88,7 +90,7 @@
 
 <div id=dialogAddNode class=dialog title="Add node">
     <b>Node name/id:</b><br/>
-    <input type=text id=textNodeID /><br/>
+    <input type=text id=textNodeID onkeyup="if (event.keyCode == 13) $('#buttonAddNode').trigger('click');"/><br/>
   
     <button id=buttonAddNode class=dialogButton> Add </button>
     <button id=buttonAddNodeCancel class=dialogButton> Cancel </button>
@@ -151,9 +153,9 @@
 </div>
 
 <div id=dialogPreferences class=dialog title="Preferences">
-    <input type=checkbox id=optionsOneClick />Simulate on node click<br/>
-    <input type=checkbox id=optionsScale />Scale graph to fit page<br/>
-    <input type=checkbox id=optionsSimulateAfterImport />Simulate after importing a network<br/>
+    <input type=checkbox id=optionsOneClick onclick="config.oneClick = typeof($('#optionsOneClick').attr('checked')) !== undefined;" />Simulate on node click<br/>
+    <input type=checkbox id=optionsScale />Scale graph to fit page on import<br/>
+    <input type=checkbox id=optionsSimulateAfterImport />Start simulating after import<br/>
     <input type=checkbox id=optionsSyntaxChecking checked />Check rule syntax in editor<br/>
 </div>
 
