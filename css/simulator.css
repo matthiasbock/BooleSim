@@ -40,6 +40,10 @@
     top: 50%;
 }
 
+#buttonSimulate {
+    width: 119px;
+}
+
 #textRules {
     display: inline;
     vertical-align: top;

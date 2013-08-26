@@ -1,6 +1,6 @@
 var serverURL = "http://127.0.0.1:8000/biographer";
 var debug = true;
-var simDelay = 300;
+var simDelay = 400;
 
 var showPassedSteadyStatesTab = false;
 

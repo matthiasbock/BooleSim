@@ -291,10 +291,11 @@ startSimulator = function () {
     $('#buttonSimulate')
         .unbind('click', startSimulator)
         .click(stopSimulator)
-        .text('Pause')
         .button("option", "icons", {
             primary: 'ui-icon-pause'
         });
+    $('#buttonSimulate span.ui-button-text')
+        .text('Pause');
 
     // Start the simulation
     running = true;
@@ -322,10 +323,11 @@ stopSimulator = function () {
     $('#buttonSimulate')
         .unbind('click', stopSimulator)
         .click(startSimulator)
-        .text('Simulate')
         .button("option", "icons", {
             primary: 'ui-icon-play'
         });
+    $('#buttonSimulate span.ui-button-text')
+        .text('Simulate');
 
     // switch on editing rules
     $('#textRules').prop('disabled', false);
