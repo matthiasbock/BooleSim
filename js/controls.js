@@ -110,10 +110,12 @@ var Controls = function () {
             }
         }).click(openImportDialog);
         $('#buttonImportFile').click(importFile);
-        $('#buttonImportDemo').click(importDemo);
         $('#buttonImportCancel').click(function () {
             $('#dialogImport').dialog('close');
         });
+
+        $('#buttonDemo1').click(importDemo1);
+        $('#buttonDemo2').click(importDemo2);
 
         $('#dialogExport').dialog({
             autoOpen: false,
@@ -319,11 +321,14 @@ var Controls = function () {
     plaintextImporter = function (data, confirmed) {
         // Depending on the file type option checked in the import dialog box
         // call the appropriate importer
+        
+        // if a network is loaded already, confirm overwrite first
         if ((!confirmed) && (networkGraph !== null)) {
-            $('#buttonConfirmYes').unbind('click');
+//            $('#buttonConfirmYes').unbind('click');
             $('#buttonConfirmYes').click(function () {
-                plaintextImporter(data, true);
+                $('#buttonConfirmYes').unbind('click');
                 $('#dialogConfirm').dialog('close');
+                plaintextImporter(data, true);
             });
             $('#dialogConfirm').dialog('open');
             return;
@@ -435,12 +440,21 @@ var Controls = function () {
         reader.readAsText(file);
     };
 
-    importDemo = function () {
+    importDemo1 = function () {
         // close import dialog
         $('#dialogImport').dialog('close');
 
         setTimeout(function () {
-            plaintextImporter($('#demoNetwork').html(), false);
+            plaintextImporter($('#demoNetwork1').html(), false);
+        }, 200);
+    };
+
+    importDemo2 = function () {
+        // close import dialog
+        $('#dialogImport').dialog('close');
+
+        setTimeout(function () {
+            plaintextImporter($('#demoNetwork2').html(), false);
         }, 200);
     };
 

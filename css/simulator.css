@@ -197,6 +197,15 @@
   margin:20px 10px 10px;
 }
 
+#radioSeed, #radioFormat {
+    margin-top: 10px;
+}
+
+#dialogImport .dialogButton, #dialogConfirm .dialogButton {
+    left: 0px;
+    margin-bottom: 5px;
+}
+
 #textRules
 {
   min-width: 800px;

@@ -1,18 +1,56 @@
 <html>
 
 <head>
-    <title>BooleSim</title>
-  
-    <!-- The order of import plays a role, due to dependencies on jQuery ... -->
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
-    <link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
-    <link rel="stylesheet" type="text/css" href="css/simulator.css"/>
-    <link rel="stylesheet" type="text/css" href="css/rickshaw.css"/>
+<title>BooleSim</title>
 
-    <script type="text/javascript" src="include/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="include/jquery-ui-1.8.22.custom.min.js"></script>
-    <script type="text/javascript" src="settings.js"></script>
-    <script type="text/javascript" src="js/controls.js"></script>
+<!-- The order of import plays a role, due to dependencies on jQuery ... -->
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="css/visualization-html.css"/>
+<link rel="stylesheet" type="text/css" href="css/simulator.css"/>
+<link rel="stylesheet" type="text/css" href="css/rickshaw.css"/>
+
+<script type="text/javascript" src="include/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="include/jquery-ui-1.8.22.custom.min.js"></script>
+<script type="text/javascript" src="settings.js"></script>
+<script type="text/javascript" src="js/controls.js"></script>
+    
+<script type="data/jSBGN" id="demoNetwork1">
+targets, factors
+
+pluri_exo, !pluri_exo_meth | !pluri_exo_het_chrom
+pluri_exo_meth, pluri_exo_meth
+pluri_exo_het_chrom, pluri_exo_het_chrom
+
+pluri_net, (pluri_net | pluri_exo) & !(B_net | A_net) & !pluri_meth & !pluri_het_chrom
+pluri_meth, pluri_meth
+pluri_het_chrom, pluri_het_chrom
+
+B_net, B_net & !(pluri_net | A_net) & !B_meth & !B_het_chrom
+B_meth, B_meth
+B_het_chrom, B_het_chrom
+
+A_net, A_net & !(pluri_net | B_net) & !A_meth & !A_het_chrom
+A_meth, A_meth
+A_het_chrom, A_het_chrom
+
+dnmt, pluri_net | pluri_exo | dnmt
+de_meth, pluri_net | pluri_exo | de_meth
+</script>
+
+<script type="data/jSBGN" id="demoNetwork2">
+targets, factors
+CycD, CycD
+Rb, (! CycA & ! CycB & ! CycD & ! CycE) | (p27 & ! CycB & ! CycD)
+E2F, (! Rb & ! CycA & ! CycB) | (p27 & ! Rb & ! CycB)
+CycE, (E2F & ! Rb)
+CycA, (E2F & ! Rb & ! Cdc20 & ! (Cdh1 & UbcH10)) | (CycA & ! Rb & ! Cdc20 & ! (Cdh1 & UbcH10))
+p27, (! CycD & ! CycE & ! CycA & ! CycB) | (p27 & ! (CycE & CycA) & ! CycB &! CycD)
+Cdc20, CycB
+Cdh1,(! CycA & ! CycB) | (Cdc20) | (p27 & ! CycB)
+UbcH10, ! Cdh1 | (Cdh1 & UbcH10 & (Cdc20 | CycA | CycB))
+CycB, ! Cdc20 & ! Cdh1
+</script>
+
 </head>
 
 <body style="overflow-y: scroll;">
@@ -108,17 +146,18 @@
 </div>
 
 <div id=dialogConfirm class=dialog title="Create new network">
-    <b>Are you sure you want to discard all changes to the current network and create a new one ? </b><br/>
+    <b>Are you sure you want to discard all changes to the current network and create a new one ?</b><br/>
 
     <button id=buttonConfirmYes class=dialogButton> Yes </button>
-    <button id=buttonConfirmExport class=dialogButton> Export </button>
+    <button id=buttonConfirmExport class=dialogButton> Save current network </button>
     <button id=buttonConfirmNo class=dialogButton> Cancel </button>
 </div>
 
 <!-- This dialog appears after clicking "Open" -->
 <div id=dialogImport class=dialog title="Import network">
     <b>Import file:</b>
-    <input type=file id=fileNetwork /> 
+    <input type=file id=fileNetwork />
+    <br/> 
     <div id=radioSeed>
         <b>Set initial node state:</b> <br/>
         <input type=radio name="seed" id=seedFile />as initialized in the model<br/>
@@ -136,8 +175,9 @@
         <!--input type=radio name="format" id=formatSBML />SBML <small>(<a target="_blank" href="http://sbml.org/Basic_Introduction_to_SBML">more</a>)</small><br-->
     </div>
     <button id=buttonImportFile class=dialogButton> Import </button>
-    <button id=buttonImportDemo class=dialogButton> Demo </button>
-    <button id=buttonImportCancel class=dialogButton> Cancel </button>
+    <button id=buttonImportCancel class=dialogButton> Cancel </button><br/>
+    <button id=buttonDemo1 class=dialogButton> Pluripotency demo </button>
+    <button id=buttonDemo2 class=dialogButton> Cell cycle demo </button>
 </div>
   
 <!-- This dialog appears after clicking "Export" -->
@@ -191,29 +231,6 @@
     $('#dialogHelp').dialog('open');
 </script>
 
-<!-- This is a demo network -->
-<script type="data/jSBGN" id="demoNetwork">
-targets, factors
-
-pluri_exo, !pluri_exo_meth | !pluri_exo_het_chrom
-pluri_exo_meth, pluri_exo_meth
-pluri_exo_het_chrom, pluri_exo_het_chrom
-
-pluri_net, (pluri_net | pluri_exo) & !(B_net | A_net) & !pluri_meth & !pluri_het_chrom
-pluri_meth, pluri_meth
-pluri_het_chrom, pluri_het_chrom
-
-B_net, B_net & !(pluri_net | A_net) & !B_meth & !B_het_chrom
-B_meth, B_meth
-B_het_chrom, B_het_chrom
-
-A_net, A_net & !(pluri_net | B_net) & !A_meth & !A_het_chrom
-A_meth, A_meth
-A_het_chrom, A_het_chrom
-
-dnmt, pluri_net | pluri_exo | dnmt
-de_meth, pluri_net | pluri_exo | de_meth
-</script>
 </body>
 
 </html>
