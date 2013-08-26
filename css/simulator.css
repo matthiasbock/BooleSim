@@ -1,3 +1,4 @@
+
 #tabs {
     border: none;
     margin: 2px;
@@ -72,6 +73,22 @@
 
 #divRuleHelp td {
     text-align: center;
+}
+
+#divSaveRules {
+    border: none;
+	display: inline-block;
+    width: 800px;
+    margin-top: 8px;
+    margin-left: 237px;
+    text-align: left;
+}
+
+#labelSaved {
+    float: right;
+    color: red;
+    font-weight: bold;
+    visibility: hidden;
 }
 
 #SteadyStates

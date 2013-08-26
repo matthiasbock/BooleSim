@@ -1,3 +1,4 @@
+
 var controls, simulator = null;
 var networkGraph = null;
 var transitionGraph = null;
@@ -36,18 +37,36 @@ var Controls = function () {
         $('#legendOn').css('background-color', yellow);
         $('#legendOff').css('background-color', blue);
         
-        $('#buttonCreate').button({
-            icons: {
-                primary: "ui-icon-star"
-            }
-        });
-        $('#buttonInitialCreate').button({
-            icons: {
-                primary: "ui-icon-star"
-            }
-        });
-        $('#buttonCreate').click(createDefaultNetwork);
-        $('#buttonInitialCreate').click(createDefaultNetwork);
+        $('#buttonCreate')
+            .button({
+                        icons: {
+                            primary: "ui-icon-star"
+                        }
+                    })
+            .click(createDefaultNetwork);
+
+        $('#buttonInitialCreate')
+            .button({
+                        icons: {
+                            primary: "ui-icon-star"
+                        }
+                    })
+            .click(createDefaultNetwork);
+        
+        // the corresponding .click function is reloadUpdateRules
+        // which is set in editrule.js
+        $('#buttonSaveRules')
+            .button({
+                        icons: {
+                            primary: "ui-icon-check"
+                        }
+                    });
+        $('#buttonDiscardChanges')
+            .button({
+                        icons: {
+                            primary: "ui-icon-trash"
+                        }
+                    });
 
         $('#buttonSimulate').button({
             icons: {
@@ -171,9 +190,10 @@ var Controls = function () {
                 return;
             }
         });
-
-        // proceed by loading additional JavaScripts
+        
+        // load the additional JavaScripts
         loadAdditionalResources();
+        
     };
 
     /** 
@@ -248,14 +268,14 @@ var Controls = function () {
     changeTab = function (event, ui) {
         if (prevTab === 1) { // select 1: Network
             if ((network != null) && !running && rulesChanged) {
-                //Re-import network from the new rules
+/*                //Re-import network from the new rules
                 rulesChanged = false;
                 alert('The network will now be re-imported');
                 if (!reloadUpdateRules()) {
                     prevTab = 2;
                     $('#tabs').tabs('select', 1);
                     return;
-                }
+                }*/
                 $('#tabs').tabs('select', ui.index);
             }
         } else if (prevTab === 2) { // select 2: Rules

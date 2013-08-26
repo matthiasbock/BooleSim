@@ -70,7 +70,11 @@
         <textarea id=textRules spellcheck="false" disabled="true" onkeyup="SpellCheck(event);"></textarea>
         <script src="js/spellchecker.js"></script>
         <br/>
-        <button>Save changes to network</button>
+        <div id=divSaveRules>
+            <button id=buttonSaveRules>Save changes to network</button>
+            <button id=buttonDiscardChanges>Discard changes</button>
+            <label id=labelSaved>-unsaved changes-</label>
+        </div>
     </div>
 
     <div class=tabs id=tabTimeseries>

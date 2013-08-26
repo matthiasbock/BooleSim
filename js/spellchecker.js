@@ -133,7 +133,11 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
 spell = SpellChecker('textRules', 'tabEditor', 18);
 
 SpellCheck = function(event) {
-    rulesChanged = true;
-    spell.check();
+    var t = $('#textRules');
+    if (t.val() != t.attr('backup')) {
+        rulesChanged = true;
+        $('#labelSaved').css('visibility','visible');
+        spell.check();
+    }
 };
 
