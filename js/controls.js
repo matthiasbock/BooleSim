@@ -319,8 +319,8 @@ var Controls = function () {
                 guessed = 'R';
             else if ((data.indexOf(' && ') + data.indexOf(' || ') > -1) || (data.indexOf('"sbgnlang"') > -1))
                 guessed = 'jSBGN';
-            else if (data.indexOf('<gxl') > -1)
-                guessed = 'GINML';
+/*            else if (data.indexOf('<gxl') > -1)
+                guessed = 'GINML'; */
             else {
                 console.log('Import aborted: Inferring file format did not succeed.');
                 alert('Sorry,\nthe format of your file could not be inferred.\nPlease try specifying it manually in the import dialog.');
@@ -335,8 +335,8 @@ var Controls = function () {
             result = jsbgn.importBooleanNetwork(data, '=', false);
         else if ($('#formatRBoolNet').attr('checked') || guessed == 'R')
             result = jsbgn.importBooleanNetwork(data, ',', false);
-        else if ($('#formatGINML').attr('checked') || guessed == 'GINML')
-            result = jsbgn.importGINML(data);
+/*        else if ($('#formatGINML').attr('checked') || guessed == 'GINML')
+            result = jsbgn.importGINML(data); */
         else if ($('#formatjSBGN').attr('checked') || guessed == 'jSBGN') {
             result = jsbgn.importjSBGN(data);
             doLayout = false;
