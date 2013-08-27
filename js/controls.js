@@ -268,19 +268,20 @@ var Controls = function () {
      * @param {UI} ui Contains the index of the selected tab.
      */
     changeTab = function (event, ui) {
-        if (prevTab === 1) { // select 1: Network
+/*        if (ui.index == 0) { // select 1: Network
             if ((network != null) && !running && rulesChanged) {
-/*                //Re-import network from the new rules
+
+                //Re-import network from the new rules
                 rulesChanged = false;
                 alert('The network will now be re-imported');
                 if (!reloadUpdateRules()) {
                     prevTab = 2;
                     $('#tabs').tabs('select', 1);
                     return;
-                }*/
+                }
                 $('#tabs').tabs('select', ui.index);
             }
-        } else if (prevTab === 2) { // select 2: Rules
+        } else*/ if (ui.index == 1) { // select 1: Rules tab
             if (network != null) {
                 //Re-import rules from new network: Add/Delete + rules update functionality required
                 loadRulesText();
@@ -290,13 +291,15 @@ var Controls = function () {
         }
 
         prevTab = ui.index;
-
+/*
         // Get the current tab index
         var graph = null;
         if (ui.index === 0) graph = networkGraph;
         if (graph === null) return;
+
         // Set the slider's value to the current graph's scale 
         $('#sliderZoom').slider('option', 'value', graph.scale());
+*/
     };
 
     createDefaultNetwork = function () {

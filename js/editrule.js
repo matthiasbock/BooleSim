@@ -1,8 +1,8 @@
 
-//
-// Rules tab has been selected.
-// Write current network rule configuration to edit field !
-//
+/*
+ * Rules tab has been selected.
+ * Write current network rule configuration to edit field !
+ */
 loadRulesText = function () {
     var text = '';
     $('#textRules').val('');
