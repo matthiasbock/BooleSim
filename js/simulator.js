@@ -74,6 +74,22 @@ initialIndex = 0;
 plot = null;
 states = [];
 
+resetNodeStates = function() {
+    if (network == null || network == undefined)
+        return;
+    
+    var i;
+    for (i in network.nodes) {
+        var id = network.nodes[i].id;
+        if (network.state.hasOwnProperty(id))
+            network.state[id] = true;
+    }
+
+    updateAllGraphNodes(network.state, networkGraph);
+};
+
+$('#buttonResetStates')
+    .click(function () { resetNodeStates(); });
 
 /*
  * initialize the simulator. The initial states are calculated, the

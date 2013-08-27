@@ -85,6 +85,7 @@
     width: 800px;
     margin-top: 8px;
     margin-left: 237px;
+    margin-bottom: 30px;
     text-align: left;
 }
 
@@ -136,7 +137,18 @@
     stroke-width: 1;
 }
 
-#legend {
+#divNetworkLegend {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: transparent;
+    padding: 8px;
+    border: 1px dotted black;
+    border-radius: 5px;
+    visibility: hidden;
+}
+
+#divTimeseriesLegend {
     display: inline-block;
     border: 1px dotted black;
     border-radius: 5px;

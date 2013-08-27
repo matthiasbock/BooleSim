@@ -76,7 +76,13 @@ CycB, ! Cdc20 & ! Cdh1
         <img id=grid src="img/grid.svg"/>
         <button id=buttonInitialCreate>New</button>
     </div>
-  
+
+    <div id=divNetworkLegend>
+        <div class="legend legendTrue"></div>&nbsp;=&nbsp;<b>True</b>&nbsp;&nbsp;
+        <div class="legend legendFalse"></div>&nbsp;=&nbsp;<b>False</b>&nbsp;&nbsp;
+        <button id=buttonResetStates>Reset states</button>
+    </div>
+
     <div class=tabs id=tabEditor>
         <br/>
         <font size=6><b>Rule editor</b></font><br/>
@@ -118,14 +124,14 @@ CycB, ! Cdc20 & ! Cdh1
     <div class=tabs id=tabTimeseries>
         <br/>
         <font size=6><b>Time series</b></font><br/>
-        <div id=legend>
-          <div class=legend id=legendOn></div>&nbsp;=&nbsp;<b>True</b>&nbsp;&nbsp;
-          <div class=legend id=legendOff></div>&nbsp;=&nbsp;<b>False</b>&nbsp;&nbsp;
+        <div id=divTimeseriesLegend>
+          <div class="legend legendTrue"></div>&nbsp;=&nbsp;<b>True</b>&nbsp;&nbsp;
+          <div class="legend legendFalse"></div>&nbsp;=&nbsp;<b>False</b>&nbsp;&nbsp;
           <img src="img/cursor.svg"/>&nbsp;=&nbsp;<b>Iterator position</b>
         </div>
         <div id=divTimeseries>
         </div>
-        <button id=buttonReset>Reset</button>
+        <button id=buttonResetTime>Reset time</button>
     </div>
 
 </div>
@@ -213,7 +219,7 @@ CycB, ! Cdc20 & ! Cdh1
     <li>Right-click on a node to delete it.</li>
     <li>Left-click on a node, to change it's state (from true to false and vice-versa).</li>
     <li>Ctrl+left click on a node, to freeze/unfreeze it (disable/re-enable node state update).</li>
-    <li>Zoom in and out with Alt+mouse wheel up/down.</li>
+    <li>Zoom in and out of the network using Alt+mouse wheel with the mouse cursor inside the graph.</li>
     <li>Drag'n'drop on the canvas to move the network around.</li>
     <li>Click the nodes' borders, to resize them.</li>
     <li>Hover a node, to see a hint with the node's Boolean update rule.</li>

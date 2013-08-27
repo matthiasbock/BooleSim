@@ -34,8 +34,8 @@ var Controls = function () {
         $('#tabs').bind('tabsshow', changeTab);
         
         // initialize all the jQuery UI components
-        $('#legendOn').css('background-color', yellow);
-        $('#legendOff').css('background-color', blue);
+        $('.legendTrue').css('background-color', yellow);
+        $('.legendFalse').css('background-color', blue); 
         
         $('#buttonCreate')
             .button({
@@ -69,16 +69,17 @@ var Controls = function () {
                     });
 
         $('#buttonSimulate').button({
-            icons: {
-                primary: "ui-icon-play"
-            }
-        });
+                                icons: {
+                                    primary: "ui-icon-play"
+                                }
+                            });
         
-        $('#buttonReset').button({
-            icons: {
-                primary: "ui-icon-stop"
-            }
-        });
+        $('#buttonResetTime')
+            .button( {icons: {primary: "ui-icon-seek-first"}} )
+            .click(function () { resetTimeseries(); });
+
+        $('#buttonResetStates')
+            .button( {icons: {primary: "ui-icon-arrowreturnthick-1-w"}} );
 
         $('#dialogAddNode').dialog({
             autoOpen: false,
@@ -153,7 +154,7 @@ var Controls = function () {
 
         $('#dialogHelp').dialog({
             autoOpen: false,
-            minWidth: 630,
+            minWidth: 650,
             resizable: false,
             modal: true
         });
@@ -180,10 +181,6 @@ var Controls = function () {
         });
         $('#buttonConfirmNo').click(function () {
             $('#dialogConfirm').dialog('close');
-        });
-
-        $('#buttonReset').click(function () {
-            resetTimeseries();
         });
 
         $('#buttonSimulate').click(function () {
@@ -268,20 +265,12 @@ var Controls = function () {
      * @param {UI} ui Contains the index of the selected tab.
      */
     changeTab = function (event, ui) {
-/*        if (ui.index == 0) { // select 1: Network
-            if ((network != null) && !running && rulesChanged) {
-
-                //Re-import network from the new rules
-                rulesChanged = false;
-                alert('The network will now be re-imported');
-                if (!reloadUpdateRules()) {
-                    prevTab = 2;
-                    $('#tabs').tabs('select', 1);
-                    return;
-                }
-                $('#tabs').tabs('select', ui.index);
-            }
-        } else*/ if (ui.index == 1) { // select 1: Rules tab
+        // select 1: Rules tab
+        if (ui.index == 0 && network != null)
+            $('#divNetworkLegend').css('visibility', 'visible');
+        else
+            $('#divNetworkLegend').css('visibility', 'hidden');
+        if (ui.index == 1) {
             if (network != null) {
                 //Re-import rules from new network: Add/Delete + rules update functionality required
                 loadRulesText();
@@ -291,15 +280,6 @@ var Controls = function () {
         }
 
         prevTab = ui.index;
-/*
-        // Get the current tab index
-        var graph = null;
-        if (ui.index === 0) graph = networkGraph;
-        if (graph === null) return;
-
-        // Set the slider's value to the current graph's scale 
-        $('#sliderZoom').slider('option', 'value', graph.scale());
-*/
     };
 
     createDefaultNetwork = function () {
@@ -504,12 +484,14 @@ var Controls = function () {
         if (typeof ($('#optionsScale').attr('checked')) !== "undefined")
             graph.fitToPage();
         graph.unsuspendRedraw(handle);
-
-        $('#sliderZoom').slider('option', 'value', graph.scale());
+        
+//        $('#sliderZoom').slider('option', 'value', graph.scale());
         $('#tabs').tabs('select', tab);
+        $('#divNetworkLegend').css('visibility', 'visible');
 
         if (tab === '#graphStateTransition') transitionGraph = graph;
         else networkGraph = graph;
+        
     };
 
     this.getRandomSeed = function () {
