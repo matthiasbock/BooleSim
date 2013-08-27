@@ -1606,7 +1606,7 @@ var getSBOForMarkerId = function(id) {
      *   generated element.
      */
     bui.connectingArcs.inhibition = function() {
-        return createPathWithData('M0,0 V20 H1 V0 ZM22,0', 2, 10, 20, 22);
+        return createPathWithData('M0,0 V20 H1 V0 H1 V20 Z', 0, 10, 6, 24);
     };
     
     /**
