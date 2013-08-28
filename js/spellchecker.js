@@ -55,7 +55,7 @@ SpellChecker = function(_idTextarea, _idParentDiv, _lineHeight) {
                 return 'Empty rules are not allowed';
             
             // check for illegal characters
-            if (currentLine.match(/[A-Za-z0-9_&\|!= ]+/g)[0].length != currentLine.length)
+            if (currentLine.match(/[A-Za-z0-9_&\|!= ()]+/g)[0].length != currentLine.length)
                 return 'Illegal character';
             
             // check for accidental use of "and", "or", "not"

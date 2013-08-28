@@ -54,6 +54,8 @@
     box-shadow: -10px 10px 5px #888;
    -webkit-box-shadow: -10px 10px 5px #888;
    -moz-box-shadow: -10px 10px 5px #888;
+   overflow: scroll;
+   resize: none;
 }
 
 .spellcheckWarning {
@@ -143,6 +145,7 @@
     right: 20px;
     background-color: transparent;
     padding: 8px;
+    padding-left: 16px;
     border: 1px dotted black;
     border-radius: 5px;
     visibility: hidden;
@@ -154,6 +157,7 @@
     border-radius: 5px;
     margin: 10px;
     padding: 8px;
+    padding-left: 12px;
     text-align: left;
 }
 

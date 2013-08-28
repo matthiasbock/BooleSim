@@ -92,7 +92,9 @@ var Controls = function () {
         
         $('#dialogDeleteNode').dialog({
             autoOpen: false,
-            minWidth: 200,
+            minWidth: 300,
+            minHeight: 80,
+            resizable: false,
             modal: true
         });
         $('#buttonDeleteNodeNo').click(function () {
@@ -270,14 +272,8 @@ var Controls = function () {
             $('#divNetworkLegend').css('visibility', 'visible');
         else
             $('#divNetworkLegend').css('visibility', 'hidden');
-        if (ui.index == 1) {
-            if (network != null) {
-                //Re-import rules from new network: Add/Delete + rules update functionality required
-                loadRulesText();
-                rulesChanged = false;
-            }
+        if (ui.index == 1)
             $('#textRules').focus();
-        }
 
         prevTab = ui.index;
     };
@@ -387,6 +383,9 @@ var Controls = function () {
             oneClick: typeof ($('#optionsOneClick').attr('checked')) !== "undefined"
         };
         initializeSimulator(jsbgn, settings, networkGraph);
+
+        loadRulesText();
+        rulesChanged = false;
 
         highlightIONodes();
 
