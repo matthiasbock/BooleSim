@@ -2,6 +2,9 @@
  * The event handler for hovering over a node: displays update rule
  */
 showRuleBox = function (event) {
+    $('#boxInfo')
+        .remove();
+
     var id = $(this)
         .attr('id');
     var rule = id + ' = ' + network.rules[id];

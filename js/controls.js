@@ -386,6 +386,7 @@ var Controls = function () {
 
         loadRulesText();
         rulesChanged = false;
+        $('.spellcheckWarning').remove();
 
         highlightIONodes();
 
