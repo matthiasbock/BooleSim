@@ -158,7 +158,7 @@ var Controls = function () {
             autoOpen: false,
             minWidth: 650,
             resizable: false,
-            modal: true
+            modal: false
         });
         $('#buttonHelp').button({
             icons: {

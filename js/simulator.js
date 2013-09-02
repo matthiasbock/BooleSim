@@ -194,6 +194,9 @@ onNodeClick = function (ob, ev) {
     }, config.simDelay);
 };
 
+/*
+ * Event handler for right click on a node: remove node
+ */
 onRightClick = function (event) {
     if (running) {
         alert('Node cannot be deleted while simulating');

@@ -1,3 +1,4 @@
+
 var plotH = 20;
 var plotW = 100;
 var maxColumns = 40;
@@ -8,7 +9,7 @@ var skipped = 0;
  * Construct the node label column
  * @param {Object} state Current state of the network.
  */
-var createNodesColumn = function (state) {
+var createNodeLabelColumn = function (state) {
     var yPos = 0;
     plotW = 100;
 
@@ -37,7 +38,7 @@ var createNodesColumn = function (state) {
  * @param {Object} state Current state of the network.
  * @param {number} count Iteration Counter.
  */
-var createStateColumn = function (state, count) {
+var createNodeStateColumn = function (state, count) {
 
     // Calculate position of the column
     var relativeX = count % maxColumns;
@@ -46,7 +47,7 @@ var createStateColumn = function (state, count) {
     var color;
 
     // Replace previous column
-    removeStateColumn(relativeX);
+    removeNodeStateColumn(relativeX);
 
     for (node in state) {
         if (state[node])
@@ -93,7 +94,7 @@ var createStateColumn = function (state, count) {
  * Delete a column before replacing it.
  * @param {number} index The index of the column to be deleted.
  */
-var removeStateColumn = function (index) {
+var removeNodeStateColumn = function (index) {
     index = index % maxColumns;
     $('.rect' + index).remove();
     $('#text' + index).remove();
@@ -107,19 +108,23 @@ var createPlotter = function () {
 
     if (plot !== null) return;
 
+    // remove old plot
     $('#divTimeseries > svg').remove();
 
     // Use d3 to create the initial svg with the start states
     plot = d3.select('#divTimeseries').append('svg:svg').attr('xmlns', 'http://www.w3.org/2000/svg');
-    createNodesColumn(network.state);
+    createNodeLabelColumn(network.state);
 
     for (var j = iterationCounter - iterationCounter % maxColumns; j <= iterationCounter; j++)
-        createStateColumn(states[j], j);
+        createNodeStateColumn(states[j], j);
     skipped = 0;
 };
 
+/*
+ * Re-create time series plot,
+ * reset cursor to position 1 
+ */
 var resetTimeseries = function () {
-    plot = null;
     initialIndex = 0;
     iterationCounter = 0;
     timeseriesLabelCounter = 1;
@@ -128,14 +133,19 @@ var resetTimeseries = function () {
     states = [];
     states.push({});
     $.extend(states[0], network.state);
+    plot = null;
     createPlotter();
 };
 
+/*
+ * Re-create time series plot
+ */
 var updateTimeseries = function () {
     // update Time series
     plot = null;
     timeseriesLabelCounter = parseInt($('#text0').text());
     console.log(timeseriesLabelCounter);
-    if (timeseriesLabelCounter === "NaN") timeseriesLabelCounter = 1;
+    if (timeseriesLabelCounter === "NaN")
+        timeseriesLabelCounter = 1;
     createPlotter();
 };
