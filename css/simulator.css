@@ -6,6 +6,10 @@
     font-size: 16px;
 }
 
+#tabNetwork {
+    min-height: 90%;
+}
+
 .tabs {
     background-color:#FFF!important;
     padding:0!important;

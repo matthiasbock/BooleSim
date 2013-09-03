@@ -1,34 +1,33 @@
 var serverURL, controls;
 
 /*
- * Generate a random color. The format is a 6 digit hex prefixed by a hash symbol.
- * @returns {string} The random color.
+ * Generate a random color. The format is a 6 digit hex prefixed by a hash
+ * symbol. @returns {string} The random color.
  */
-randomColor = function () {
-    var color = '#',
-        i;
+randomColor = function() {
+    var color = '#', i;
     // Get 6 random characters in hex
     for (i = 0; i < 6; i++)
-        color += Math.round(Math.random() * 0xF)
-            .toString(16);
+        color += Math.round(Math.random() * 0xF).toString(16);
     return color;
 };
 
 /*
- * Convert the update rule to a function. This is done by matching all
- * the node ids and replacing them with the state variable equivalents.
- * @param {string} rule The update rule.
- * @returns {Function} The function for the update rule.
+ * Convert the update rule to a function. This is done by matching all the node
+ * ids and replacing them with the state variable equivalents. @param {string}
+ * rule The update rule. @returns {Function} The function for the update rule.
  */
-rule2function = function (node, rule) {
+rule2function = function(node, rule) {
     var newRule;
     if (typeof (rule) === "undefined") {
-        // during update the previous node value is set (equal to no update at all)
+        // during update the previous node value is set (equal to no update at
+        // all)
         newRule = "state['" + node + "'];";
     } else {
         // Match the node ids
-        newRule = rule.replace(/[A-Za-z0-9_]+/g, function (text) {
-            if (text === 'true' || text === 'false') return text;
+        newRule = rule.replace(/[A-Za-z0-9_]+/g, function(text) {
+            if (text === 'true' || text === 'false')
+                return text;
             return "state['" + text + "']";
         });
     }
@@ -40,21 +39,21 @@ rule2function = function (node, rule) {
     }
 };
 
-updateAllGraphNodes = function (state, graph) {
+updateAllGraphNodes = function(state, graph) {
     var drawables = graph.drawables();
     for (i in state) {
         updateGraphNode(drawables, i);
     }
 };
 
-updateGraphNode = function (drawables, i) {
+updateGraphNode = function(drawables, i) {
     // Get the node in the SVG and bind the event handlers
     svgNode = $('#' + i);
     if (svgNode !== null) {
-        drawables[i].bind(bui.Node.ListenerType.click, function () {
+        drawables[i].bind(bui.Node.ListenerType.click, function() {
             this.bind(bui.Node.ListenerType.click, onNodeClick);
         });
-        drawables[i].bind(bui.Node.ListenerType.dragStart, function () {
+        drawables[i].bind(bui.Node.ListenerType.dragStart, function() {
             this.unbind(bui.Node.ListenerType.click, onNodeClick);
         });
         drawables[i].bind(bui.Node.ListenerType.click, onNodeClick);
@@ -77,7 +76,7 @@ states = [];
 resetNodeStates = function() {
     if (network == null || network == undefined)
         return;
-    
+
     var i;
     for (i in network.nodes) {
         var id = network.nodes[i].id;
@@ -88,19 +87,18 @@ resetNodeStates = function() {
     updateAllGraphNodes(network.state, networkGraph);
 };
 
-$('#buttonResetStates')
-    .click(function () { resetNodeStates(); });
+$('#buttonResetStates').click(function() {
+    resetNodeStates();
+});
 
 /*
- * initialize the simulator. The initial states are calculated, the
- * plotter is created and all the event handlers for the nodes are
- * applied.
- * @param {jSBGN} jsbgn The network represented as a jSBGN object.
- * @param {number} simDelay The delay between successive iterations.
- * @param {Boolean} guessSeed Truth value for whether the guess seed for
- * SBML files should be applied.
+ * initialize the simulator. The initial states are calculated, the plotter is
+ * created and all the event handlers for the nodes are applied. @param {jSBGN}
+ * jsbgn The network represented as a jSBGN object. @param {number} simDelay The
+ * delay between successive iterations. @param {Boolean} guessSeed Truth value
+ * for whether the guess seed for SBML files should be applied.
  */
-initializeSimulator = function (jsbgn, settings, graph) {
+initializeSimulator = function(jsbgn, settings, graph) {
     network = jsbgn;
     config = settings;
     network.freeze = {};
@@ -109,8 +107,8 @@ initializeSimulator = function (jsbgn, settings, graph) {
     console.log('Initializing simulator ...');
 
     $('#buttonSimulate').click(startSimulator);
-    //$('#buttonAnalyse')
-    //	.click(findAttractors);
+    // $('#buttonAnalyse')
+    // .click(findAttractors);
 
     // initialize the state of the network
     var i;
@@ -131,11 +129,11 @@ initializeSimulator = function (jsbgn, settings, graph) {
     updateAllGraphNodes(network.state, graph);
 };
 
-destroySimulator = function () {
+destroySimulator = function() {
     $('#buttonSimulate').unbind('click', startSimulator);
 };
 
-var resetSimulator = function () {
+var resetSimulator = function() {
     if (running)
         stopSimulator();
     for (i in states[initialIndex])
@@ -145,10 +143,10 @@ var resetSimulator = function () {
 };
 
 /*
- * Update the color of a node after every iteration.
- * @param {string} nodeid The node id.
+ * Update the color of a node after every iteration. @param {string} nodeid The
+ * node id.
  */
-updateNodeColor = function (nodeid) {
+updateNodeColor = function(nodeid) {
     if (network.state[nodeid])
         color = yellow;
     else
@@ -160,20 +158,18 @@ updateNodeColor = function (nodeid) {
         width = "6px";
     }
 
-    $('#' + nodeid + ' :eq(0)')
-        .css('stroke', stroke)
-        .css('stroke-width', width)
-    //~ .css('fill', color);
-    .animate({
-            'fill': color
-        },
-        config.simDelay);
+    $('#' + nodeid + ' :eq(0)').css('stroke', stroke)
+            .css('stroke-width', width)
+            // ~ .css('fill', color);
+            .animate({
+                'fill' : color
+            }, config.simDelay);
 };
 
 /*
  * The event handler for left clicking a node. The node state is toggled.
  */
-onNodeClick = function (ob, ev) {
+onNodeClick = function(ob, ev) {
     // Toggle the node state
     var nodeid = this.id();
 
@@ -184,20 +180,21 @@ onNodeClick = function (ob, ev) {
     }
     updateNodeColor(nodeid);
 
-    //Update the value in the plot
+    // Update the value in the plot
     states[iterationCounter] = {};
     $.extend(states[iterationCounter], network.state);
 
     // Start the simulation if the One click option is checked
-    if (config.oneClick && (!running)) setTimeout(function () {
-        startSimulator();
-    }, config.simDelay);
+    if (config.oneClick && (!running))
+        setTimeout(function() {
+            startSimulator();
+        }, config.simDelay);
 };
 
 /*
  * Event handler for right click on a node: remove node
  */
-onRightClick = function (event) {
+onRightClick = function(event) {
     if (running) {
         alert('Node cannot be deleted while simulating');
         event.preventDefault();
@@ -208,19 +205,20 @@ onRightClick = function (event) {
         var id = $(this).attr('id');
         $('#deleteNodeID').html(id);
         $('#dialogDeleteNode').dialog('open');
-        $('#buttonDeleteNodeYes').unbind('click');
-        $('#buttonDeleteNodeYes').bind('click', id, controls.deleteNodeFromGraph);
+        $('#buttonDeleteNodeYes')
+            .unbind('click')
+            .bind('click', id, controls.deleteNodeFromGraph);
     }
 };
 
 /*
- * Calculate the new state of the network using the update rules.
- * The node state is updated synchronously in the sense that the update
- * rule is calculated using the previous iteration's state. Only after
- * calculating all the new states, the state variable is updated.
- * @returns {Array} A list of the changed nodes.
+ * Calculate the new state of the network using the update rules. The node state
+ * is updated synchronously in the sense that the update rule is calculated
+ * using the previous iteration's state. Only after calculating all the new
+ * states, the state variable is updated. @returns {Array} A list of the changed
+ * nodes.
  */
-synchronousUpdate = function (state) {
+synchronousUpdate = function(state) {
     var i, id;
     var changed = [];
     var newState = {};
@@ -245,10 +243,10 @@ synchronousUpdate = function (state) {
 };
 
 /*
- * Run a single iteration. Call the run function after completing an
- * iteration. The node color is updated using an animation.
+ * Run a single iteration. Call the run function after completing an iteration.
+ * The node color is updated using an animation.
  */
-updateAndContinue = function () {
+updateAndContinue = function() {
     var changed, i;
     changed = synchronousUpdate(network.state);
 
@@ -264,7 +262,7 @@ updateAndContinue = function () {
             updateNodeColor(changed[i]);
 
         // iterate again after delay
-        setTimeout(function () {
+        setTimeout(function() {
             runSimulator();
         }, config.simDelay);
     } else {
@@ -279,8 +277,9 @@ updateAndContinue = function () {
 /*
  * executes the simulator
  */
-runSimulator = function () {
-    if (!(running)) return;
+runSimulator = function() {
+    if (!(running))
+        return;
 
     // Get the next states from the current state
     updateAndContinue();
@@ -292,11 +291,10 @@ runSimulator = function () {
         createNodeStateColumn(network.state, iterationCounter + skipped);
 };
 
-
 /*
  * bind event handlers
  */
-startSimulator = function () {
+startSimulator = function() {
     // reload update rules if in editor mode
     var index = $('#tabs').tabs('option', 'selected');
     if (index === 1) {
@@ -307,14 +305,11 @@ startSimulator = function () {
         }
     }
 
-    $('#buttonSimulate')
-        .unbind('click', startSimulator)
-        .click(stopSimulator)
-        .button("option", "icons", {
-            primary: 'ui-icon-pause'
-        });
-    $('#buttonSimulate span.ui-button-text')
-        .text('Pause');
+    $('#buttonSimulate').unbind('click', startSimulator).click(stopSimulator)
+            .button("option", "icons", {
+                primary : 'ui-icon-pause'
+            });
+    $('#buttonSimulate span.ui-button-text').text('Pause');
 
     // Start the simulation
     running = true;
@@ -336,17 +331,14 @@ startSimulator = function () {
 /*
  * unbind event handlers
  */
-stopSimulator = function () {
+stopSimulator = function() {
     running = false;
 
-    $('#buttonSimulate')
-        .unbind('click', stopSimulator)
-        .click(startSimulator)
-        .button("option", "icons", {
-            primary: 'ui-icon-play'
-        });
-    $('#buttonSimulate span.ui-button-text')
-        .text('Simulate');
+    $('#buttonSimulate').unbind('click', stopSimulator).click(startSimulator)
+            .button("option", "icons", {
+                primary : 'ui-icon-play'
+            });
+    $('#buttonSimulate span.ui-button-text').text('Simulate');
 
     // switch on editing rules
     $('#textRules').prop('disabled', false);
