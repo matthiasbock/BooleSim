@@ -100,7 +100,8 @@ reloadUpdateRules = function () {
     network.left = jsbgn.left;
     network.right = jsbgn.right;
 
-    updateTimeseries();
+    //updateTimeseries();
+    resetTimeseries();
     //~ identifyIONodes(network.left, network.right);
     //~ highlightIONodes();
     //~ createSteadyStates();
