@@ -10,6 +10,11 @@
     min-height: 90%;
 }
 
+svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .tabs {
     background-color:#FFF!important;
     padding:0!important;
