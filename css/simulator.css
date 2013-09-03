@@ -10,7 +10,7 @@
     min-height: 90%;
 }
 
-svg {
+#tabNetwork svg {
     width: 100% !important;
     height: 100% !important;
 }
