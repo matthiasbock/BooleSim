@@ -80,8 +80,12 @@ resetNodeStates = function() {
     var i;
     for (i in network.nodes) {
         var id = network.nodes[i].id;
-        if (network.state.hasOwnProperty(id))
-            network.state[id] = true;
+        if (network.state.hasOwnProperty(id)) {
+            if (network.initialState.hasOwnProperty(id))
+                network.state[id] = network.initialState[id];
+            else
+                network.state[id] = true;
+        }
     }
 
     updateAllGraphNodes(network.state, networkGraph);
@@ -314,6 +318,13 @@ startSimulator = function() {
 
     // Start the simulation
     running = true;
+
+    if ($('#optionsResetStatesToBeforeSimulation').attr('checked')) {
+        // before simulating: save current states to inital states dictionary
+        network.initialState = {};
+        for (id in network.state)
+            network.initialState[id] = network.state[id];
+    }
 
     if (iterationCounter > 0) {
         // move 2 steps to the right, delete the column inbetween

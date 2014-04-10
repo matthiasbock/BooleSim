@@ -137,7 +137,7 @@ var Controls = function () {
 
         $('#dialogPreferences').dialog({
             autoOpen: false,
-            minWidth: 400,
+            minWidth: 520,
             resizable: false,
             modal: true,
             buttons: {

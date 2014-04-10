@@ -9,6 +9,7 @@ var jSBGN = function () {
     this.nodes = [];
     this.edges = [];
     this.state = {};
+    this.initialState = {};
 };
 
 /**
@@ -113,7 +114,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                 .replace(/\-_Nucleus_/g, '_Nucleus')
                 .replace(/\-/g, '_');
                 //.replace(/__/g, '_');
-       console.log(data);
+       //console.log(data);
     }
 
     // The file consists of multiple lines with each line representing 
@@ -164,6 +165,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                         } else if ($('#seedRandom').attr('checked')) {
                             this.state[targetID] = controls.getRandomSeed();
                         }
+                        this.initialState[targetID] = this.state[targetID];
                     }
                 }
                 // Convert R or Python logic to JavaScript
@@ -177,7 +179,12 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                         .replace(/\bnot\b/g, '!')
                         .replace(/ +/g, ' ')
                         .trim();
-                console.log(rule);
+
+                if (rule == 'true' || rule == 'false')
+                    console.log('Initial state: '+rule);
+                else
+                    console.log('Update rule: '+rule);
+
             } else {
                 rule = cols[1].trim();
             }
@@ -192,7 +199,9 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
             // Create the node if it does not exist
             if (doc.node(targetID) === null) {
                 targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
-                console.log('Created: '+targetID);
+                console.log('Node created: '+targetID);
+            } else {
+                console.log('Node exists: '+targetID);
             }
 
             // Assign rules (right side equation) to nodes (left side of equation)
