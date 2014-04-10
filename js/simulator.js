@@ -114,6 +114,7 @@ initializeSimulator = function(jsbgn, settings, graph) {
     var i;
     for (i in network.nodes) {
         var id = network.nodes[i].id;
+        // Assign initial state to all nodes that don't have a state already
         if (!network.state.hasOwnProperty(id))
             network.state[id] = controls.getInitialSeed();
         network.freeze[id] = false;

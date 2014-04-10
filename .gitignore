@@ -5,3 +5,6 @@ autoload.net
 .project
 .settings/
 BooleSim.html5
+*.js~
+*.html~
+

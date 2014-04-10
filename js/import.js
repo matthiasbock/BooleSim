@@ -99,6 +99,23 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
     var doc = new sb.Document();
     doc.lang(sb.Language.AF);
 
+    // rxncon exported Boolean networks need to be adjusted in order to work with BooleSim
+    if (data.indexOf('-_P_') + data.indexOf('_P+_') + data.indexOf('-_Cytoplasm_') > -1) {
+        console.log("Nah, not actually Python. More rxncon'ish. Converting ...");
+        data = data
+                .replace(/\*\=/g, '=')
+                .replace(/\-_P_/g, '_P')
+                .replace(/_P\+_/g, '_phos_')
+                .replace(/_P\-_/g, '_dephos_')
+                .replace(/_Ub\+_/g, '_ubi_')
+                .replace(/_Ub\-_/g, '_deubi_')
+                .replace(/\-_Cytoplasm_/g, '_Cytoplasm')
+                .replace(/\-_Nucleus_/g, '_Nucleus')
+                .replace(/\-/g, '_')
+                .replace(/__/g, '_');
+       console.log(data);
+    }
+
     // The file consists of multiple lines with each line representing 
     // the update rule for a node
     var lines, cols, i, j, trimmed;
@@ -117,6 +134,9 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                 return false;
             }
 
+            //console.log('Target: '+cols[0]);
+            //console.log('Rule: '+cols[1]);
+
             targetID = cols[0].trim();
             if (!reImport) {
                 if (splitKey === ',') {
@@ -125,31 +145,44 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                     if (targetID[targetID.length - 1] === '*') {
                         targetID = targetID.substring(0, targetID.length - 1);
                     } else {
+                        // Set inital node states
                         if ($('#seedFile').attr('checked')) {
                             rule = cols[cols.length - 1].trim();
                             for (j = 0; j < cols.length - 1; j++) {
                                 targetID = cols[j].trim();
-                                if (rule === 'True') this.state[targetID] = true;
-                                else if (rule === 'False') this.state[targetID] = false;
-                                else this.state[targetID] = controls.getRandomSeed();
+                                if (rule === 'True')
+                                    this.state[targetID] = true;
+                                else if (rule === 'False')
+                                    this.state[targetID] = false;
+                                else
+                                    this.state[targetID] = controls.getRandomSeed();
                             }
+                        } else if ($('#seedTrue').attr('checked')) {
+                            this.state[targetID] = true;
+                        } else if ($('#seedFalse').attr('checked')) {
+                            this.state[targetID] = false;
+                        } else if ($('#seedRandom').attr('checked')) {
+                            this.state[targetID] = controls.getRandomSeed();
                         }
-                        continue;
                     }
-                    cols[1] = cols[1].replace(/False/g, 'false');
-                    cols[1] = cols[1].replace(/True/g, 'true');
                 }
-                // Replace R/Python's logical operators with JS logical operators.
-                rule = cols[1].replace(/[&]/g, ' && ').replace(/[|]/g, ' || ')
-                    .replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
-                    .replace(/ +/g, ' ')
-                    .trim();
+                // Convert R or Python logic to JavaScript
+                rule = cols[1]
+                        .replace(/True/g, 'true')
+                        .replace(/False/g, 'false')
+                        .replace(/[&]/g, ' && ')
+                        .replace(/[|]/g, ' || ')
+                        .replace(/\band\b/g, '&&')
+                        .replace(/\bor\b/g, '||')
+                        .replace(/\bnot\b/g, '!')
+                        .replace(/ +/g, ' ')
+                        .trim();
             } else {
                 rule = cols[1].trim();
             }
 
+            // Check, whether the targetID contains illegal characters
             var check = targetID.match(/[A-Za-z0-9_]+/g);
-
             if (check[0] !== targetID) {
                 console.error('Syntax error: Bogus target ID; line ' + i + ': "' + trimmed + '"');
                 return false;
@@ -158,21 +191,30 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
             // Create the node if it does not exist
             if (doc.node(targetID) === null) {
                 targetNode = doc.createNode(targetID).type(sb.NodeType.Macromolecule).label(targetID);
+                console.log('Created: '+targetID);
             }
 
-            // assign rules (right side equation) to array of nodes (left side of equation)
+            // Assign rules (right side equation) to array of nodes (left side of equation)
             rules[targetID] = rule;
             if (rule === '') {
                 rules[targetID] = 'true';
                 continue;
             }
-            if (rule === 'true' || rule === 'false') continue;
+
+            /*
+             * A rule shall not be statically true or false.
+             * Instead such a "static" node shall assume it's previous state upon simulation,
+             * which might be switched by clicking.
+             */
+            if (rule === 'true' || rule === 'false')
+                rule = targetID;
 
             // Extract all the node id's in the update rule
             ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
             right = $.unique($.merge(right, ruleIDs));
             left.push(targetID);
 
+            // Inspect node dependencies and add edges appropriately
             for (j in ruleIDs) {
                 sourceID = ruleIDs[j];
                 if ((sourceID.toLowerCase() == 'true') || (sourceID.toLowerCase() == 'false')) continue;
@@ -201,7 +243,11 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
     this.right = right;
     this.left = left;
 
-    return true;
+    console.log('Imported '+this.nodes.length+' nodes and '+this.edges.length+' edges:');
+    console.log(this.nodes);
+    console.log(this.edges);
+
+    return (this.nodes.length > 0);
 };
 
 

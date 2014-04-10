@@ -9,7 +9,7 @@ loadRulesText = function () {
     for (node in network.rules) {
         text += node + ' = ' + network.rules[node] + '\n';
     }
-    console.log(text);
+    //console.log(text);
     $('#textRules').val(text);
     $('#textRules').attr('backup', text);
     if (running)

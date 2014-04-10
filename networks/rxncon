@@ -1,0 +1,43 @@
+A = True
+C = True
+B = True
+Phos = True
+Kin = True
+Trans = True
+
+B--C = False
+Kin--B = False
+B_pd2-_P_ = False
+A--B = False
+Phos--B = False
+B-_Cytoplasm_ = False
+B_pd1-_P_ = False
+B-_Nucleus_ = False
+
+Trans_NIMP_B = False
+Phos_P-_B_pd2 = False
+B_ppi_C = False
+Kin_ppi_B = False
+Kin_P+_B_pd1 = False
+Kin_P+_B_pd2 = False
+A_ppi_B = False
+Phos_ppi_B = False
+
+B--C *= (B_ppi_C)
+Kin--B *= (Kin_ppi_B)
+B_pd2-_P_ *= (Kin_P+_B_pd2) or (not (Phos_P-_B_pd2) and B_pd2-_P_)
+A--B *= (A_ppi_B)
+Phos--B *= (Phos_ppi_B)
+B-_Cytoplasm_ *= not (Trans_NIMP_B) and B-_Cytoplasm_
+B_pd1-_P_ *= (Kin_P+_B_pd1) or B_pd1-_P_
+B-_Nucleus_ *= (Trans_NIMP_B) or B-_Nucleus_
+
+Trans_NIMP_B *= Trans and B and B-_Cytoplasm_ and (B_pd1-_P_ or B_pd2-_P_)
+Phos_P-_B_pd2 *= Phos and B and B_pd2-_P_
+B_ppi_C *= B and C
+Kin_ppi_B *= Kin and B
+Kin_P+_B_pd1 *= Kin and B and Kin--B and not (A--B)
+Kin_P+_B_pd2 *= Kin and B and Kin--B and not (A--B)
+A_ppi_B *= A and B
+Phos_ppi_B *= Phos and B
+
