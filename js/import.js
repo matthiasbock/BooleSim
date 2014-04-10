@@ -111,8 +111,8 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                 .replace(/_Ub\-_/g, '_deubi_')
                 .replace(/\-_Cytoplasm_/g, '_Cytoplasm')
                 .replace(/\-_Nucleus_/g, '_Nucleus')
-                .replace(/\-/g, '_')
-                .replace(/__/g, '_');
+                .replace(/\-/g, '_');
+                //.replace(/__/g, '_');
        console.log(data);
     }
 
@@ -168,8 +168,8 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                 }
                 // Convert R or Python logic to JavaScript
                 rule = cols[1]
-                        .replace(/True/g, 'true')
-                        .replace(/False/g, 'false')
+                        .replace(/\bTrue\b/g, 'true')
+                        .replace(/\bFalse\b/g, 'false')
                         .replace(/[&]/g, ' && ')
                         .replace(/[|]/g, ' || ')
                         .replace(/\band\b/g, '&&')
@@ -177,6 +177,7 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                         .replace(/\bnot\b/g, '!')
                         .replace(/ +/g, ' ')
                         .trim();
+                console.log(rule);
             } else {
                 rule = cols[1].trim();
             }
@@ -194,20 +195,18 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
                 console.log('Created: '+targetID);
             }
 
-            // Assign rules (right side equation) to array of nodes (left side of equation)
+            // Assign rules (right side equation) to nodes (left side of equation)
             rules[targetID] = rule;
-            if (rule === '') {
-                rules[targetID] = 'true';
-                continue;
-            }
 
             /*
-             * A rule shall not be statically true or false.
+             * A rule shall neither be empty nor statically be true or false.
              * Instead such a "static" node shall assume it's previous state upon simulation,
              * which might be switched by clicking.
              */
-            if (rule === 'true' || rule === 'false')
-                rule = targetID;
+            if (rule == '' || rule == 'true' || rule == 'false' || rule == targetID) {
+                rules[targetID] = targetID;
+                continue;
+            }
 
             // Extract all the node id's in the update rule
             ruleIDs = rules[targetID].match(/[A-Za-z0-9_]+/g);
@@ -217,7 +216,11 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
             // Inspect node dependencies and add edges appropriately
             for (j in ruleIDs) {
                 sourceID = ruleIDs[j];
-                if ((sourceID.toLowerCase() == 'true') || (sourceID.toLowerCase() == 'false')) continue;
+
+                // no arcs for the trivial rules
+                // catch here if statement at line 206 fails
+                if (sourceID == 'true' || sourceID == 'false' || sourceID == targetID)
+                    continue;
 
                 // Create the node if it does not exist
                 if (doc.node(sourceID) === null) {
