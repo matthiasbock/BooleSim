@@ -303,6 +303,10 @@
   border-radius:12px 12px 0 0;
 }
 
+li.ui-state-active {
+    transition: top 0.5s, border-radius 0.8s;
+}
+
 /* positioning */
 .ui-icon-carat-1-n
 {

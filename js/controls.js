@@ -78,8 +78,14 @@ var Controls = function () {
             .button( {icons: {primary: "ui-icon-seek-first"}} )
             .click(function () { resetTimeseries(); });
 
+        $( "#divNetworkLegend" )
+            .draggable({ containment: "#tabNetwork", scroll: false });
         $('#buttonResetStates')
             .button( {icons: {primary: "ui-icon-arrowreturnthick-1-w"}} );
+        $('#buttonAllTrue')
+            .button( {icons: {primary: "ui-icon-arrowthick-1-n"}} );
+        $('#buttonAllFalse')
+            .button( {icons: {primary: "ui-icon-arrowthick-1-s"}} );
 
         $('#dialogAddNode').dialog({
             autoOpen: false,

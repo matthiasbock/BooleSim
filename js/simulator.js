@@ -73,10 +73,14 @@ initialIndex = 0;
 plot = null;
 states = [];
 
-resetNodeStates = function() {
+/*
+ * Functions for the buttons in divNetworkLegend
+ */
+
+// reset node states to state upon import or state before simulation
+$('#buttonResetStates').click(function() {
     if (network == null || network == undefined)
         return;
-
     var i;
     for (i in network.nodes) {
         var id = network.nodes[i].id;
@@ -87,12 +91,33 @@ resetNodeStates = function() {
                 network.state[id] = true;
         }
     }
-
     updateAllGraphNodes(network.state, networkGraph);
-};
+});
 
-$('#buttonResetStates').click(function() {
-    resetNodeStates();
+// set all nodes to true
+$('#buttonAllTrue').click(function() {
+    if (network == null || network == undefined)
+        return;
+    var i;
+    for (i in network.nodes) {
+        var id = network.nodes[i].id;
+        if (network.state.hasOwnProperty(id))
+            network.state[id] = true;
+    }
+    updateAllGraphNodes(network.state, networkGraph);
+});
+
+// set all nodes to false
+$('#buttonAllFalse').click(function() {
+    if (network == null || network == undefined)
+        return;
+    var i;
+    for (i in network.nodes) {
+        var id = network.nodes[i].id;
+        if (network.state.hasOwnProperty(id))
+            network.state[id] = false;
+    }
+    updateAllGraphNodes(network.state, networkGraph);
 });
 
 /*
