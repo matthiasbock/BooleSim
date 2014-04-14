@@ -161,6 +161,7 @@
     border-radius: 5px;
     visibility: hidden;
     overflow: hidden;
+    cursor: move;
     transition: width 0.8s, height 0.8s, background-color 0.5s;
 }
 
@@ -169,6 +170,18 @@
     height: 90px;
     background-color: white;
     transition: width 0.8s, height 0.8s, background-color 0.5s;
+}
+
+#divNetworkLegend #divLegendColors {
+    border: none;
+    width: 300px;
+    height: 20px;
+    margin: 0 0 8px 0;
+    padding: 10px 0 10px 0;
+}
+
+#divNetworkLegend #divLegendButtons {
+    width: 450px;
 }
 
 #divTimeseriesLegend {
