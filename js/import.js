@@ -101,8 +101,15 @@ jSBGN.prototype.importBooleanNetwork = function (data, splitKey, reImport) {
     doc.lang(sb.Language.AF);
 
     // rxncon exported Boolean networks need to be adjusted in order to work with BooleSim
-    if (data.indexOf('-_P_') + data.indexOf('_P+_') + data.indexOf('-_Cytoplasm_') > -1) {
-        console.log("Nah, not actually Python. More rxncon'ish. Converting ...");
+    if (data.indexOf('*=') + 1 +
+        data.indexOf('-_P_') + 1 +
+        data.indexOf('_P+_') + 1 +
+        data.indexOf('_P-_') + 1 +
+        data.indexOf('_Ub+_') + 1 +
+        data.indexOf('_Ub-_') + 1 +
+        data.indexOf('-_Cytoplasm_') + 1 +
+        data.indexOf('-_Nucleus_') + 1 > 0) {
+        console.log("Not actually Python. Looks like someone is trying to import a rxncon exported boolean network. Converting ...");
         data = data
                 .replace(/\*\=/g, '=')
                 .replace(/\-_P_/g, '_P')
