@@ -3230,8 +3230,8 @@ var getSBOForMarkerId = function(id) {
             // set as interactable
             interact.set(privates.nodeGroup, {
                     drag: this._enableDragging,
-                    resize: this._enableResizing,
-                    squareResize: this._forceRectangular,
+                    resize: false,//this._enableResizing,
+                    squareResize: false,//this._forceRectangular,
                     actionChecker: privates.interact.actionCheck
                 });
         }
